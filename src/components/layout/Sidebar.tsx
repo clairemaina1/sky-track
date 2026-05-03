@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const NAV = [
+const NAV: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/", label: "Command", icon: LayoutDashboard, exact: true },
   { to: "/fleet", label: "Fleet", icon: Plane },
   { to: "/mro", label: "MRO", icon: Wrench },
@@ -19,7 +19,7 @@ const NAV = [
   { to: "/disruption", label: "Disruption", icon: AlertTriangle },
   { to: "/routing", label: "Routing", icon: Map },
   { to: "/cargo", label: "Cargo", icon: Package },
-] as const;
+];
 
 export function Sidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
