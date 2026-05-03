@@ -22,7 +22,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-4">
         <span className="font-mono text-xs text-secondary-fg">{utc}</span>
-        <Link to="/disruption" className="relative">
+        <Link to={"/disruption" as string} className="relative">
           <Bell className="w-4 h-4 text-secondary-fg" />
           {unread > 0 && (
             <span
