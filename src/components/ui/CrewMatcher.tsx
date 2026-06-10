@@ -18,13 +18,13 @@ export function CrewMatcher({ crew }: { crew: Crew[] }) {
         const hasCert = c.certifications.includes(requiredCert);
         const dutyHrs = Number(c.duty_time_remaining_hrs);
         const dutyOK = dutyHrs >= minDuty;
-        const available = c.status === "Available";
+        const available = c.status === "Off-Duty" || c.status === "On-Duty";
 
         const score =
           (hasCert ? 40 : 0) +
           Math.min(30, (dutyHrs / 8) * 30) +
           (c.base_airport === base ? 20 : 0) +
-          (available ? 10 : c.status === "On-Duty" ? 5 : 0);
+          (available ? 10 : 0);
 
         return { crew: c, score, matchesRole, hasCert, dutyOK, available };
       })

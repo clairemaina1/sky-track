@@ -151,9 +151,9 @@ function useSuggestions(q: string, nav: ReturnType<typeof useNavigate>, pushToas
         await supabase.from("aircraft").update({ status: "AOG" }).eq("id", data.id);
         await runAOGCascade(data as Aircraft);
         pushToast({
-          id: crypto.randomUUID(), severity: "critical", category: "AOG",
-          message: `AOG cascade triggered for ${tail}`, aircraft_id: data.id, flight_id: null,
-          acknowledged: false, created_at: new Date().toISOString(), acknowledged_at: null, acknowledged_by: null,
+          id: crypto.randomUUID(), severity: "critical", type: "AOG", title: `AOG · ${tail}`,
+          body: `AOG cascade triggered for ${tail}`, source_id: data.id, source_table: "aircraft",
+          acknowledged: false, created_at: new Date().toISOString(), acknowledged_by: null,
         });
         nav({ to: "/fleet" });
       },
