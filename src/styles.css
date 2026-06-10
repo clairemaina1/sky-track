@@ -230,4 +230,20 @@
   @keyframes dash-flow {
     to { stroke-dashoffset: -28; }
   }
+
+  .select-input {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    border-radius: 2px;
+  }
+  .select-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 1px var(--accent-primary);
+  }
 }
