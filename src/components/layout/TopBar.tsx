@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouterState, Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { useAlertStore } from "@/stores/alertStore";
+import { CommandInput } from "@/components/ui/CommandInput";
 
 export function TopBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -21,6 +22,7 @@ export function TopBar() {
         {path === "/" ? "Command Center" : path.replace("/", "").toUpperCase()}
       </div>
       <div className="flex items-center gap-4">
+        <CommandInput />
         <span className="font-mono text-xs text-secondary-fg">{utc}</span>
         <Link to={"/disruption" as string} className="relative">
           <Bell className="w-4 h-4 text-secondary-fg" />
