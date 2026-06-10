@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { RULChart } from "@/components/ui/RULChart";
 import type { Maintenance, Aircraft } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/mro")({ component: MROPage });
@@ -38,6 +39,10 @@ function MROPage() {
             );
           })}
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        {sorted.slice(0, 4).map((a) => <RULChart key={a.id} aircraft={a} />)}
       </div>
 
       <div className="panel overflow-hidden">

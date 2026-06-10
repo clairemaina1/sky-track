@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AIRPORTS } from "@/lib/types";
 import type { Aircraft, Flight } from "@/lib/types";
 import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/routing")({ component: RoutingPage });
 
@@ -21,6 +21,11 @@ function RoutingPage() {
   const [origin, setOrigin] = useState("HKJK");
   const [dest, setDest] = useState("HAAB");
   const [payload, setPayload] = useState(15000);
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const o = AIRPORTS[origin], d = AIRPORTS[dest];
   const dist = o && d ? Math.round(haversine(o.lat, o.lon, d.lat, d.lon)) : 0;
@@ -47,11 +52,36 @@ function RoutingPage() {
                 pathOptions={{ color: "#0EA5E9", weight: 1.5, dashArray: "8 6", opacity: 0.7 }} />
             );
           })}
+          {flights.map((f) => {
+            const a = AIRPORTS[f.origin_icao], b = AIRPORTS[f.destination_icao];
+            if (!a || !b || !f.scheduled_departure || !f.scheduled_arrival) return null;
+            const dep = new Date(f.scheduled_departure).getTime();
+            const arr = new Date(f.scheduled_arrival).getTime();
+            const now = Date.now() + tick * 0; // tick triggers re-render
+            const p = (now - dep) / (arr - dep);
+            if (p <= 0 || p >= 1) return null;
+            const lat = a.lat + (b.lat - a.lat) * p;
+            const lon = a.lon + (b.lon - a.lon) * p;
+            const color = f.status === "Delayed" ? "#F59E0B" : f.status === "Cancelled" ? "#EF4444" : "#22C55E";
+            return (
+              <CircleMarker key={`pos-${f.id}`} center={[lat, lon]} radius={5}
+                pathOptions={{ color, fillColor: color, fillOpacity: 1, weight: 2 }}>
+                <Popup>
+                  <div className="font-mono text-xs">
+                    <b>{f.flight_number}</b><br />
+                    {f.origin_icao} → {f.destination_icao}<br />
+                    {(p * 100).toFixed(0)}% en route
+                  </div>
+                </Popup>
+              </CircleMarker>
+            );
+          })}
           {fleet.filter((a) => a.status === "AOG").map((ac) => {
             const ap = AIRPORTS[ac.current_airport ?? ac.base_airport];
             if (!ap) return null;
-            return <CircleMarker key={ac.id} center={[ap.lat, ap.lon]} radius={10}
-              pathOptions={{ color: "#EF4444", fillColor: "#EF4444", fillOpacity: 0.5 }}>
+            const pulse = 0.4 + 0.3 * Math.sin(tick * 0.8);
+            return <CircleMarker key={ac.id} center={[ap.lat, ap.lon]} radius={10 + pulse * 4}
+              pathOptions={{ color: "#EF4444", fillColor: "#EF4444", fillOpacity: pulse, weight: 2 }}>
               <Popup>AOG: {ac.tail_number}</Popup></CircleMarker>;
           })}
         </MapContainer>

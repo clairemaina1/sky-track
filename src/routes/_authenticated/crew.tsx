@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { CrewMatcher } from "@/components/ui/CrewMatcher";
 import type { Crew } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/crew")({ component: CrewPage });
@@ -32,6 +33,7 @@ function CrewPage() {
   return (
     <div className="space-y-4">
       <h1 className="font-display uppercase tracking-[0.12em] text-lg">Crew Roster</h1>
+      <CrewMatcher crew={crew} />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {crew.map((c) => {
           const fatigue = c.status === "Fatigue-Hold";
