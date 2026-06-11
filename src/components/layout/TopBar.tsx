@@ -47,6 +47,7 @@ export function TopBar() {
         {path === "/" ? "Command Center" : path.replace("/", "").toUpperCase()}
       </div>
       <div className="flex items-center gap-4">
+        <OrgSwitcher />
         <CommandInput />
         <span className="font-mono text-xs text-secondary-fg">{utc}</span>
         <Link to={"/disruption" as string} className="relative">
