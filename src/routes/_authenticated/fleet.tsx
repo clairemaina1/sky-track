@@ -284,22 +284,28 @@ function FleetPage() {
               Live aircraft registry from Lovable Cloud · auto-refresh every 30s.
             </p>
           </div>
-          <button
-            disabled={exporting || fleet.length === 0}
-            onClick={async () => {
-              setExporting(true);
-              try {
-                await exportFleetSnapshotPdf(fleet, currentOrg?.name ?? "SkyTrack");
-              } finally {
-                setExporting(false);
-              }
-            }}
-            className="btn-cmd shrink-0"
-          >
-            <Download className="w-3.5 h-3.5" />
-            {exporting ? "Exporting…" : "Export PDF"}
-          </button>
+          <div className="flex gap-2 shrink-0">
+            <button onClick={() => setAddOpen(true)} className="btn-cmd">
+              <Plus className="w-3.5 h-3.5" /> Add Aircraft
+            </button>
+            <button
+              disabled={exporting || fleet.length === 0}
+              onClick={async () => {
+                setExporting(true);
+                try {
+                  await exportFleetSnapshotPdf(fleet, currentOrg?.name ?? "SkyTrack");
+                } finally {
+                  setExporting(false);
+                }
+              }}
+              className="btn-cmd-ghost"
+            >
+              <Download className="w-3.5 h-3.5" />
+              {exporting ? "Exporting…" : "Export PDF"}
+            </button>
+          </div>
         </div>
+        <AddAircraftDialog open={addOpen} onClose={() => setAddOpen(false)} />
 
         {error && (
           <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/5 px-4 py-3 text-[12px] text-red-300">
