@@ -42,6 +42,7 @@ export function Shell() {
       </div>
       <StatusStrip />
       <AlertToast />
+      <SkyChat />
     </div>
   );
 }
