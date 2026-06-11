@@ -64,3 +64,16 @@ export function useCurrentOrg(): OrgMembership | null {
   if (!orgs || !orgId) return null;
   return orgs.find((o) => o.org_id === orgId) ?? null;
 }
+
+/**
+ * Server-of-record platform tier, resolved from the current org row in the DB.
+ * Never trust localStorage for tier — RLS-scoped queries return the canonical value.
+ * Returns 'commercial_airline' as a safe default while orgs are loading so the
+ * UI doesn't briefly expose flight-school-only items to commercial users.
+ */
+export type PlatformTier = "commercial_airline" | "flight_school";
+export function useResolvedTier(): PlatformTier {
+  const org = useCurrentOrg();
+  if (!org) return "commercial_airline";
+  return org.tier === "flight_school" ? "flight_school" : "commercial_airline";
+}

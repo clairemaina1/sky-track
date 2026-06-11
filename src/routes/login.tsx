@@ -6,7 +6,7 @@ import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 type UIState = "idle" | "loading" | "success" | "error";
-type Mode = "magic" | "password";
+type Mode = "magic" | "signin" | "signup";
 
 function LoginPage() {
   const nav = useNavigate();
@@ -38,7 +38,7 @@ function LoginPage() {
       setUi("error");
       return;
     }
-    if (mode === "password" && password.length < 6) {
+    if ((mode === "signin" || mode === "signup") && password.length < 6) {
       setErrorMsg("Password must be at least 6 characters.");
       setUi("error");
       return;
@@ -55,17 +55,18 @@ function LoginPage() {
         });
         if (error) throw error;
         setUi("success");
-      } else {
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email: trimmed, password });
-        if (error) {
-          // try signup fallback
-          const { error: e2 } = await supabase.auth.signUp({
-            email: trimmed,
-            password,
-            options: { emailRedirectTo: window.location.origin },
-          });
-          if (e2) throw e2;
-        }
+        if (error) throw error;
+        nav({ to: "/" });
+      } else {
+        // explicit signup — no silent fallback from signin
+        const { error } = await supabase.auth.signUp({
+          email: trimmed,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        if (error) throw error;
         nav({ to: "/" });
       }
     } catch (err: unknown) {
@@ -196,8 +197,35 @@ function LoginPage() {
             <p className="sky-fade-3 text-sm text-secondary-fg mb-6 leading-relaxed">
               {mode === "magic"
                 ? "Enter your email — we'll send a secure, passwordless sign-in link valid for 60 minutes."
-                : "Sign in with email and password. New emails create an account."}
+                : mode === "signin"
+                  ? "Sign in with your email and password."
+                  : "Create a new SkyTrack account. You'll set up your organisation after signing in."}
             </p>
+
+            {/* Mode tabs */}
+            <div className="sky-fade-3 flex gap-1 mb-4 border-b" style={{ borderColor: "var(--border-subtle)" }}>
+              {([
+                { id: "magic" as const, label: "Magic Link" },
+                { id: "signin" as const, label: "Sign In" },
+                { id: "signup" as const, label: "Create Account" },
+              ]).map((m) => {
+                const active = mode === m.id;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => { setMode(m.id); setUi("idle"); setErrorMsg(""); }}
+                    className="px-3 py-2 font-display text-[10px] uppercase tracking-[0.14em] -mb-px border-b-2"
+                    style={{
+                      color: active ? "var(--accent-primary)" : "var(--text-secondary)",
+                      borderColor: active ? "var(--accent-primary)" : "transparent",
+                    }}
+                  >
+                    {m.label}
+                  </button>
+                );
+              })}
+            </div>
 
             {ui === "success" ? (
               <div className="sky-fade-4 space-y-4">
@@ -267,7 +295,7 @@ function LoginPage() {
                   />
                 </div>
 
-                {mode === "password" && (
+                {(mode === "signin" || mode === "signup") && (
                   <div>
                     <label className="font-display uppercase text-[10px] tracking-[0.18em] text-secondary-fg">
                       Password
@@ -276,7 +304,7 @@ function LoginPage() {
                       type="password"
                       required
                       minLength={6}
-                      autoComplete="current-password"
+                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
                       value={password}
                       disabled={!interactive}
                       onChange={(e) => setPassword(e.target.value)}
@@ -314,21 +342,11 @@ function LoginPage() {
                     </span>
                   ) : mode === "magic" ? (
                     "Send Magic Link →"
+                  ) : mode === "signin" ? (
+                    "Sign In →"
                   ) : (
-                    "Authenticate →"
+                    "Create Account →"
                   )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode(mode === "magic" ? "password" : "magic");
-                    setUi("idle");
-                    setErrorMsg("");
-                  }}
-                  className="w-full text-center font-mono text-[11px] uppercase tracking-[0.16em] text-secondary-fg hover:text-primary-fg transition-colors"
-                >
-                  {mode === "magic" ? "Use password instead" : "Use magic link instead"}
                 </button>
               </form>
             )}

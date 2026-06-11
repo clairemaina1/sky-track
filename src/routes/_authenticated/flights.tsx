@@ -7,6 +7,7 @@ import {
 } from "@/components/flights/FlightRow";
 import { LiveMap } from "@/components/flights/LiveMap";
 import type { PlatformTier } from "@/lib/tierGuard";
+import { useResolvedTier } from "@/hooks/use-org";
 
 export const Route = createFileRoute("/_authenticated/flights")({ component: FlightsPage });
 
@@ -32,10 +33,7 @@ const COMMERCIAL_FLIGHTS: FlightRowData[] = [
   { id: "com-008", flight_number: "ST-502", origin_icao: "DNMM", origin_iata: "LOS", origin_city: "Lagos", destination_icao: "HKJK", destination_iata: "NBO", destination_city: "Nairobi", aircraft_tail: "5Y-SKD", aircraft_model: "737-800", status: "Landed", scheduled_departure: hoursFromNow(-5), scheduled_arrival: hoursFromNow(-1.5), actual_departure: hoursFromNow(-5), actual_arrival: hoursFromNow(-1.6), delay_minutes: 0, predicted_delay_min: 0, delay_prediction_conf: 0.98, distance_nm: 2488, pax_count: 162, co2_kg_planned: 36400, progress_pct: 100 },
 ];
 
-function resolveTier(): PlatformTier {
-  if (typeof window === "undefined") return "commercial_airline";
-  return window.localStorage.getItem("skytrack.tier") === "flight_school" ? "flight_school" : "commercial_airline";
-}
+// Tier comes from the DB-backed org row via useResolvedTier (see below); never localStorage.
 
 function KpiTile({
   label, value, sub, valueClass = "text-slate-100", accent = "rgba(255,255,255,0.05)",
@@ -61,7 +59,7 @@ const STATUS_ORDER: Record<FlightStatus, number> = {
 type FilterKey = "All" | "Active" | "Delayed" | "Landed" | "Cancelled";
 
 function FlightsPage() {
-  const tier = resolveTier();
+  const tier: PlatformTier = useResolvedTier();
   const flights = tier === "flight_school" ? FLIGHT_SCHOOL_FLIGHTS : COMMERCIAL_FLIGHTS;
   const [filter, setFilter] = useState<FilterKey>("All");
 
