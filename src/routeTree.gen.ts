@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
+import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
 import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authenticated/disruption'
 import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/crew'
@@ -41,6 +42,11 @@ const AuthenticatedRoutingRoute = AuthenticatedRoutingRouteImport.update({
 const AuthenticatedMroRoute = AuthenticatedMroRouteImport.update({
   id: '/mro',
   path: '/mro',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedFlightsRoute = AuthenticatedFlightsRouteImport.update({
+  id: '/flights',
+  path: '/flights',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedFleetRoute = AuthenticatedFleetRouteImport.update({
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/crew': typeof AuthenticatedCrewRoute
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRoute
+  '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
   '/routing': typeof AuthenticatedRoutingRoute
 }
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/crew': typeof AuthenticatedCrewRoute
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRoute
+  '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/': typeof AuthenticatedIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/_authenticated/crew': typeof AuthenticatedCrewRoute
   '/_authenticated/disruption': typeof AuthenticatedDisruptionRoute
   '/_authenticated/fleet': typeof AuthenticatedFleetRoute
+  '/_authenticated/flights': typeof AuthenticatedFlightsRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/crew'
     | '/disruption'
     | '/fleet'
+    | '/flights'
     | '/mro'
     | '/routing'
   fileRoutesByTo: FileRoutesByTo
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/crew'
     | '/disruption'
     | '/fleet'
+    | '/flights'
     | '/mro'
     | '/routing'
     | '/'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crew'
     | '/_authenticated/disruption'
     | '/_authenticated/fleet'
+    | '/_authenticated/flights'
     | '/_authenticated/mro'
     | '/_authenticated/routing'
     | '/_authenticated/'
@@ -172,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMroRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/flights': {
+      id: '/_authenticated/flights'
+      path: '/flights'
+      fullPath: '/flights'
+      preLoaderRoute: typeof AuthenticatedFlightsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/fleet': {
       id: '/_authenticated/fleet'
       path: '/fleet'
@@ -208,6 +227,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrewRoute: typeof AuthenticatedCrewRoute
   AuthenticatedDisruptionRoute: typeof AuthenticatedDisruptionRoute
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRoute
+  AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -218,6 +238,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCrewRoute: AuthenticatedCrewRoute,
   AuthenticatedDisruptionRoute: AuthenticatedDisruptionRoute,
   AuthenticatedFleetRoute: AuthenticatedFleetRoute,
+  AuthenticatedFlightsRoute: AuthenticatedFlightsRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

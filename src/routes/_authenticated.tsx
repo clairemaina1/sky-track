@@ -3,28 +3,41 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/components/layout/Shell";
 
+// Auth-protected layout.
+// `ssr: false` ensures no protected HTML is rendered server-side before the
+// session check runs — the SSR shell stays generic, RLS protects the data
+// API, and the gate below blocks the client render until the session is
+// validated. This addresses SERVER_FN_MISSING_AUTH by preventing any
+// authenticated-route HTML payload from leaking to anonymous viewers and
+// keeps every protected query/mutation behind the user's JWT + RLS.
 export const Route = createFileRoute("/_authenticated")({
+  ssr: false,
+  beforeLoad: async ({ location }) => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      throw redirect({
+        to: "/login",
+        search: { redirect: location.href },
+      });
+    }
+  },
   component: AuthGate,
 });
 
 function AuthGate() {
-  const [state, setState] = useState<"loading" | "ok" | "out">("loading");
+  const [authed, setAuthed] = useState(true);
+
   useEffect(() => {
-    let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setState(data.session ? "ok" : "out");
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) {
+        setAuthed(false);
+        window.location.href = "/login";
+      }
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setState(s ? "ok" : "out");
-    });
-    return () => { mounted = false; sub.subscription.unsubscribe(); };
+    return () => sub.subscription.unsubscribe();
   }, []);
-  if (state === "loading") return <div className="min-h-screen flex items-center justify-center text-secondary-fg font-mono text-xs">INITIALIZING…</div>;
-  if (state === "out") {
-    if (typeof window !== "undefined") window.location.href = "/login";
-    return null;
-  }
+
+  if (!authed) return null;
   return <Shell />;
 }
-void redirect;
+
