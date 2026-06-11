@@ -1,0 +1,9 @@
+# SkyTrack AAOS
+
+> Agentic Aviation Operating System: a real-time command center for fleet, MRO, crew, disruption, routing, and cargo operations.
+
+SkyTrack AAOS is built for commercial airlines and flight schools that need a single operational pane of glass — live aircraft state, AI delay predictions, work-order triage, crew duty, and ICAO carbon accounting.
+
+## Pages
+- [Sign In](/login): Access the SkyTrack command center.
+- [Aircraft Management Guide](/guide/aircraft-management): Complete guide to modern aircraft management with an AAOS.
