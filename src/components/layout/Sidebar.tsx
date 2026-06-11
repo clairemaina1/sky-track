@@ -140,7 +140,7 @@ export function Sidebar() {
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <div className="font-display font-bold text-base tracking-[0.16em] text-accent leading-none">
-              SKY//TRACK
+              SKYTRACK
             </div>
             <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-secondary-fg mt-1 truncate">
               {orgName}

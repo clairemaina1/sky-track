@@ -185,7 +185,7 @@ function LoginPage() {
               </div>
               <div>
                 <div className="font-display font-bold text-xl tracking-[0.18em] text-primary-fg">
-                  SKY//TRACK
+                  SKYTRACK
                 </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg">
                   Aviation Operating System
