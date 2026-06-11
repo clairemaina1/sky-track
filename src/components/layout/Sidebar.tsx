@@ -8,6 +8,7 @@ import {
   Map,
   Package,
   Zap,
+  Leaf,
   GraduationCap,
   CalendarDays,
   SlidersHorizontal,
@@ -17,6 +18,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 import {
   getPermittedNavItems,
   getTierMeta,
@@ -33,6 +35,7 @@ const ICONS: Record<string, LucideIcon> = {
   Map,
   Package,
   Zap,
+  Leaf,
   GraduationCap,
   CalendarDays,
   SlidersHorizontal,
