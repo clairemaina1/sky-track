@@ -101,6 +101,7 @@ export async function runAOGCascade(aircraft: Aircraft) {
         severity: "Medium",
         source_table: "aircraft",
         source_id: aircraft.id,
+        org_id: aircraft.org_id,
         title: `${cargoCount} cargo shipments delayed`,
         body: `${cargoCount} AWB(s) on ${aircraft.tail_number} have been notified of delay.`,
       });
