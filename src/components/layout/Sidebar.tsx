@@ -216,6 +216,7 @@ export function Sidebar({
         {currentOrg?.role === "admin" && (
           <Link
             to={"/admin" as string}
+            onClick={onNavigate}
             title={collapsed ? "Admin — manage team & data" : "Manage team & data"}
             className="relative flex items-center gap-3 mx-2 mt-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
             style={{
