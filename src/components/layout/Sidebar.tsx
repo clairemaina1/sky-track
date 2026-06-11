@@ -58,12 +58,16 @@ function initials(name: string) {
   return (p[0][0] + p[p.length - 1][0]).toUpperCase();
 }
 
-export function Sidebar() {
+export function Sidebar({
+  onNavigate,
+  forceExpanded = false,
+}: { onNavigate?: () => void; forceExpanded?: boolean } = {}) {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsedState, setCollapsed] = useState(false);
+  const collapsed = forceExpanded ? false : collapsedState;
   const [role, setRole] = useState<UserRole>("crew");
   const [displayName, setDisplayName] = useState("Operator");
   const [orgName, setOrgName] = useState("SkyTrack");
