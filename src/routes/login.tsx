@@ -159,7 +159,7 @@ function LoginPage() {
           </div>
         </div>
         <div className="absolute top-4 right-4 font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg sky-fade-1">
-          ICAO · {new Date().toISOString().slice(0, 16).replace("T", " ")}Z
+          ICAO · <ClientClock />
         </div>
         <div className="absolute bottom-4 left-4 right-4 flex justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg sky-fade-1">
           <span>AAOS v1.0</span>
