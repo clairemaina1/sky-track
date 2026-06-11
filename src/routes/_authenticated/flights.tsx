@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import {
@@ -9,7 +10,8 @@ import { LiveMap } from "@/components/flights/LiveMap";
 import type { PlatformTier } from "@/lib/tierGuard";
 import { useResolvedTier } from "@/hooks/use-org";
 
-export const Route = createFileRoute("/_authenticated/flights")({ component: FlightsPage });
+export const Route = createFileRoute("/_authenticated/flights")({
+  head: pageHead({ title: "Flights — SkyTrack AAOS", description: "Live flight board with AI delay predictions, route tracking, and ICAO carbon emissions per sector.", path: "/flights" }), component: FlightsPage });
 
 const hoursFromNow = (h: number) => new Date(Date.now() + h * 3600000).toISOString();
 const minutesFromNow = (m: number) => new Date(Date.now() + m * 60000).toISOString();

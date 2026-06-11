@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import type { PlatformTier } from "@/lib/tierGuard";
 import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
+  head: pageHead({ title: "Fleet Overview — SkyTrack AAOS", description: "Real-time fleet status, health scores, AOG alerts, and aircraft utilisation across your operation.", path: "/fleet" }),
   component: FleetPage,
 });
 

@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Building2, User, Users, Shield, Plug } from "lucide-react";
@@ -5,7 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const Route = createFileRoute("/_authenticated/settings")({ component: SettingsPage });
+export const Route = createFileRoute("/_authenticated/settings")({
+  head: pageHead({ title: "Settings — SkyTrack AAOS", description: "Organization, branding, language, theme, and integration settings.", path: "/settings" }), component: SettingsPage });
 
 type Tab = "organisation" | "account" | "team" | "integrations" | "compliance";
 type Tier = "flight_school" | "commercial_airline";

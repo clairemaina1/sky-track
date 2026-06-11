@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -9,7 +10,8 @@ import { UrgencyBadge, normaliseUrgency, getUrgencySeverity, type WorkOrderUrgen
 import { RULChart } from "@/components/ui/RULChart";
 import type { Maintenance, Aircraft } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/mro")({ component: MROPage });
+export const Route = createFileRoute("/_authenticated/mro")({
+  head: pageHead({ title: "Maintenance & MRO — SkyTrack AAOS", description: "Work orders, urgency triage, remaining useful life forecasts, and AOG response across the fleet.", path: "/mro" }), component: MROPage });
 
 type StatusFilter = "all" | "open" | "in-progress" | "parts" | "completed";
 

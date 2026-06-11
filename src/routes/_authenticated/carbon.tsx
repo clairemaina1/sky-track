@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -6,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { calculateCarbon, type FuelType } from "@/lib/carbonCalculator";
 import type { Flight, Aircraft } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/carbon")({ component: CarbonPage });
+export const Route = createFileRoute("/_authenticated/carbon")({
+  head: pageHead({ title: "Carbon & ICAO Emissions — SkyTrack AAOS", description: "ICAO CORSIA emissions tracking, per-sector CO₂ accounting, and offset reporting.", path: "/carbon" }), component: CarbonPage });
 
 function CarbonPage() {
   const [fuelType, setFuelType] = useState<FuelType>("Jet_A1");

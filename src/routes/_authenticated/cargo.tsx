@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +9,8 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AddCargoDialog } from "@/components/crud/AddDialogs";
 import type { Cargo } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/cargo")({ component: CargoPage });
+export const Route = createFileRoute("/_authenticated/cargo")({
+  head: pageHead({ title: "Cargo — SkyTrack AAOS", description: "Cargo manifests, weight and balance, dangerous goods checks, and load planning.", path: "/cargo" }), component: CargoPage });
 
 const HANDLING_COLOR: Record<string, string> = {
   DANGEROUS_GOODS: "var(--status-red)",

@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -6,6 +7,7 @@ import { useCurrentOrg } from "@/hooks/use-org";
 import { Users, Mail, Trash2, Shield } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  head: pageHead({ title: "Admin — SkyTrack AAOS", description: "Workspace administration: seed demo data, reset to clean slate, and manage users.", path: "/admin" }),
   component: AdminPage,
 });
 
