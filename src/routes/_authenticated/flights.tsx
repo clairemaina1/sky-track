@@ -129,13 +129,14 @@ function FlightsPage() {
         ) : (
           <KpiTile label="Sorties" value={flights.filter((f) => f.status !== "Cancelled").length} sub="planned today" valueClass="text-sky-400" accent="rgba(56,189,248,0.1)" />
         )}
+        </div>
       </section>
 
-      <section className="mb-6" aria-label="Live flight map">
+      <section className="mb-6" aria-labelledby="live-map-h">
         <div className="mb-2 flex items-center justify-between">
-          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <h2 id="live-map-h" className="text-[10px] font-medium uppercase tracking-[0.14em] text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             Live Route Map
-          </span>
+          </h2>
           <span className="text-[9px] text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             Equirectangular · Positions update 30s
           </span>
@@ -143,7 +144,8 @@ function FlightsPage() {
         <LiveMap flights={flights} height={260} />
       </section>
 
-      <section aria-label="Flight board">
+      <section aria-labelledby="flight-board-h">
+        <h2 id="flight-board-h" className="sr-only">Flight board</h2>
         <div className="mb-3 flex flex-wrap items-center gap-2">
           {filters.map((f) => (
             <button key={f.key} onClick={() => setFilter(f.key)}
