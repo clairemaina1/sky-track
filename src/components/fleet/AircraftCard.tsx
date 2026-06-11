@@ -145,12 +145,31 @@ function Icon({ d, className }: { d: string; className?: string }) {
 
 export function AircraftCard({ aircraft, index = 0 }: AircraftCardProps) {
   const [hovered, setHovered] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const qc = useQueryClient();
   const statusConfig = resolveStatus(aircraft.status);
   const categoryTag = deriveCategoryTag(aircraft.model, aircraft.org_tier);
   const inspectionStr = formatInspectionDate(aircraft.next_inspection);
   const inspUrgent = isInspectionUrgent(aircraft.next_inspection);
   const isAOG = aircraft.status === "AOG";
   const animDelay = `${index * 55}ms`;
+
+  async function onDeclareAOG(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isAOG || busy) return;
+    if (!confirm(`Declare ${aircraft.tail_number} AOG? This will create a work order, flag crew, and notify cargo.`)) return;
+    setBusy(true);
+    try {
+      await declareAOG(aircraft.id);
+      await qc.invalidateQueries({ queryKey: ["aircraft"] });
+      await qc.invalidateQueries({ queryKey: ["maintenance"] });
+      await qc.invalidateQueries({ queryKey: ["alerts"] });
+    } finally {
+      setBusy(false);
+    }
+  }
+
 
   return (
     <>
