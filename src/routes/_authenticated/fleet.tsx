@@ -211,6 +211,7 @@ function FleetPage() {
   const currentOrg = useCurrentOrg();
   const [filter, setFilter] = useState<FilterKey>("All");
   const [exporting, setExporting] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
   const { data: rows = [], isLoading, error } = useQuery({
     queryKey: ["aircraft", orgId],
