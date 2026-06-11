@@ -153,6 +153,7 @@ async function handlePredictiveDegradation(aircraft: Aircraft) {
 
   await supabase.from("maintenance").insert({
     aircraft_id: aircraft.id,
+    org_id: aircraft.org_id,
     work_order_number: newWoNumber(),
     title: `Predictive: ${aircraft.tail_number} health below 10%`,
     description: `Auto-generated. Current health score: ${aircraft.health_score}.`,
@@ -165,6 +166,7 @@ async function handlePredictiveDegradation(aircraft: Aircraft) {
     severity: "High",
     source_table: "aircraft",
     source_id: aircraft.id,
+    org_id: aircraft.org_id,
     title: `Predictive maintenance — ${aircraft.tail_number}`,
     body: `Health score ${aircraft.health_score}% below critical threshold. Work order created.`,
   });
