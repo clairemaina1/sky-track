@@ -238,7 +238,7 @@ export function FlightRow({ flight, index = 0 }: FlightRowProps) {
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }
