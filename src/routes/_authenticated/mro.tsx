@@ -41,7 +41,7 @@ function MROPage() {
   );
 
   const kpis = useMemo(() => {
-    const open = wos.filter((w) => w.status !== "Completed" && w.status !== "Cancelled").length;
+    const open = wos.filter((w) => w.status !== "Completed").length;
     const aog = wos.filter((w) => normaliseUrgency(w.priority) === "AOG").length;
     const critical = wos.filter((w) => normaliseUrgency(w.priority) === "Critical").length;
     const completed = wos.filter((w) => w.status === "Completed").length;
