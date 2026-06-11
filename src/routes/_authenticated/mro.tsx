@@ -24,16 +24,19 @@ const STATUS_FILTERS: { id: StatusFilter; label: string; match?: string }[] = [
 function MROPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [urgencyFilter, setUrgencyFilter] = useState<WorkOrderUrgency | "all">("all");
+  const [orgId] = useCurrentOrgId();
 
   const { data: wos = [] } = useQuery({
-    queryKey: ["maintenance"],
+    queryKey: ["maintenance", orgId],
+    enabled: !!orgId,
     queryFn: async () =>
-      (await supabase.from("maintenance").select("*").order("opened_at", { ascending: false }))
+      (await supabase.from("maintenance").select("*").eq("org_id", orgId!).order("opened_at", { ascending: false }))
         .data as Maintenance[],
   });
   const { data: fleet = [] } = useQuery({
-    queryKey: ["aircraft"],
-    queryFn: async () => (await supabase.from("aircraft").select("*")).data as Aircraft[],
+    queryKey: ["aircraft", orgId],
+    enabled: !!orgId,
+    queryFn: async () => (await supabase.from("aircraft").select("*").eq("org_id", orgId!)).data as Aircraft[],
   });
 
   const aircraftById = useMemo(
