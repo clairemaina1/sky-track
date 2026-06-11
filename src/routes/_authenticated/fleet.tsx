@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentOrgId, useResolvedTier } from "@/hooks/use-org";
+import { useCurrentOrg, useCurrentOrgId, useResolvedTier } from "@/hooks/use-org";
 import {
   AircraftCard,
   type AircraftCardData,
@@ -10,6 +11,7 @@ import {
 } from "@/components/fleet/AircraftCard";
 import type { Aircraft } from "@/lib/types";
 import type { PlatformTier } from "@/lib/tierGuard";
+import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
   component: FleetPage,
