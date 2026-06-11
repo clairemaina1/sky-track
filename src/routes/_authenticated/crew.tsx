@@ -23,11 +23,13 @@ const FILTERS: { id: Filter; label: string }[] = [
 function CrewPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [orgId] = useCurrentOrgId();
 
   const { data: crew = [], isLoading } = useQuery({
-    queryKey: ["crew"],
+    queryKey: ["crew", orgId],
+    enabled: !!orgId,
     queryFn: async () =>
-      (await supabase.from("crew").select("*").order("full_name")).data as Crew[],
+      (await supabase.from("crew").select("*").eq("org_id", orgId!).order("full_name")).data as Crew[],
   });
 
   const kpis = useMemo(() => {
