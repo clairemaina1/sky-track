@@ -18,7 +18,7 @@ import {
   Shield,
   type LucideIcon,
 } from "lucide-react";
-import { useCurrentOrg } from "@/hooks/use-org";
+import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 import {
@@ -62,14 +62,13 @@ export function Sidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   const currentOrg = useCurrentOrg();
+  const tier: PlatformTier = useResolvedTier();
   const [collapsed, setCollapsed] = useState(false);
   const [role, setRole] = useState<UserRole>("crew");
-  const [tier, setTier] = useState<PlatformTier>("commercial_airline");
   const [displayName, setDisplayName] = useState("Operator");
   const [orgName, setOrgName] = useState("SkyTrack");
 
   useEffect(() => {
-    setTier(resolveTier());
     let mounted = true;
 
     (async () => {
