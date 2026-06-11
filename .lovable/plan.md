@@ -43,3 +43,11 @@ Depends on Phase 2.
 Just **"go"** to start Phase 1. I'll check in after each phase before continuing — if you want to skip something or change priority, that's the moment to say so.
 
 (Custom domain `skytrack.com` is almost certainly taken — we'll search for available `skytrack.*` variants after publishing, separately from this work.)
+---
+## ✅ Phase 4 + 5 shipped
+- Light/dark theme tokens + toggle in TopBar (persisted)
+- EN/FR i18n via react-i18next + language toggle in TopBar
+- Mobile responsive: hamburger in TopBar opens slide-out Sidebar drawer below md
+- Fleet → "Export PDF" button using pdf-lib (org-branded snapshot)
+- Theme + lang sync hook mounted in __root
+- Branded auth emails: requires email domain — needs user to run email setup dialog first
