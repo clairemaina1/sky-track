@@ -3,10 +3,12 @@ import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { StatusStrip } from "./StatusStrip";
 import { AlertToast } from "@/components/ui/AlertToast";
+import { OnboardingGate } from "./OnboardingGate";
 
 export function Shell() {
   return (
     <div className="min-h-screen flex flex-col bg-void">
+      <OnboardingGate />
       <div className="flex-1 flex">
         <Sidebar />
         <div className="flex-1 flex flex-col min-w-0">
