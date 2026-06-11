@@ -120,6 +120,7 @@ export async function runAOGCascade(aircraft: Aircraft) {
     severity: "Critical",
     source_table: "aircraft",
     source_id: aircraft.id,
+    org_id: aircraft.org_id,
     title: `AOG DECLARED — ${aircraft.tail_number}`,
     body: `Aircraft ${aircraft.tail_number} at ${aircraft.current_airport ?? aircraft.base_airport} is AOG. Work order ${wo.work_order_number} auto-generated. ${crewCount} crew flagged. ${cargoCount} cargo shipments delayed.`,
   });
