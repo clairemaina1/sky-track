@@ -50,13 +50,7 @@ const BADGE_STYLES: Record<NonNullable<NavItem["badge"]>, string> = {
   New: "border-amber-400/40 text-amber-300 bg-amber-500/10",
 };
 
-// Tier is org-scoped in a multi-tenant world. For now, allow override via
-// localStorage (`skytrack.tier`) and default to commercial_airline.
-function resolveTier(): PlatformTier {
-  if (typeof window === "undefined") return "commercial_airline";
-  const v = window.localStorage.getItem("skytrack.tier");
-  return v === "flight_school" ? "flight_school" : "commercial_airline";
-}
+// Tier is server-of-record from the org row; never trusted from the browser.
 
 function initials(name: string) {
   const p = name.trim().split(/\s+/);
