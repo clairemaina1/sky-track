@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Users, AlertTriangle, ShieldCheck, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrgId } from "@/hooks/use-org";
 import { CrewMatcher } from "@/components/ui/CrewMatcher";
 import { CrewCard } from "@/components/crew/CrewCard";
 import type { Crew } from "@/lib/types";
@@ -22,11 +23,13 @@ const FILTERS: { id: Filter; label: string }[] = [
 function CrewPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [orgId] = useCurrentOrgId();
 
   const { data: crew = [], isLoading } = useQuery({
-    queryKey: ["crew"],
+    queryKey: ["crew", orgId],
+    enabled: !!orgId,
     queryFn: async () =>
-      (await supabase.from("crew").select("*").order("full_name")).data as Crew[],
+      (await supabase.from("crew").select("*").eq("org_id", orgId!).order("full_name")).data as Crew[],
   });
 
   const kpis = useMemo(() => {

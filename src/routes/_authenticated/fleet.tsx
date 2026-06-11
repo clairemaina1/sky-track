@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrgId } from "@/hooks/use-org";
 import {
   AircraftCard,
   type AircraftCardData,
@@ -208,14 +209,17 @@ function FilterChip({
 
 function FleetPage() {
   const tier = resolveTier();
+  const [orgId] = useCurrentOrgId();
   const [filter, setFilter] = useState<FilterKey>("All");
 
   const { data: rows = [], isLoading, error } = useQuery({
-    queryKey: ["aircraft"],
+    queryKey: ["aircraft", orgId],
+    enabled: !!orgId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("aircraft")
         .select("*")
+        .eq("org_id", orgId!)
         .order("tail_number");
       if (error) throw error;
       return data as Aircraft[];
