@@ -9,9 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as GuideAircraftManagementRouteImport } from './routes/guide.aircraft-management'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
@@ -26,6 +28,11 @@ import { Route as AuthenticatedCarbonRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCrewIdRouteImport } from './routes/_authenticated/crew.$id'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -39,6 +46,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const GuideAircraftManagementRoute = GuideAircraftManagementRouteImport.update({
+  id: '/guide/aircraft-management',
+  path: '/guide/aircraft-management',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
@@ -109,6 +121,7 @@ const AuthenticatedCrewIdRoute = AuthenticatedCrewIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
@@ -121,10 +134,12 @@ export interface FileRoutesByFullPath {
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/crew/$id': typeof AuthenticatedCrewIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
@@ -137,6 +152,7 @@ export interface FileRoutesByTo {
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/': typeof AuthenticatedIndexRoute
   '/crew/$id': typeof AuthenticatedCrewIdRoute
 }
@@ -144,6 +160,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/carbon': typeof AuthenticatedCarbonRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
@@ -156,6 +173,7 @@ export interface FileRoutesById {
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/api/chat': typeof ApiChatRoute
+  '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/crew/$id': typeof AuthenticatedCrewIdRoute
 }
@@ -164,6 +182,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/sitemap.xml'
     | '/admin'
     | '/carbon'
     | '/cargo'
@@ -176,10 +195,12 @@ export interface FileRouteTypes {
     | '/routing'
     | '/settings'
     | '/api/chat'
+    | '/guide/aircraft-management'
     | '/crew/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/sitemap.xml'
     | '/admin'
     | '/carbon'
     | '/cargo'
@@ -192,12 +213,14 @@ export interface FileRouteTypes {
     | '/routing'
     | '/settings'
     | '/api/chat'
+    | '/guide/aircraft-management'
     | '/'
     | '/crew/$id'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/sitemap.xml'
     | '/_authenticated/admin'
     | '/_authenticated/carbon'
     | '/_authenticated/cargo'
@@ -210,6 +233,7 @@ export interface FileRouteTypes {
     | '/_authenticated/routing'
     | '/_authenticated/settings'
     | '/api/chat'
+    | '/guide/aircraft-management'
     | '/_authenticated/'
     | '/_authenticated/crew/$id'
   fileRoutesById: FileRoutesById
@@ -217,11 +241,20 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
+  GuideAircraftManagementRoute: typeof GuideAircraftManagementRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -242,6 +275,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/guide/aircraft-management': {
+      id: '/guide/aircraft-management'
+      path: '/guide/aircraft-management'
+      fullPath: '/guide/aircraft-management'
+      preLoaderRoute: typeof GuideAircraftManagementRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
       id: '/api/chat'
@@ -385,7 +425,9 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
+  GuideAircraftManagementRoute: GuideAircraftManagementRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
