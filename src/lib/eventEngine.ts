@@ -75,6 +75,7 @@ export async function runAOGCascade(aircraft: Aircraft) {
         severity: "High",
         source_table: "aircraft",
         source_id: aircraft.id,
+        org_id: aircraft.org_id,
         title: `${crewCount} crew flagged Fatigue-Hold`,
         body: `${crewCount} crew member(s) assigned to flights on ${aircraft.tail_number} have been placed on fatigue hold.`,
       });
