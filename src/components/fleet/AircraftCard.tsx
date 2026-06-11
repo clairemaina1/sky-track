@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { HealthGauge } from "@/components/fleet/HealthGauge";
+import { declareAOG } from "@/lib/eventEngine";
 import type { PlatformTier } from "@/lib/tierGuard";
 
 export type AircraftStatus = "In-Flight" | "AOG" | "Maintenance" | "Standby";
