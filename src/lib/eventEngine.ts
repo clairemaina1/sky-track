@@ -189,6 +189,7 @@ async function handleFlightDelay(flight: Flight) {
     severity: "Medium",
     source_table: "flights",
     source_id: flight.id,
+    org_id: flight.org_id,
     title: `Flight ${flight.flight_number} delayed`,
     body: `${flight.origin_icao} → ${flight.destination_icao} delayed. ${count} cargo shipment(s) notified.`,
   });
