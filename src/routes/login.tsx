@@ -6,7 +6,7 @@ import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
 type UIState = "idle" | "loading" | "success" | "error";
-type Mode = "magic" | "password";
+type Mode = "magic" | "signin" | "signup";
 
 function LoginPage() {
   const nav = useNavigate();
@@ -38,7 +38,7 @@ function LoginPage() {
       setUi("error");
       return;
     }
-    if (mode === "password" && password.length < 6) {
+    if ((mode === "signin" || mode === "signup") && password.length < 6) {
       setErrorMsg("Password must be at least 6 characters.");
       setUi("error");
       return;
@@ -55,17 +55,18 @@ function LoginPage() {
         });
         if (error) throw error;
         setUi("success");
-      } else {
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email: trimmed, password });
-        if (error) {
-          // try signup fallback
-          const { error: e2 } = await supabase.auth.signUp({
-            email: trimmed,
-            password,
-            options: { emailRedirectTo: window.location.origin },
-          });
-          if (e2) throw e2;
-        }
+        if (error) throw error;
+        nav({ to: "/" });
+      } else {
+        // explicit signup — no silent fallback from signin
+        const { error } = await supabase.auth.signUp({
+          email: trimmed,
+          password,
+          options: { emailRedirectTo: window.location.origin },
+        });
+        if (error) throw error;
         nav({ to: "/" });
       }
     } catch (err: unknown) {

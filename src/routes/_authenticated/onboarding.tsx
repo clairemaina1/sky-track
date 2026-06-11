@@ -34,10 +34,6 @@ function OnboardingPage() {
     }
     const newOrgId = data as unknown as string;
     window.localStorage.setItem("skytrack.org_id", newOrgId);
-    window.localStorage.setItem(
-      "skytrack.tier",
-      tier === "flight_school" ? "flight_school" : "commercial_airline",
-    );
     await qc.invalidateQueries({ queryKey: ["my-orgs"] });
     navigate({ to: "/" });
   }
