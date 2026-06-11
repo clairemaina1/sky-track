@@ -381,3 +381,14 @@ function LoginPage() {
     </>
   );
 }
+
+function ClientClock() {
+  const [t, setT] = useState<string>("");
+  useEffect(() => {
+    const tick = () => setT(new Date().toISOString().slice(0, 16).replace("T", " ") + "Z");
+    tick();
+    const id = setInterval(tick, 30000);
+    return () => clearInterval(id);
+  }, []);
+  return <span suppressHydrationWarning>{t || "—"}</span>;
+}
