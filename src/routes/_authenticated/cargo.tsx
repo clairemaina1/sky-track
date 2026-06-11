@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrgId } from "@/hooks/use-org";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { Cargo } from "@/lib/types";
 
@@ -13,9 +14,11 @@ const HANDLING_COLOR: Record<string, string> = {
 };
 
 function CargoPage() {
+  const [orgId] = useCurrentOrgId();
   const { data: items = [] } = useQuery({
-    queryKey: ["cargo"],
-    queryFn: async () => (await supabase.from("cargo").select("*").order("awb_number")).data as Cargo[],
+    queryKey: ["cargo", orgId],
+    enabled: !!orgId,
+    queryFn: async () => (await supabase.from("cargo").select("*").eq("org_id", orgId!).order("awb_number")).data as Cargo[],
   });
   const stats = {
     total: items.length,
