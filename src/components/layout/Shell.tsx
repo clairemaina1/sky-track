@@ -1,4 +1,4 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useRouterState } from "@tanstack/react-router";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { StatusStrip } from "./StatusStrip";
@@ -10,6 +10,7 @@ import { SkyChat } from "@/components/ai/SkyChat";
 export function Shell() {
   const mobileOpen = useUiStore((s) => s.mobileNavOpen);
   const setMobileNav = useUiStore((s) => s.setMobileNav);
+  const path = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="min-h-screen flex flex-col bg-void">
       <OnboardingGate />
@@ -36,7 +37,9 @@ export function Shell() {
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar />
           <main className="flex-1 overflow-auto p-3 sm:p-4">
-            <Outlet />
+            <div key={path} className="page-enter">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>

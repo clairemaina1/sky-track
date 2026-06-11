@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useRouterState, Link } from "@tanstack/react-router";
-import { Bell, Building2, Sun, Moon, Languages, Menu } from "lucide-react";
-import { useAlertStore } from "@/stores/alertStore";
+import { useRouterState } from "@tanstack/react-router";
+import { Building2, Sun, Moon, Languages, Menu } from "lucide-react";
 import { CommandInput } from "@/components/ui/CommandInput";
+import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { useMyOrgs, useCurrentOrgId } from "@/hooks/use-org";
 import { useUiStore } from "@/stores/uiStore";
 
@@ -63,14 +63,14 @@ function LangToggle() {
 
 export function TopBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const unread = useAlertStore((s) => s.unreadCount);
   const setMobileNav = useUiStore((s) => s.setMobileNav);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-  const utc = now.toISOString().slice(11, 19) + " UTC";
+  const utc = now ? now.toISOString().slice(11, 19) + " UTC" : "";
   return (
     <header
       className="h-12 flex items-center justify-between px-2 sm:px-4 border-b bg-panel gap-2"
@@ -88,23 +88,13 @@ export function TopBar() {
           {path === "/" ? "Command Center" : path.replace("/", "").toUpperCase()}
         </div>
       </div>
-      <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <OrgSwitcher />
-        <div className="hidden lg:block"><CommandInput /></div>
-        <span className="hidden sm:inline font-mono text-xs text-secondary-fg">{utc}</span>
+        <div className="hidden md:block"><CommandInput /></div>
+        <span className="hidden sm:inline font-mono text-xs text-secondary-fg" suppressHydrationWarning>{utc || "—"}</span>
         <ThemeToggle />
         <LangToggle />
-        <Link to={"/disruption" as string} className="relative">
-          <Bell className="w-4 h-4 text-secondary-fg" />
-          {unread > 0 && (
-            <span
-              className="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-mono font-semibold flex items-center justify-center"
-              style={{ background: "var(--status-red)", color: "white" }}
-            >
-              {unread}
-            </span>
-          )}
-        </Link>
+        <NotificationCenter />
       </div>
     </header>
   );
