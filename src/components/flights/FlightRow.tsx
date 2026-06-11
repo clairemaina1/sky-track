@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { DelayPredictionChip } from "@/components/flights/DelayPredictionChip";
 
 export type FlightStatus =
@@ -118,8 +119,10 @@ export function FlightRow({ flight, index = 0 }: FlightRowProps) {
         .flight-row { animation: rowIn 0.35s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
-      <div
-        className="flight-row group block"
+      <Link
+        to="/flights/$id"
+        params={{ id: flight.id }}
+        className="flight-row group block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-xl"
         style={{ animationDelay: `${index * 40}ms` }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -235,7 +238,7 @@ export function FlightRow({ flight, index = 0 }: FlightRowProps) {
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }

@@ -14,6 +14,7 @@ import { AddAircraftDialog } from "@/components/fleet/AddAircraftDialog";
 import type { Aircraft } from "@/lib/types";
 import type { PlatformTier } from "@/lib/tierGuard";
 import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
+import { SavedViewsMenu } from "@/components/ui/SavedViewsMenu";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
   head: pageHead({ title: "Fleet Overview — SkyTrack AAOS", description: "Real-time fleet status, health scores, AOG alerts, and aircraft utilisation across your operation.", path: "/fleet" }),
@@ -380,6 +381,12 @@ function FleetPage() {
             />
           ))}
           <div className="flex-1" />
+          <SavedViewsMenu<{ filter: FilterKey }>
+            scope="fleet"
+            current={{ filter }}
+            onApply={(p) => setFilter(p.filter)}
+            describe={(p) => `filter=${p.filter}`}
+          />
           <span className="text-[11px] text-slate-500" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             {visible.length} of {fleet.length} aircraft
           </span>

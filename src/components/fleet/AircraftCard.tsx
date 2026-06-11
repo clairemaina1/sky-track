@@ -184,7 +184,8 @@ export function AircraftCard({ aircraft, index = 0 }: AircraftCardProps) {
       `}</style>
 
       <Link
-        to="/fleet"
+        to="/fleet/$id"
+        params={{ id: aircraft.id }}
         className="aircraft-card group block focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-2xl"
         style={{ animationDelay: animDelay }}
         onMouseEnter={() => setHovered(true)}
