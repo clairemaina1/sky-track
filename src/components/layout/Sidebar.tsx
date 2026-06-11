@@ -67,6 +67,7 @@ function initials(name: string) {
 export function Sidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
+  const currentOrg = useCurrentOrg();
   const [collapsed, setCollapsed] = useState(false);
   const [role, setRole] = useState<UserRole>("crew");
   const [tier, setTier] = useState<PlatformTier>("commercial_airline");
