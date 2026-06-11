@@ -536,6 +536,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      invitation_matches_user: {
+        Args: { _email: string; _user_id: string }
+        Returns: boolean
+      }
       user_has_org_role: {
         Args: {
           _org_id: string
