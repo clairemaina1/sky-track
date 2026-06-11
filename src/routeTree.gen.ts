@@ -19,6 +19,7 @@ import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authenticated/disruption'
 import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/crew'
 import { Route as AuthenticatedCargoRouteImport } from './routes/_authenticated/cargo'
+import { Route as AuthenticatedCrewIdRouteImport } from './routes/_authenticated/crew.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -69,41 +70,49 @@ const AuthenticatedCargoRoute = AuthenticatedCargoRouteImport.update({
   path: '/cargo',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedCrewIdRoute = AuthenticatedCrewIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedCrewRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/cargo': typeof AuthenticatedCargoRoute
-  '/crew': typeof AuthenticatedCrewRoute
+  '/crew': typeof AuthenticatedCrewRouteWithChildren
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRoute
   '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
   '/routing': typeof AuthenticatedRoutingRoute
+  '/crew/$id': typeof AuthenticatedCrewIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/cargo': typeof AuthenticatedCargoRoute
-  '/crew': typeof AuthenticatedCrewRoute
+  '/crew': typeof AuthenticatedCrewRouteWithChildren
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRoute
   '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/': typeof AuthenticatedIndexRoute
+  '/crew/$id': typeof AuthenticatedCrewIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
-  '/_authenticated/crew': typeof AuthenticatedCrewRoute
+  '/_authenticated/crew': typeof AuthenticatedCrewRouteWithChildren
   '/_authenticated/disruption': typeof AuthenticatedDisruptionRoute
   '/_authenticated/fleet': typeof AuthenticatedFleetRoute
   '/_authenticated/flights': typeof AuthenticatedFlightsRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/crew/$id': typeof AuthenticatedCrewIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/flights'
     | '/mro'
     | '/routing'
+    | '/crew/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/mro'
     | '/routing'
     | '/'
+    | '/crew/$id'
   id:
     | '__root__'
     | '/_authenticated'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mro'
     | '/_authenticated/routing'
     | '/_authenticated/'
+    | '/_authenticated/crew/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -219,12 +231,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCargoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/crew/$id': {
+      id: '/_authenticated/crew/$id'
+      path: '/$id'
+      fullPath: '/crew/$id'
+      preLoaderRoute: typeof AuthenticatedCrewIdRouteImport
+      parentRoute: typeof AuthenticatedCrewRoute
+    }
   }
 }
 
+interface AuthenticatedCrewRouteChildren {
+  AuthenticatedCrewIdRoute: typeof AuthenticatedCrewIdRoute
+}
+
+const AuthenticatedCrewRouteChildren: AuthenticatedCrewRouteChildren = {
+  AuthenticatedCrewIdRoute: AuthenticatedCrewIdRoute,
+}
+
+const AuthenticatedCrewRouteWithChildren =
+  AuthenticatedCrewRoute._addFileChildren(AuthenticatedCrewRouteChildren)
+
 interface AuthenticatedRouteChildren {
   AuthenticatedCargoRoute: typeof AuthenticatedCargoRoute
-  AuthenticatedCrewRoute: typeof AuthenticatedCrewRoute
+  AuthenticatedCrewRoute: typeof AuthenticatedCrewRouteWithChildren
   AuthenticatedDisruptionRoute: typeof AuthenticatedDisruptionRoute
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRoute
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRoute
@@ -235,7 +265,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCargoRoute: AuthenticatedCargoRoute,
-  AuthenticatedCrewRoute: AuthenticatedCrewRoute,
+  AuthenticatedCrewRoute: AuthenticatedCrewRouteWithChildren,
   AuthenticatedDisruptionRoute: AuthenticatedDisruptionRoute,
   AuthenticatedFleetRoute: AuthenticatedFleetRoute,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRoute,
