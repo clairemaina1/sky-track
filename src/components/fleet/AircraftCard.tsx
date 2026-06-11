@@ -399,12 +399,29 @@ export function AircraftCard({ aircraft, index = 0 }: AircraftCardProps) {
               className="mt-4 flex items-center justify-between border-t px-5 py-3"
               style={{ borderColor: "rgba(255,255,255,0.04)" }}
             >
-              <span
-                className="text-[10px] uppercase tracking-[0.15em] text-slate-500"
-                style={{ fontFamily: "'JetBrains Mono', monospace" }}
-              >
-                {aircraft.id.slice(0, 8).toUpperCase()}
-              </span>
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[10px] uppercase tracking-[0.15em] text-slate-500"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  {aircraft.id.slice(0, 8).toUpperCase()}
+                </span>
+                {!isAOG && (
+                  <button
+                    type="button"
+                    onClick={onDeclareAOG}
+                    disabled={busy}
+                    className="rounded border px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
+                    style={{
+                      borderColor: "rgba(239,68,68,0.25)",
+                      fontFamily: "'JetBrains Mono', monospace",
+                    }}
+                    aria-label={`Declare ${aircraft.tail_number} AOG`}
+                  >
+                    {busy ? "…" : "Declare AOG"}
+                  </button>
+                )}
+              </div>
               <div
                 className={`flex items-center gap-1.5 text-[11px] font-medium ${
                   hovered ? "text-emerald-400" : "text-slate-500"
