@@ -207,7 +207,9 @@ function FilterChip({
 function FleetPage() {
   const tier = useResolvedTier();
   const [orgId] = useCurrentOrgId();
+  const currentOrg = useCurrentOrg();
   const [filter, setFilter] = useState<FilterKey>("All");
+  const [exporting, setExporting] = useState(false);
 
   const { data: rows = [], isLoading, error } = useQuery({
     queryKey: ["aircraft", orgId],
