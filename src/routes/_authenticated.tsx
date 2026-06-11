@@ -38,9 +38,6 @@ function AuthGate() {
   }, []);
 
   if (!authed) return null;
-  return (
-    <Shell>
-      <Outlet />
-    </Shell>
-  );
+  return <Shell />;
 }
+
