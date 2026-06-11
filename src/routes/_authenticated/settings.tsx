@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Building2, User, Users, Shield, Plug } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/settings")({ component: SettingsPage });
 
@@ -17,17 +19,17 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
 ];
 
 function SettingsPage() {
+  const currentOrg = useCurrentOrg();
+  const isAdmin = currentOrg?.role === "admin";
+  const tier: Tier = useResolvedTier();
+  const qc = useQueryClient();
+
   const [tab, setTab] = useState<Tab>("organisation");
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("Operator");
-  const [orgName, setOrgName] = useState("SKYTRACK Airways");
+  const [orgName, setOrgName] = useState(currentOrg?.name ?? "SKYTRACK Airways");
   const [iata, setIata] = useState("ST");
   const [icao, setIcao] = useState("SKT");
-  const [tier, setTier] = useState<Tier>(
-    typeof window !== "undefined" && window.localStorage.getItem("skytrack.tier") === "flight_school"
-      ? "flight_school"
-      : "commercial_airline",
-  );
   const [hq, setHq] = useState("Nairobi, Kenya");
   const [offsetGoal, setOffsetGoal] = useState(18000);
   const [saved, setSaved] = useState<string | null>(null);
@@ -41,12 +43,26 @@ function SettingsPage() {
     });
   }, []);
 
-  function commitTier(next: Tier) {
-    setTier(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("skytrack.tier", next);
+  useEffect(() => {
+    if (currentOrg?.name) setOrgName(currentOrg.name);
+  }, [currentOrg?.name]);
+
+  async function commitTier(next: Tier) {
+    if (!isAdmin || !currentOrg) {
+      flash("Only org admins can change the platform tier.");
+      return;
     }
-    flash("Platform tier updated. Reload to refresh navigation.");
+    const dbTier = next === "flight_school" ? "flight_school" : "commercial";
+    const { error } = await supabase
+      .from("organizations")
+      .update({ tier: dbTier })
+      .eq("id", currentOrg.org_id);
+    if (error) {
+      flash(`Failed to update tier: ${error.message}`);
+      return;
+    }
+    await qc.invalidateQueries({ queryKey: ["my-orgs"] });
+    flash("Platform tier updated.");
   }
 
   function flash(msg: string) {
