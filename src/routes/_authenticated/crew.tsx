@@ -1,66 +1,179 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { Users, AlertTriangle, ShieldCheck, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CrewMatcher } from "@/components/ui/CrewMatcher";
+import { CrewCard } from "@/components/crew/CrewCard";
 import type { Crew } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/crew")({ component: CrewPage });
 
-function DutyGauge({ hours }: { hours: number }) {
-  const v = Math.max(0, Math.min(8, hours));
-  const pct = v / 8;
-  const color = v < 2 ? "var(--status-red)" : v < 4 ? "var(--status-amber)" : "var(--status-green)";
-  const r = 22, c = 2 * Math.PI * r;
-  return (
-    <svg width="56" height="56" viewBox="0 0 56 56">
-      <circle cx="28" cy="28" r={r} fill="none" stroke="var(--border-subtle)" strokeWidth="4" />
-      <circle cx="28" cy="28" r={r} fill="none" stroke={color} strokeWidth="4"
-        strokeDasharray={`${c * pct} ${c}`} strokeLinecap="round" transform="rotate(-90 28 28)" />
-      <text x="28" y="32" textAnchor="middle" fontSize="11" fill={color} fontFamily="JetBrains Mono">
-        {v.toFixed(1)}h
-      </text>
-    </svg>
-  );
-}
+type Filter = "all" | "on-duty" | "available" | "fatigue" | "leave";
+
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "on-duty", label: "On Duty" },
+  { id: "available", label: "Available" },
+  { id: "fatigue", label: "Fatigue Hold" },
+  { id: "leave", label: "On Leave" },
+];
 
 function CrewPage() {
-  const { data: crew = [] } = useQuery({
+  const [filter, setFilter] = useState<Filter>("all");
+  const [query, setQuery] = useState("");
+
+  const { data: crew = [], isLoading } = useQuery({
     queryKey: ["crew"],
-    queryFn: async () => (await supabase.from("crew").select("*").order("full_name")).data as Crew[],
+    queryFn: async () =>
+      (await supabase.from("crew").select("*").order("full_name")).data as Crew[],
   });
+
+  const kpis = useMemo(() => {
+    const onDuty = crew.filter((c) => c.status === "On-Duty").length;
+    const available = crew.filter((c) => c.status === "Off-Duty").length;
+    const fatigue = crew.filter((c) => c.status === "Fatigue-Hold").length;
+    const avgDuty =
+      crew.length === 0
+        ? 0
+        : crew.reduce((s, c) => s + Number(c.duty_time_remaining_hrs), 0) / crew.length;
+    return { total: crew.length, onDuty, available, fatigue, avgDuty };
+  }, [crew]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return crew
+      .filter((c) => {
+        if (filter === "on-duty" && c.status !== "On-Duty") return false;
+        if (filter === "available" && c.status !== "Off-Duty") return false;
+        if (filter === "fatigue" && c.status !== "Fatigue-Hold") return false;
+        if (filter === "leave" && c.status !== "On-Leave") return false;
+        return true;
+      })
+      .filter((c) => {
+        if (!q) return true;
+        return (
+          c.full_name.toLowerCase().includes(q) ||
+          c.role.toLowerCase().includes(q) ||
+          c.base_airport.toLowerCase().includes(q) ||
+          c.certifications.some((t) => t.toLowerCase().includes(q))
+        );
+      });
+  }, [crew, filter, query]);
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display uppercase tracking-[0.12em] text-lg">Crew Roster</h1>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display uppercase tracking-[0.12em] text-lg">Crew Roster</h1>
+          <div className="font-mono text-[10px] uppercase tracking-wider text-secondary-fg">
+            ICAO Annex 6 FDP · Real-Time Fatigue Monitoring
+          </div>
+        </div>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search name, role, base, cert…"
+          className="px-3 py-1.5 text-xs font-mono w-72"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--border-subtle)",
+            color: "var(--text-primary)",
+          }}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Kpi
+          icon={<Users className="w-3.5 h-3.5" />}
+          label="Total Crew"
+          value={kpis.total.toString()}
+        />
+        <Kpi
+          icon={<ShieldCheck className="w-3.5 h-3.5" />}
+          label="On Duty"
+          value={kpis.onDuty.toString()}
+          tone="var(--status-green)"
+        />
+        <Kpi
+          icon={<AlertTriangle className="w-3.5 h-3.5" />}
+          label="Fatigue Hold"
+          value={kpis.fatigue.toString()}
+          tone={kpis.fatigue > 0 ? "var(--status-red)" : undefined}
+        />
+        <Kpi
+          icon={<Clock className="w-3.5 h-3.5" />}
+          label="Avg Duty Remaining"
+          value={`${kpis.avgDuty.toFixed(1)}h`}
+        />
+      </div>
+
       <CrewMatcher crew={crew} />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {crew.map((c) => {
-          const fatigue = c.status === "Fatigue-Hold";
-          const initials = c.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+
+      <div className="flex flex-wrap gap-2">
+        {FILTERS.map((f) => {
+          const active = filter === f.id;
           return (
-            <div key={c.id} className="panel p-3" style={{ borderColor: fatigue ? "var(--status-red)" : "var(--border-subtle)" }}>
-              {fatigue && <div className="text-[10px] font-display uppercase tracking-wider text-center py-1 mb-2" style={{ background: "var(--status-red)", color: "white" }}>Fatigue Hold</div>}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center font-display font-bold text-sm" style={{ background: "var(--bg-elevated)", color: "var(--accent-primary)" }}>{initials}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-display font-semibold truncate">{c.full_name}</div>
-                  <div className="text-xs text-secondary-fg truncate">{c.role}</div>
-                </div>
-                <DutyGauge hours={Number(c.duty_time_remaining_hrs)} />
-              </div>
-              <div className="mt-2 flex items-center justify-between">
-                <StatusBadge status={c.status} />
-                <span className="font-mono text-[10px] text-secondary-fg">{c.base_airport}</span>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {c.certifications.map((t) => (
-                  <span key={t} className="font-mono text-[9px] px-1.5 py-0.5" style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}>{t}</span>
-                ))}
-              </div>
-            </div>
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className="px-3 py-1 text-[10px] font-display uppercase tracking-[0.12em] border transition-colors"
+              style={{
+                background: active ? "var(--accent-primary)" : "transparent",
+                color: active ? "var(--bg-void)" : "var(--text-secondary)",
+                borderColor: active ? "var(--accent-primary)" : "var(--border-subtle)",
+              }}
+            >
+              {f.label}
+            </button>
           );
         })}
+        <span className="ml-auto self-center font-mono text-[10px] text-secondary-fg">
+          {filtered.length} of {crew.length}
+        </span>
+      </div>
+
+      {isLoading ? (
+        <div className="panel p-8 text-center text-xs text-secondary-fg font-mono">
+          Loading roster…
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="panel p-8 text-center text-xs text-secondary-fg">
+          No crew match this filter.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {filtered.map((c) => (
+            <CrewCard key={c.id} crew={c} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Kpi({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  tone?: string;
+}) {
+  return (
+    <div className="panel p-3">
+      <div className="flex items-center gap-1.5 font-display uppercase text-[10px] tracking-[0.14em] text-secondary-fg">
+        {icon}
+        {label}
+      </div>
+      <div
+        className="mt-1 font-display text-2xl font-bold"
+        style={{ color: tone ?? "var(--text-primary)" }}
+      >
+        {value}
       </div>
     </div>
   );
