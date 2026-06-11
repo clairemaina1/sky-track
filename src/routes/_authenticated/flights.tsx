@@ -112,7 +112,9 @@ function FlightsPage() {
         </p>
       </div>
 
-      <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" aria-label="Flight operations summary">
+      <section className="mb-6" aria-labelledby="ops-summary-h">
+        <h2 id="ops-summary-h" className="sr-only">Flight operations summary</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <KpiTile label="Total Flights" value={summary.total} sub="today's schedule" />
         <KpiTile label="Airborne" value={summary.airborne} sub="active sectors" valueClass="text-emerald-400" accent="rgba(52,211,153,0.10)" />
         <KpiTile label="On Time" value={summary.onTime} sub="no delays" valueClass="text-emerald-400" accent="rgba(52,211,153,0.08)" />
