@@ -3,7 +3,20 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 
-export const Route = createFileRoute("/login")({ component: LoginPage });
+export const Route = createFileRoute("/login")({
+  component: LoginPage,
+  head: () => ({
+    meta: [
+      { title: "Sign In — SkyTrack AAOS" },
+      { name: "description", content: "Sign in to SkyTrack AAOS — the agentic aviation operating system for fleet, MRO, crew, and operations command." },
+      { property: "og:title", content: "Sign In — SkyTrack AAOS" },
+      { property: "og:description", content: "Access your SkyTrack Aviation Command Center." },
+      { property: "og:url", content: "/login" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "/login" }],
+  }),
+});
 
 type UIState = "idle" | "loading" | "success" | "error";
 type Mode = "magic" | "signin" | "signup";

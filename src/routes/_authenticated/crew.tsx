@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -9,7 +10,8 @@ import { CrewCard } from "@/components/crew/CrewCard";
 import { AddCrewDialog } from "@/components/crud/AddDialogs";
 import type { Crew } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/crew")({ component: CrewPage });
+export const Route = createFileRoute("/_authenticated/crew")({
+  head: pageHead({ title: "Crew — SkyTrack AAOS", description: "Crew rosters, qualifications, duty time, and fatigue risk across pilots and cabin crew.", path: "/crew" }), component: CrewPage });
 
 type Filter = "all" | "on-duty" | "available" | "fatigue" | "leave";
 

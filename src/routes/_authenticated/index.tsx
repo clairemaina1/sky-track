@@ -1,9 +1,11 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Aircraft, Alert } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/")({ component: CommandCenter });
+export const Route = createFileRoute("/_authenticated/")({
+  head: pageHead({ title: "Command Center — SkyTrack AAOS", description: "SkyTrack AAOS command center: live overview of fleet, flights, maintenance, crew, and disruptions.", path: "/" }), component: CommandCenter });
 
 function CommandCenter() {
   const { data: fleet = [] } = useQuery({

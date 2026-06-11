@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +9,8 @@ import type { Alert } from "@/lib/types";
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 
-export const Route = createFileRoute("/_authenticated/disruption")({ component: DisruptionPage });
+export const Route = createFileRoute("/_authenticated/disruption")({
+  head: pageHead({ title: "Disruption Management — SkyTrack AAOS", description: "Live disruption console: weather, slot, crew, and technical events with AI recovery options.", path: "/disruption" }), component: DisruptionPage });
 
 function DisruptionPage() {
   const ackLocal = useAlertStore((s) => s.acknowledge);

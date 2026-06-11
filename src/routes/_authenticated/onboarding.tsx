@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Plane, GraduationCap, ArrowRight, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  head: pageHead({ title: "Onboarding — SkyTrack AAOS", description: "Set up your operation: name your org, pick a tier, and choose seed data.", path: "/onboarding" }),
   component: OnboardingPage,
 });
 

@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -9,7 +10,8 @@ import { UrgencyBadge, normaliseUrgency, getUrgencySeverity, type WorkOrderUrgen
 import { RULChart } from "@/components/ui/RULChart";
 import type { Maintenance, Aircraft } from "@/lib/types";
 
-export const Route = createFileRoute("/_authenticated/mro")({ component: MROPage });
+export const Route = createFileRoute("/_authenticated/mro")({
+  head: pageHead({ title: "Maintenance & MRO — SkyTrack AAOS", description: "Work orders, urgency triage, remaining useful life forecasts, and AOG response across the fleet.", path: "/mro" }), component: MROPage });
 
 type StatusFilter = "all" | "open" | "in-progress" | "parts" | "completed";
 
@@ -101,10 +103,10 @@ function MROPage() {
         />
       </div>
 
-      <div className="panel p-4">
-        <div className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">
+      <section className="panel p-4" aria-labelledby="fleet-health-h">
+        <h2 id="fleet-health-h" className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">
           Fleet Health · Sorted by Risk
-        </div>
+        </h2>
         <div className="space-y-2">
           {sortedFleet.map((a) => {
             const v = Number(a.health_score);
@@ -130,7 +132,7 @@ function MROPage() {
             );
           })}
         </div>
-      </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {sortedFleet.slice(0, 2).map((a) => (
@@ -138,6 +140,7 @@ function MROPage() {
         ))}
       </div>
 
+      <h2 className="sr-only">Work orders</h2>
       <div className="flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((f) => {
           const active = statusFilter === f.id;

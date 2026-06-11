@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import type { PlatformTier } from "@/lib/tierGuard";
 import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
+  head: pageHead({ title: "Fleet Overview — SkyTrack AAOS", description: "Real-time fleet status, health scores, AOG alerts, and aircraft utilisation across your operation.", path: "/fleet" }),
   component: FleetPage,
 });
 
@@ -320,8 +322,9 @@ function FleetPage() {
             border: "1px solid rgba(52,211,153,0.08)",
             animationDelay: "0.05s",
           }}
-          aria-label="Fleet summary metrics"
+          aria-labelledby="fleet-summary-h"
         >
+          <h2 id="fleet-summary-h" className="sr-only">Fleet summary metrics</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 mb-6">
             <KpiTile label="Fleet Strength" value={summary.total} subtext="registered aircraft" />
             <KpiTile

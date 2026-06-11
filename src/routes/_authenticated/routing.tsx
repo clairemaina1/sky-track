@@ -1,3 +1,4 @@
+import { pageHead } from "@/lib/routeHead";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,7 +7,8 @@ import type { Aircraft, Flight } from "@/lib/types";
 import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/_authenticated/routing")({ component: RoutingPage });
+export const Route = createFileRoute("/_authenticated/routing")({
+  head: pageHead({ title: "Routing — SkyTrack AAOS", description: "AI-optimised flight routing, fuel burn, and ETOPS-aware path planning.", path: "/routing" }), component: RoutingPage });
 
 function RoutingPage() {
   const { data: flights = [] } = useQuery({
