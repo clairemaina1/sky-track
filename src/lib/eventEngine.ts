@@ -17,6 +17,7 @@ async function insertAlert(payload: {
   source_id: string;
   title: string;
   body: string;
+  org_id: string;
 }) {
   const { data, error } = await supabase.from("alerts").insert(payload).select().single();
   if (error) {
