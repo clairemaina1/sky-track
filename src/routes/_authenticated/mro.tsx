@@ -103,10 +103,10 @@ function MROPage() {
         />
       </div>
 
-      <div className="panel p-4">
-        <div className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">
+      <section className="panel p-4" aria-labelledby="fleet-health-h">
+        <h2 id="fleet-health-h" className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">
           Fleet Health · Sorted by Risk
-        </div>
+        </h2>
         <div className="space-y-2">
           {sortedFleet.map((a) => {
             const v = Number(a.health_score);
@@ -132,7 +132,7 @@ function MROPage() {
             );
           })}
         </div>
-      </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {sortedFleet.slice(0, 2).map((a) => (
