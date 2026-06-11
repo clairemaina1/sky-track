@@ -5,6 +5,7 @@ import { StatusStrip } from "./StatusStrip";
 import { AlertToast } from "@/components/ui/AlertToast";
 import { OnboardingGate } from "./OnboardingGate";
 import { useUiStore } from "@/stores/uiStore";
+import { SkyChat } from "@/components/ai/SkyChat";
 
 export function Shell() {
   const mobileOpen = useUiStore((s) => s.mobileNavOpen);
