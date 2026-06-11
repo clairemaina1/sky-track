@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AIRecoveryAssistant } from "@/components/ai/AIRecoveryAssistant";
 import { useAlertStore } from "@/stores/alertStore";
 import type { Alert } from "@/lib/types";
 import { useState } from "react";
@@ -29,7 +30,16 @@ function DisruptionPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display uppercase tracking-[0.12em] text-lg">Disruption Recovery Center</h1>
+      <div>
+        <h1 className="font-display uppercase tracking-[0.12em] text-lg">
+          Disruption Recovery Centre
+        </h1>
+        <div className="font-mono text-[10px] uppercase tracking-wider text-secondary-fg">
+          IRROPS · AI-Augmented Decision Support · ICAO Annex 6 Aware
+        </div>
+      </div>
+
+      <AIRecoveryAssistant />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <div className="panel p-4 lg:col-span-2">
