@@ -54,6 +54,7 @@ function EngineMount() { useEventEngine(); return null; }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useThemeAndLangSync();
   return (
     <QueryClientProvider client={queryClient}>
       <EngineMount />
