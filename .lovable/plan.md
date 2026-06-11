@@ -51,3 +51,18 @@ Just **"go"** to start Phase 1. I'll check in after each phase before continuing
 - Fleet → "Export PDF" button using pdf-lib (org-branded snapshot)
 - Theme + lang sync hook mounted in __root
 - Branded auth emails: requires email domain — needs user to run email setup dialog first
+
+---
+## ✅ Phase 6 + 7 shipped
+**Phase 6 — CRUD forms**
+- Add Aircraft dialog (Fleet)
+- Add Crew dialog (Crew)
+- Add Cargo Shipment dialog (Cargo)
+- All inserts org-scoped via RLS; React Query invalidation on success
+
+**Phase 7 — AI Copilot (SkyChat)**
+- Floating chat widget mounted in Shell, available on every page
+- Server route `/api/chat` streams via Lovable AI Gateway (`google/gemini-3-flash-preview`)
+- Role-aware system prompt (admin/dispatcher unlock `performanceOverview`)
+- RLS-scoped tool calls: `fleetSummary`, `crewSummary`, `cargoSummary`, `maintenanceSummary`, `performanceOverview`
+- Auth: caller sends Supabase JWT in Authorization header; server validates user & org membership

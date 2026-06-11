@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Users, AlertTriangle, ShieldCheck, Clock } from "lucide-react";
+import { Users, AlertTriangle, ShieldCheck, Clock, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrgId } from "@/hooks/use-org";
 import { CrewMatcher } from "@/components/ui/CrewMatcher";
 import { CrewCard } from "@/components/crew/CrewCard";
+import { AddCrewDialog } from "@/components/crud/AddDialogs";
 import type { Crew } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/crew")({ component: CrewPage });
@@ -23,6 +24,7 @@ const FILTERS: { id: Filter; label: string }[] = [
 function CrewPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
   const [orgId] = useCurrentOrgId();
 
   const { data: crew = [], isLoading } = useQuery({
@@ -73,18 +75,24 @@ function CrewPage() {
             ICAO Annex 6 FDP · Real-Time Fatigue Monitoring
           </div>
         </div>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search name, role, base, cert…"
-          className="px-3 py-1.5 text-xs font-mono w-72"
-          style={{
-            background: "var(--bg-elevated)",
-            border: "1px solid var(--border-subtle)",
-            color: "var(--text-primary)",
-          }}
-        />
+        <div className="flex items-center gap-2">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name, role, base, cert…"
+            className="px-3 py-1.5 text-xs font-mono w-72 max-w-[50vw]"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-subtle)",
+              color: "var(--text-primary)",
+            }}
+          />
+          <button onClick={() => setAddOpen(true)} className="btn-cmd shrink-0">
+            <Plus className="w-3.5 h-3.5" /> Add
+          </button>
+        </div>
       </div>
+      <AddCrewDialog open={addOpen} onClose={() => setAddOpen(false)} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Kpi

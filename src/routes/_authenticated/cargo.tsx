@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrgId } from "@/hooks/use-org";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AddCargoDialog } from "@/components/crud/AddDialogs";
 import type { Cargo } from "@/lib/types";
 
 export const Route = createFileRoute("/_authenticated/cargo")({ component: CargoPage });
@@ -15,6 +18,7 @@ const HANDLING_COLOR: Record<string, string> = {
 
 function CargoPage() {
   const [orgId] = useCurrentOrgId();
+  const [addOpen, setAddOpen] = useState(false);
   const { data: items = [] } = useQuery({
     queryKey: ["cargo", orgId],
     enabled: !!orgId,
@@ -28,8 +32,14 @@ function CargoPage() {
   };
   return (
     <div className="space-y-4">
-      <h1 className="font-display uppercase tracking-[0.12em] text-lg">Cargo Operations</h1>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="font-display uppercase tracking-[0.12em] text-lg">Cargo Operations</h1>
+        <button onClick={() => setAddOpen(true)} className="btn-cmd shrink-0">
+          <Plus className="w-3.5 h-3.5" /> Add Shipment
+        </button>
+      </div>
+      <AddCargoDialog open={addOpen} onClose={() => setAddOpen(false)} />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           ["Total", stats.total],
           ["In-Transit", stats.transit],
