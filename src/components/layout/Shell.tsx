@@ -1,4 +1,4 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useRouterState } from "@tanstack/react-router";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { StatusStrip } from "./StatusStrip";
