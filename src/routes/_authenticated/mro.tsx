@@ -140,6 +140,7 @@ function MROPage() {
         ))}
       </div>
 
+      <h2 className="sr-only">Work orders</h2>
       <div className="flex flex-wrap items-center gap-2">
         {STATUS_FILTERS.map((f) => {
           const active = statusFilter === f.id;
