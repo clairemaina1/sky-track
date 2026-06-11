@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
 import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
@@ -21,6 +22,7 @@ import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/crew'
 import { Route as AuthenticatedCargoRouteImport } from './routes/_authenticated/cargo'
 import { Route as AuthenticatedCarbonRouteImport } from './routes/_authenticated/carbon'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCrewIdRouteImport } from './routes/_authenticated/crew.$id'
 
 const LoginRoute = LoginRouteImport.update({
@@ -45,6 +47,11 @@ const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
 const AuthenticatedRoutingRoute = AuthenticatedRoutingRouteImport.update({
   id: '/routing',
   path: '/routing',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedMroRoute = AuthenticatedMroRouteImport.update({
@@ -82,6 +89,11 @@ const AuthenticatedCarbonRoute = AuthenticatedCarbonRouteImport.update({
   path: '/carbon',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCrewIdRoute = AuthenticatedCrewIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -91,6 +103,7 @@ const AuthenticatedCrewIdRoute = AuthenticatedCrewIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -98,12 +111,14 @@ export interface FileRoutesByFullPath {
   '/fleet': typeof AuthenticatedFleetRoute
   '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/crew/$id': typeof AuthenticatedCrewIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -111,6 +126,7 @@ export interface FileRoutesByTo {
   '/fleet': typeof AuthenticatedFleetRoute
   '/flights': typeof AuthenticatedFlightsRoute
   '/mro': typeof AuthenticatedMroRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/': typeof AuthenticatedIndexRoute
@@ -120,6 +136,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/carbon': typeof AuthenticatedCarbonRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
   '/_authenticated/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -127,6 +144,7 @@ export interface FileRoutesById {
   '/_authenticated/fleet': typeof AuthenticatedFleetRoute
   '/_authenticated/flights': typeof AuthenticatedFlightsRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -137,6 +155,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/admin'
     | '/carbon'
     | '/cargo'
     | '/crew'
@@ -144,12 +163,14 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/flights'
     | '/mro'
+    | '/onboarding'
     | '/routing'
     | '/settings'
     | '/crew/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
+    | '/admin'
     | '/carbon'
     | '/cargo'
     | '/crew'
@@ -157,6 +178,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/flights'
     | '/mro'
+    | '/onboarding'
     | '/routing'
     | '/settings'
     | '/'
@@ -165,6 +187,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/admin'
     | '/_authenticated/carbon'
     | '/_authenticated/cargo'
     | '/_authenticated/crew'
@@ -172,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/fleet'
     | '/_authenticated/flights'
     | '/_authenticated/mro'
+    | '/_authenticated/onboarding'
     | '/_authenticated/routing'
     | '/_authenticated/settings'
     | '/_authenticated/'
@@ -218,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/routing'
       fullPath: '/routing'
       preLoaderRoute: typeof AuthenticatedRoutingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/mro': {
@@ -269,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarbonRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crew/$id': {
       id: '/_authenticated/crew/$id'
       path: '/$id'
@@ -291,6 +329,7 @@ const AuthenticatedCrewRouteWithChildren =
   AuthenticatedCrewRoute._addFileChildren(AuthenticatedCrewRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCarbonRoute: typeof AuthenticatedCarbonRoute
   AuthenticatedCargoRoute: typeof AuthenticatedCargoRoute
   AuthenticatedCrewRoute: typeof AuthenticatedCrewRouteWithChildren
@@ -298,12 +337,14 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRoute
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCarbonRoute: AuthenticatedCarbonRoute,
   AuthenticatedCargoRoute: AuthenticatedCargoRoute,
   AuthenticatedCrewRoute: AuthenticatedCrewRouteWithChildren,
@@ -311,6 +352,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFleetRoute: AuthenticatedFleetRoute,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

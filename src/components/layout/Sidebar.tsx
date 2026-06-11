@@ -15,8 +15,10 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
+import { useCurrentOrg } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 import {
