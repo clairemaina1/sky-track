@@ -136,13 +136,18 @@ export function Sidebar() {
         className="px-3 py-4 border-b flex items-center gap-2 min-h-[60px]"
         style={{ borderColor: "var(--border-subtle)" }}
       >
-        <span
-          className="w-2 h-2 rounded-full pulse-dot shrink-0 ml-1"
-          style={{ background: "var(--status-green)", color: "var(--status-green)" }}
-        />
+        <SkytrackLogo size={collapsed ? 24 : 28} showWordmark={false} />
         {!collapsed && (
           <div className="flex-1 min-w-0">
-            <div className="font-display font-bold text-base tracking-[0.16em] text-accent leading-none">
+            <div
+              className="font-display font-bold text-base tracking-[0.16em] leading-none"
+              style={{
+                background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               SKYTRACK
             </div>
             <div className="font-mono text-[9px] uppercase tracking-[0.16em] text-secondary-fg mt-1 truncate">
