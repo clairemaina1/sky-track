@@ -1,68 +1,45 @@
-# SkyTrack AAOS — Build Plan
+This is a large amount of work — roughly 2–3 weeks of build if done all at once. I'll ship it in **4 phases** so you can test each one before the next lands, and so we don't break what's already working. After you approve, I'll start Phase 1 immediately and pause at each phase boundary for you to verify.
 
-A production-grade aviation command center with live fleet ops, MRO, crew, disruption recovery, routing, and cargo modules — wired end-to-end to Lovable Cloud (Postgres + Realtime + Auth).
+## Phase 1 — Live data + AOG persistence (Critical #1 + #2)
+The fastest, highest-impact wins. No schema changes, no auth changes.
 
-## Stack note
-Project template is **TanStack Start** (file-based routing in `src/routes/`), not Vite + React Router. I'll keep the spec's intent and folder layout for `lib/`, `stores/`, `components/`, `modules/`, but routes live as `src/routes/fleet.tsx`, `src/routes/mro.tsx`, etc., under an `_authenticated` layout. Everything else (Tailwind, Supabase JS, React Query, Recharts, Lucide, Zustand, react-leaflet, date-fns) maps 1:1.
+- Replace hardcoded arrays in **Fleet, MRO, Crew, Cargo** with live Supabase queries (TanStack Query + server functions, RLS-scoped to the signed-in user).
+- "Declare AOG" button → `UPDATE aircraft SET status='AOG'` + still fires the cascade (cargo notif + WO creation already in `eventEngine`).
+- Realtime: pages refresh automatically when any row changes (already partly wired in `eventEngine`).
+- Loading skeletons + empty states on every page.
 
-## 1. Backend (Lovable Cloud)
-Enable Cloud, then migrations for:
-- Enums: `aircraft_status`, `crew_status`, `cargo_status`, `work_order_status`, `app_role`
-- Tables: `aircraft`, `crew`, `flights`, `maintenance`, `cargo`, `alerts`, `user_roles` (separate role table — never on profiles)
-- RLS on every table; `has_role()` security-definer function for admin/dispatcher/crew/maintenance gating
-- Realtime publication on `aircraft`, `alerts`, `flights`, `crew`
-- Seed: 8 aircraft (incl. one AOG `5Y-KQA`), 15 crew, 6 flights, 4 cargo, 3 work orders — East African ops (HKJK/HKNW/HTDA/HAAB/HRYR/HUEN/HSSS/FZAA)
+## Phase 2 — Multi-tenancy / orgs (High #4)
+This is the biggest structural change and unblocks onboarding + admin.
 
-## 2. Design System ("Simplicity is Luxury")
-- `src/styles.css`: full token set (`--bg-void`, `--accent-primary`, status colors, etc.) as oklch where feasible; fonts via Google import (Rajdhani, JetBrains Mono, DM Sans)
-- Tactical grid overlay on body via repeating-linear-gradient
-- Tailwind v4 `@theme inline` mappings so `bg-void`, `text-accent`, `border-subtle`, `font-display`, `font-mono` all work as utilities
-- Custom button variants (`primary` outline+glow, `destructive`, `ghost`) — no rounded-full, all `rounded-sm`, transitions 200ms
+- New `organizations` table (id, name, tier: `commercial` | `flight_school`, created_by).
+- New `organization_members` table (user_id, org_id, role).
+- Add `org_id` to: `aircraft`, `crew`, `flights`, `maintenance`, `cargo`, `alerts`.
+- Rewrite all RLS policies to scope by org membership (via security-definer `user_in_org()` function — no recursion).
+- Backfill existing 8 aircraft into a "SkyTrack Demo" org so nothing disappears.
+- Org switcher in the top bar (for users in multiple orgs).
 
-## 3. Layout Shell
-- `_authenticated.tsx` route guard → redirects to `/login` if no session
-- `Shell.tsx`: CSS grid sidebar/main, grid-overlay bg
-- `Sidebar.tsx`: SKY//TRACK logo + pulse dot, 8 nav items (Lucide), collapsible
-- `TopBar.tsx`: breadcrumb + `CommandInput` + live UTC clock + alert bell w/ unread badge
-- `StatusStrip.tsx`: bottom bar w/ version, UTC, alert count, supabase status
+## Phase 3 — Onboarding + Admin panel (Critical #3 + High #5)
+Depends on Phase 2.
 
-## 4. Event Engine + Stores
-- `lib/supabase.ts` — uses generated client
-- `stores/alertStore.ts` — Zustand: alerts[], unreadCount, push/ack
-- `stores/fleetStore.ts` — filters, selected aircraft, panel open state
-- `lib/eventEngine.ts` + `useEventEngine()` — subscribes to `aircraft` + `flights` realtime channels; on `status→AOG` runs the full cascade (auto WO, fatigue-hold crew, delay cargo, broadcast alert); on `health_score<10` predictive WO; on flight delayed cargo notify
-- `declareAOG(aircraftId)` exported for UI buttons
-- `AlertToast.tsx` listens to alertStore and renders critical red banner
+- **Onboarding wizard** after first signup: org name → tier (commercial / flight school) → add first aircraft (reg, type, base) → land on dashboard.
+- **Admin panel** at `/admin` (gated by `admin` role): list members, invite by email, promote/demote roles (admin / dispatcher / maintenance / crew), remove members.
+- Invites use signed tokens, no Supabase Auth Admin API exposure to client.
 
-## 5. Modules (each wired to live Supabase data via React Query)
-1. **Fleet** (`/fleet`): KPI strip, sortable table w/ AOG row tint+pulse, slide-in `AircraftDetailPanel` with health sparkline, work orders, crew, cargo, [DECLARE AOG] action
-2. **MRO** (`/mro`): horizontal health bar chart w/ 80% target line, RUL area chart using `health(t) = h * e^(-0.002·Δhrs)` w/ critical threshold marker, parts-at-risk list, work orders table w/ priority badges + filter tabs
-3. **Crew** (`/crew`): card grid, SVG arc duty-time gauge, fatigue-hold styling, `CrewMatcher` running the 6-step scoring algorithm and writing `current_assignment`
-4. **Disruption** (`/disruption`): live alerts feed (realtime), recovery panel with 3 hardcoded route alternatives (Direct / alt-waypoint / altitude-optimized), compensation generator (KES tiers) w/ downloadable letters
-5. **Routing** (`/routing`): react-leaflet + CartoDB Dark Matter, 8 airport markers, animated dashed flight polylines, interpolated aircraft dots, AOG pulsing red marker; side `FuelSimulator` w/ breakdown table + scatter chart
-6. **Cargo** (`/cargo`): KPI strip + table with special-handling tags + delayed row tint
-7. **Command Center** (`/`): summary tiles aggregating all modules
-
-## 6. Auth + Roles
-- `/login` page styled per spec, email+password
-- Roles stored in `user_roles` table (admin/dispatcher/crew/maintenance)
-- `useUserRole()` hook gates sidebar items + module access
-- Auto-create default `dispatcher` role on signup
-
-## 7. Command Input NL Parser
-`parseCommand()` — keyword + regex (`/5Y-[A-Z]{3}/i`) → `{action, target, params}` dispatched to router + `fleetStore`
-
-## 8. Scalability stubs
-`lib/aiBackend.ts` — `callPredictionEngine`, `callRouteOptimizer`, `callCrewOptimizer` returning mocks but shaped for FastAPI swap
-
-## Build sequence
-Cloud + schema + seed → design tokens → shell/sidebar/topbar/statusstrip → stores + event engine + toast → Fleet → MRO → Crew → Disruption → Routing → Cargo → Login + role guards → CommandInput → aiBackend stubs.
+## Phase 4 — Polish (High #6, #7 + Nice-to-haves #8, #9, #10)
+- Mobile sidebar: drawer below 768px, proper safe-area padding.
+- Wire `/settings` toggles (notification prefs, default airport, units).
+- Light theme + theme toggle (currently `--background` etc. are dark-locked — needs a light token set).
+- EN/FR i18n with `react-i18next`, language toggle in top bar.
+- PDF export (fleet snapshot, AOG compensation letter) via `pdf-lib`.
+- Branded SkyTrack auth email templates (signup, magic link, recovery).
 
 ## Technical notes
-- TanStack Start routes; `_authenticated` layout for guards; `__root.tsx` wraps QueryClientProvider + Toaster + `useEventEngine()`
-- Realtime channels created once in event engine; cleaned on unmount
-- All status colors driven by tokens; no hard-coded hex in components
-- Recharts theming via CSS vars passed as `stroke`/`fill`
-- Leaflet CSS imported in routing route only
+- All server-side reads/writes use `createServerFn` + `requireSupabaseAuth` (per project conventions — no Edge Functions for app logic).
+- All new public-schema tables get explicit `GRANT` + RLS in the same migration.
+- Each phase ends with a working build; I'll verify before moving on.
+- I won't touch the auto-generated Supabase client files or `_authenticated/route.tsx`.
 
-Ready to build on approval.
+## What I need from you
+Just **"go"** to start Phase 1. I'll check in after each phase before continuing — if you want to skip something or change priority, that's the moment to say so.
+
+(Custom domain `skytrack.com` is almost certainly taken — we'll search for available `skytrack.*` variants after publishing, separately from this work.)
