@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { DelayPredictionChip } from "@/components/flights/DelayPredictionChip";
 
 export type FlightStatus =
