@@ -14,6 +14,7 @@ import { AddAircraftDialog } from "@/components/fleet/AddAircraftDialog";
 import type { Aircraft } from "@/lib/types";
 import type { PlatformTier } from "@/lib/tierGuard";
 import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
+import { SavedViewsMenu } from "@/components/ui/SavedViewsMenu";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
   head: pageHead({ title: "Fleet Overview — SkyTrack AAOS", description: "Real-time fleet status, health scores, AOG alerts, and aircraft utilisation across your operation.", path: "/fleet" }),
