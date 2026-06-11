@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentOrgId, useResolvedTier } from "@/hooks/use-org";
+import { useCurrentOrg, useCurrentOrgId, useResolvedTier } from "@/hooks/use-org";
 import {
   AircraftCard,
   type AircraftCardData,
@@ -10,6 +11,7 @@ import {
 } from "@/components/fleet/AircraftCard";
 import type { Aircraft } from "@/lib/types";
 import type { PlatformTier } from "@/lib/tierGuard";
+import { exportFleetSnapshotPdf } from "@/lib/fleetPdf";
 
 export const Route = createFileRoute("/_authenticated/fleet")({
   component: FleetPage,
@@ -205,7 +207,9 @@ function FilterChip({
 function FleetPage() {
   const tier = useResolvedTier();
   const [orgId] = useCurrentOrgId();
+  const currentOrg = useCurrentOrg();
   const [filter, setFilter] = useState<FilterKey>("All");
+  const [exporting, setExporting] = useState(false);
 
   const { data: rows = [], isLoading, error } = useQuery({
     queryKey: ["aircraft", orgId],
@@ -257,25 +261,42 @@ function FleetPage() {
       `}</style>
 
       <div className="min-h-full px-6 py-8" style={{ fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif" }}>
-        <div className="banner-in mb-8 flex flex-col gap-1">
-          <div className="flex items-end gap-3">
-            <h1 className="text-[26px] font-semibold leading-none tracking-tight text-slate-100">
-              Fleet
-            </h1>
-            <span
-              className="mb-0.5 rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-400"
-              style={{
-                borderColor: "rgba(52,211,153,0.2)",
-                background: "rgba(52,211,153,0.05)",
-                fontFamily: "'JetBrains Mono', monospace",
-              }}
-            >
-              {tierLabel}
-            </span>
+        <div className="banner-in mb-8 flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
+            <div className="flex items-end gap-3 flex-wrap">
+              <h1 className="text-[26px] font-semibold leading-none tracking-tight text-slate-100">
+                Fleet
+              </h1>
+              <span
+                className="mb-0.5 rounded border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-400"
+                style={{
+                  borderColor: "rgba(52,211,153,0.2)",
+                  background: "rgba(52,211,153,0.05)",
+                  fontFamily: "'JetBrains Mono', monospace",
+                }}
+              >
+                {tierLabel}
+              </span>
+            </div>
+            <p className="text-[13px] text-slate-400">
+              Live aircraft registry from Lovable Cloud · auto-refresh every 30s.
+            </p>
           </div>
-          <p className="text-[13px] text-slate-400">
-            Live aircraft registry from Lovable Cloud · auto-refresh every 30s.
-          </p>
+          <button
+            disabled={exporting || fleet.length === 0}
+            onClick={async () => {
+              setExporting(true);
+              try {
+                await exportFleetSnapshotPdf(fleet, currentOrg?.name ?? "SkyTrack");
+              } finally {
+                setExporting(false);
+              }
+            }}
+            className="btn-cmd shrink-0"
+          >
+            <Download className="w-3.5 h-3.5" />
+            {exporting ? "Exporting…" : "Export PDF"}
+          </button>
         </div>
 
         {error && (

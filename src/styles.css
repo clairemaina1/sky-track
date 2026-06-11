@@ -76,7 +76,33 @@
 }
 
 .dark {
-  /* same — app is dark-only */
+  /* defaults above */
+}
+
+.light {
+  --bg-void: #f4f6fa;
+  --bg-panel: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #eef2f7;
+  --border-subtle: #d8dee8;
+  --border-active: #b8c2d2;
+  --accent-primary: #0284c7;
+  --accent-glow: rgba(2, 132, 199, 0.15);
+  --accent-gold: #b8860b;
+  --status-green: #059669;
+  --status-amber: #d97706;
+  --status-red: #dc2626;
+  --status-blue: #2563eb;
+  --status-ghost: #9ca3af;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+}
+
+.light body {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(15, 23, 42, 0.04) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.04) 0 1px, transparent 1px 32px);
 }
 
 @layer base {

@@ -58,12 +58,16 @@ function initials(name: string) {
   return (p[0][0] + p[p.length - 1][0]).toUpperCase();
 }
 
-export function Sidebar() {
+export function Sidebar({
+  onNavigate,
+  forceExpanded = false,
+}: { onNavigate?: () => void; forceExpanded?: boolean } = {}) {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsedState, setCollapsed] = useState(false);
+  const collapsed = forceExpanded ? false : collapsedState;
   const [role, setRole] = useState<UserRole>("crew");
   const [displayName, setDisplayName] = useState("Operator");
   const [orgName, setOrgName] = useState("SkyTrack");
@@ -177,6 +181,7 @@ export function Sidebar() {
               )}
               <Link
                 to={item.to}
+                onClick={onNavigate}
                 title={collapsed ? `${item.label} — ${item.description}` : item.description}
                 className="relative flex items-center gap-3 mx-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all group"
                 style={{
@@ -211,6 +216,7 @@ export function Sidebar() {
         {currentOrg?.role === "admin" && (
           <Link
             to={"/admin" as string}
+            onClick={onNavigate}
             title={collapsed ? "Admin — manage team & data" : "Manage team & data"}
             className="relative flex items-center gap-3 mx-2 mt-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
             style={{

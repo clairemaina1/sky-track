@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import appCss from "../styles.css?url";
 import leafletCss from "leaflet/dist/leaflet.css?url";
 import { useEventEngine } from "@/lib/eventEngine";
+import { useThemeAndLangSync } from "@/hooks/use-theme";
+import "@/lib/i18n";
 
 interface RouterContext { queryClient: QueryClient }
 
@@ -52,6 +54,7 @@ function EngineMount() { useEventEngine(); return null; }
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useThemeAndLangSync();
   return (
     <QueryClientProvider client={queryClient}>
       <EngineMount />
