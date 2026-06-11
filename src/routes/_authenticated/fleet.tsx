@@ -61,12 +61,7 @@ function mapAircraftRow(a: Aircraft): AircraftCardData {
   };
 }
 
-function resolveTier(): PlatformTier | "all" {
-  if (typeof window === "undefined") return "all";
-  const v = window.localStorage.getItem("skytrack.tier");
-  if (v === "flight_school" || v === "commercial_airline") return v;
-  return "all";
-}
+// Tier is read from the org row in the DB (see useResolvedTier); never localStorage.
 
 interface FleetSummary {
   total: number;
@@ -208,7 +203,7 @@ function FilterChip({
 }
 
 function FleetPage() {
-  const tier = resolveTier();
+  const tier = useResolvedTier();
   const [orgId] = useCurrentOrgId();
   const [filter, setFilter] = useState<FilterKey>("All");
 
