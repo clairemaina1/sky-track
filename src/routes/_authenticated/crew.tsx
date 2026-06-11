@@ -24,6 +24,7 @@ const FILTERS: { id: Filter; label: string }[] = [
 function CrewPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [addOpen, setAddOpen] = useState(false);
   const [orgId] = useCurrentOrgId();
 
   const { data: crew = [], isLoading } = useQuery({
