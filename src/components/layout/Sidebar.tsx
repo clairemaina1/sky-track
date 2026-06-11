@@ -15,8 +15,10 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
+import { useCurrentOrg } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 import {
@@ -65,6 +67,7 @@ function initials(name: string) {
 export function Sidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
+  const currentOrg = useCurrentOrg();
   const [collapsed, setCollapsed] = useState(false);
   const [role, setRole] = useState<UserRole>("crew");
   const [tier, setTier] = useState<PlatformTier>("commercial_airline");
@@ -212,6 +215,21 @@ export function Sidebar() {
             </div>
           );
         })}
+        {currentOrg?.role === "admin" && (
+          <Link
+            to={"/admin" as string}
+            title={collapsed ? "Admin — manage team & data" : "Manage team & data"}
+            className="relative flex items-center gap-3 mx-2 mt-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
+            style={{
+              background: path === "/admin" ? "var(--bg-elevated)" : "transparent",
+              color: path === "/admin" ? "var(--text-primary)" : "var(--text-secondary)",
+              borderRadius: 2,
+            }}
+          >
+            <Shield className="w-4 h-4 shrink-0" />
+            {!collapsed && <span className="flex-1 truncate">Admin</span>}
+          </Link>
+        )}
       </nav>
 
       {/* Tier badge */}
