@@ -27,6 +27,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "SkyTrack AAOS — Aviation Command Center" },
       { name: "description", content: "Agentic Aviation Operating System: real-time fleet, MRO, crew, disruption, routing and cargo command center." },
+      { property: "og:site_name", content: "SkyTrack AAOS" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -34,6 +37,28 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600&display=swap" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "SkyTrack AAOS",
+              description: "Agentic Aviation Operating System for fleet, MRO, crew, and operations.",
+              url: "/",
+            },
+            {
+              "@type": "WebSite",
+              name: "SkyTrack AAOS",
+              description: "Real-time aviation command center: fleet, MRO, crew, disruption, routing, and cargo.",
+              url: "/",
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
