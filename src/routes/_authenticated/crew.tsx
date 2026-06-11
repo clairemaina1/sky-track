@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { Users, AlertTriangle, ShieldCheck, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrgId } from "@/hooks/use-org";
 import { CrewMatcher } from "@/components/ui/CrewMatcher";
 import { CrewCard } from "@/components/crew/CrewCard";
 import type { Crew } from "@/lib/types";
