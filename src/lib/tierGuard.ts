@@ -17,6 +17,7 @@ export type NavItemId =
   | "disruption"
   | "routing"
   | "cargo"
+  | "carbon"
   | "training"
   | "scheduling"
   | "settings";
@@ -116,6 +117,16 @@ export const NAV_MANIFEST: NavItem[] = [
     badge: "AI",
   },
   {
+    id: "carbon",
+    label: "Carbon",
+    to: "/carbon",
+    icon: "Leaf",
+    description: "ICAO CO₂ emissions & SAF tracking",
+    allowedTiers: ["flight_school", "commercial_airline"],
+    minimumRole: "dispatcher",
+    badge: "ICAO",
+  },
+  {
     id: "training",
     label: "Training",
     to: "/training",
@@ -134,6 +145,16 @@ export const NAV_MANIFEST: NavItem[] = [
     description: "Instructor & aircraft booking",
     allowedTiers: ["flight_school"],
     minimumRole: "dispatcher",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    to: "/settings",
+    icon: "SlidersHorizontal",
+    description: "Organisation, account & compliance",
+    allowedTiers: ["flight_school", "commercial_airline"],
+    minimumRole: "crew",
+    groupStart: true,
   },
 ];
 

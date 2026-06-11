@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
@@ -170,21 +171,17 @@ function LoginPage() {
           >
             {/* Logo */}
             <div className="flex items-center gap-3 mb-7 sky-fade-2">
-              <div className="relative w-9 h-9 flex items-center justify-center">
-                <div
-                  className="absolute inset-0 rotate-45 border"
-                  style={{ borderColor: "var(--accent-primary)" }}
-                />
-                <div
-                  className="absolute inset-1.5 rotate-45"
-                  style={{
-                    background: "var(--accent-primary)",
-                    boxShadow: "0 0 12px var(--accent-glow)",
-                  }}
-                />
-              </div>
+              <SkytrackLogo size={44} showWordmark={false} />
               <div>
-                <div className="font-display font-bold text-xl tracking-[0.18em] text-primary-fg">
+                <div
+                  className="font-display font-bold text-xl tracking-[0.18em]"
+                  style={{
+                    background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
                   SKYTRACK
                 </div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg">
