@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const InputSchema = z.object({
   disruption: z.string().min(3).max(500),
@@ -24,8 +25,19 @@ export interface RecoveryPlan {
 }
 
 export const generateRecoveryPlan = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => InputSchema.parse(d))
-  .handler(async ({ data }): Promise<RecoveryPlan> => {
+  .handler(async ({ data, context }): Promise<RecoveryPlan> => {
+    // Authorization: only dispatcher/admin may invoke the AI gateway
+    const { supabase, userId } = context;
+    const [{ data: isAdmin }, { data: isDispatcher }] = await Promise.all([
+      supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+      supabase.rpc("has_role", { _user_id: userId, _role: "dispatcher" }),
+    ]);
+    if (!isAdmin && !isDispatcher) {
+      throw new Error("Forbidden: dispatcher role required.");
+    }
+
     const key = process.env.LOVABLE_API_KEY;
     if (!key) {
       throw new Error("LOVABLE_API_KEY is not configured.");
