@@ -181,6 +181,7 @@ export function Sidebar({
               )}
               <Link
                 to={item.to}
+                onClick={onNavigate}
                 title={collapsed ? `${item.label} — ${item.description}` : item.description}
                 className="relative flex items-center gap-3 mx-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all group"
                 style={{
