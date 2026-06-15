@@ -316,3 +316,29 @@ export function Sidebar({
     </aside>
   );
 }
+
+function ExtraLink({
+  to, icon: Icon, label, path, collapsed, onNavigate, accent,
+}: {
+  to: string; icon: LucideIcon; label: string; path: string; collapsed: boolean;
+  onNavigate?: () => void; accent?: string;
+}) {
+  const active = path === to || path.startsWith(to + "/");
+  return (
+    <Link
+      to={to}
+      onClick={onNavigate}
+      title={collapsed ? label : label}
+      className="relative flex items-center gap-3 mx-2 mt-1 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
+      style={{
+        background: active ? "var(--bg-elevated)" : "transparent",
+        color: accent ?? (active ? "var(--text-primary)" : "var(--text-secondary)"),
+        borderRadius: 2,
+      }}
+    >
+      <Icon className="w-4 h-4 shrink-0" />
+      {!collapsed && <span className="flex-1 truncate">{label}</span>}
+    </Link>
+  );
+}
+
