@@ -16,11 +16,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  BookOpen,
+  Inbox,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
+import { useCurrentCategory, useSuperAdmin, CATEGORY_LABEL, CATEGORY_ACCENT } from "@/hooks/use-category";
 import {
   getPermittedNavItems,
   getTierMeta,
