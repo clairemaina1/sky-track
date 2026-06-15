@@ -1,68 +1,74 @@
-This is a large amount of work — roughly 2–3 weeks of build if done all at once. I'll ship it in **4 phases** so you can test each one before the next lands, and so we don't break what's already working. After you approve, I'll start Phase 1 immediately and pause at each phase boundary for you to verify.
+# SkyTrack — Super-Admin Lockdown, Categories, Approvals & Logbook
 
-## Phase 1 — Live data + AOG persistence (Critical #1 + #2)
-The fastest, highest-impact wins. No schema changes, no auth changes.
+Big architectural pass. Four interlocking pieces — best to land together so RLS stays consistent.
 
-- Replace hardcoded arrays in **Fleet, MRO, Crew, Cargo** with live Supabase queries (TanStack Query + server functions, RLS-scoped to the signed-in user).
-- "Declare AOG" button → `UPDATE aircraft SET status='AOG'` + still fires the cascade (cargo notif + WO creation already in `eventEngine`).
-- Realtime: pages refresh automatically when any row changes (already partly wired in `eventEngine`).
-- Loading skeletons + empty states on every page.
+## 1. Super-admin (only you)
 
-## Phase 2 — Multi-tenancy / orgs (High #4)
-This is the biggest structural change and unblocks onboarding + admin.
+- New `app_role` value: `super_admin`. Hardcoded email in a migration seed grants it to your account on first sign-in (trigger on `auth.users` matches the email → inserts into `user_roles`).
+- **What email should I hardcode?** Need that before I run the migration.
+- Helper: `public.is_super_admin(uid) → bool` (SECURITY DEFINER). Used in every RLS policy as an unconditional bypass so you see everything across every org and every category.
+- A `/superadmin` route, hidden from everyone else, shows: all orgs, all users, all pending approvals, cross-org KPIs.
 
-- New `organizations` table (id, name, tier: `commercial` | `flight_school`, created_by).
-- New `organization_members` table (user_id, org_id, role).
-- Add `org_id` to: `aircraft`, `crew`, `flights`, `maintenance`, `cargo`, `alerts`.
-- Rewrite all RLS policies to scope by org membership (via security-definer `user_in_org()` function — no recursion).
-- Backfill existing 8 aircraft into a "SkyTrack Demo" org so nothing disappears.
-- Org switcher in the top bar (for users in multiple orgs).
+## 2. Sign-up & invitations
 
-## Phase 3 — Onboarding + Admin panel (Critical #3 + High #5)
-Depends on Phase 2.
+- Public sign-up stays **enabled** but every new `auth.users` row triggers a row in `public.pending_users` with `status='pending'`, no org, no role. They land on a "Waiting for approval" screen — zero data access (RLS denies everything until approved).
+- Two approval paths:
+  - You (super_admin) approve from `/superadmin` → assign org(s), category access, and role. Role is **permanent**; only you can change it afterwards (RLS on `user_roles` UPDATE/DELETE = super_admin only).
+  - You can also send invites directly (`invitations` table already exists) with org + category + role pre-baked.
+- Org admins can request to add a user, but the request goes to your queue — they cannot finalise role assignment.
 
-- **Onboarding wizard** after first signup: org name → tier (commercial / flight school) → add first aircraft (reg, type, base) → land on dashboard.
-- **Admin panel** at `/admin` (gated by `admin` role): list members, invite by email, promote/demote roles (admin / dispatcher / maintenance / crew), remove members.
-- Invites use signed tokens, no Supabase Auth Admin API exposure to client.
+## 3. Categories (multi-category orgs)
 
-## Phase 4 — Polish (High #6, #7 + Nice-to-haves #8, #9, #10)
-- Mobile sidebar: drawer below 768px, proper safe-area padding.
-- Wire `/settings` toggles (notification prefs, default airport, units).
-- Light theme + theme toggle (currently `--background` etc. are dark-locked — needs a light token set).
-- EN/FR i18n with `react-i18next`, language toggle in top bar.
-- PDF export (fleet snapshot, AOG compensation letter) via `pdf-lib`.
-- Branded SkyTrack auth email templates (signup, magic link, recovery).
+- New table `categories` with fixed rows: `flight_school`, `icao`, `airline`, `cargo`.
+- New table `organization_categories(org_id, category_id, brand_label)` — an org can hold any subset. `brand_label` lets each show as e.g. "SkyTrack Cargo".
+- New table `user_category_access(user_id, org_id, category_id)` — gates which categories a member sees. RLS on every domain table adds a category check (e.g. `flights` rows tagged with `category`; users only read rows whose category is in their access set).
+- Top bar gets a **category switcher** (only categories the user has access to). The whole shell rebrands: logo wordmark, nav manifest, accent color all swap per category. One org with multiple categories = one switcher; single-category orgs = no switcher, name is fixed.
+- `tierGuard.ts` is replaced by `categoryGuard.ts` with the four categories driving nav visibility. Existing `tier` column on `organizations` is kept for back-compat but no longer drives UI.
+- **Cross-tenant isolation:** every domain table already has `org_id` + RLS. I'll add a category column where missing (`flights`, `aircraft`, `cargo`, `maintenance`, etc.) and extend policies so a user can only read rows in `(their org) AND (a category they have access to)`. Super_admin bypasses both.
 
-## Technical notes
-- All server-side reads/writes use `createServerFn` + `requireSupabaseAuth` (per project conventions — no Edge Functions for app logic).
-- All new public-schema tables get explicit `GRANT` + RLS in the same migration.
-- Each phase ends with a working build; I'll verify before moving on.
-- I won't touch the auto-generated Supabase client files or `_authenticated/route.tsx`.
+## 4. Approval workflow (everything by default)
+
+- New columns on every user-writable table: `approval_status` ('pending'|'approved'|'rejected'), `approved_by`, `approved_at`, `created_by`.
+- RLS SELECT policy changes: non-admins see `approved` rows + their own pending rows. Org admins / higher roles see all pending in their org. Super_admin sees everything.
+- INSERT defaults `approval_status='pending'` unless the inserter is admin/super_admin (their inserts auto-approve).
+- A single `/approvals` inbox per role:
+  - Super_admin: every pending row, every org.
+  - Org admin: pending rows in their org.
+  - Higher-role-than-creator: pending rows from their subordinates (e.g. instructor approves student's logbook entry).
+- Approval/reject is one click → flips status, stamps `approved_by`.
+
+## 5. Pilot Logbook (Flight School category)
+
+- New table `pilot_logbook_entries`: date, aircraft_id, pic/sic, departure, arrival, route, total_time, day/night, IFR/VFR, sim time, instructor sign-off, remarks. Tied to org + flight_school category + user_id + `approval_status`.
+- New dashboard widget on Command (when active category = flight_school) showing recent entries + totals (last 30d, last 90d, total PIC, total night, etc.).
+- New route `/logbook` (flight_school only): table with inline editing (reuses `EditableCell`), "Add Entry" dialog, PDF export of last N entries.
+- Entries are pending until an instructor or admin signs them off.
+
+## Technical Plan
+
+**Migrations (single batch, in order):**
+1. Add `super_admin` enum + hardcoded-email seed trigger + `is_super_admin()` helper.
+2. `categories`, `organization_categories`, `user_category_access` tables + GRANTs + RLS.
+3. `pending_users` table + trigger on `auth.users` insert.
+4. Add `category_id`, `approval_status`, `approved_by`, `approved_at`, `created_by` to domain tables; backfill existing rows as `approved` so nothing disappears.
+5. Replace all existing RLS policies on domain tables with the new (org + category + approval + super_admin bypass) versions.
+6. `pilot_logbook_entries` table + RLS.
+7. Lock `user_roles` mutations to super_admin only.
+
+**Code:**
+- `src/lib/categoryGuard.ts` (replaces `tierGuard.ts` — old file deleted).
+- `src/hooks/use-category.ts` (current category + switcher).
+- `src/components/layout/CategorySwitcher.tsx` in TopBar.
+- `src/components/layout/Shell.tsx`, `Sidebar.tsx`, `SkytrackLogo.tsx`: brand per category.
+- `src/routes/_authenticated/superadmin.tsx` (gated to super_admin).
+- `src/routes/_authenticated/approvals.tsx`.
+- `src/routes/_authenticated/logbook.tsx` + dashboard widget.
+- `src/routes/_authenticated/pending.tsx` (the "waiting for approval" screen — `_authenticated/route.tsx` redirects here when the user has no approved access).
+- Updates to `_authenticated/route.tsx` gate to check approval status.
 
 ## What I need from you
-Just **"go"** to start Phase 1. I'll check in after each phase before continuing — if you want to skip something or change priority, that's the moment to say so.
 
-(Custom domain `skytrack.com` is almost certainly taken — we'll search for available `skytrack.*` variants after publishing, separately from this work.)
----
-## ✅ Phase 4 + 5 shipped
-- Light/dark theme tokens + toggle in TopBar (persisted)
-- EN/FR i18n via react-i18next + language toggle in TopBar
-- Mobile responsive: hamburger in TopBar opens slide-out Sidebar drawer below md
-- Fleet → "Export PDF" button using pdf-lib (org-branded snapshot)
-- Theme + lang sync hook mounted in __root
-- Branded auth emails: requires email domain — needs user to run email setup dialog first
+1. **Your email** for the super_admin seed (will be hardcoded in the migration).
+2. Confirm the four category brand labels exactly: "SkyTrack Flight Schools", "SkyTrack ICAO", "SkyTrack Airlines", "SkyTrack Cargo" — or your preferred wording.
 
----
-## ✅ Phase 6 + 7 shipped
-**Phase 6 — CRUD forms**
-- Add Aircraft dialog (Fleet)
-- Add Crew dialog (Crew)
-- Add Cargo Shipment dialog (Cargo)
-- All inserts org-scoped via RLS; React Query invalidation on success
-
-**Phase 7 — AI Copilot (SkyChat)**
-- Floating chat widget mounted in Shell, available on every page
-- Server route `/api/chat` streams via Lovable AI Gateway (`google/gemini-3-flash-preview`)
-- Role-aware system prompt (admin/dispatcher unlock `performanceOverview`)
-- RLS-scoped tool calls: `fleetSummary`, `crewSummary`, `cargoSummary`, `maintenanceSummary`, `performanceOverview`
-- Auth: caller sends Supabase JWT in Authorization header; server validates user & org membership
+Reply with those two and I'll run the migrations and ship the code in one pass.
