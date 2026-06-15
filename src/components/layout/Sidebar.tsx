@@ -70,6 +70,8 @@ export function Sidebar({
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
+  const [category] = useCurrentCategory();
+  const { data: isSuper = false } = useSuperAdmin();
   const [collapsedState, setCollapsed] = useState(false);
   const collapsed = forceExpanded ? false : collapsedState;
   const [role, setRole] = useState<UserRole>("crew");
