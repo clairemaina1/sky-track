@@ -1,24 +1,18 @@
-import { createFileRoute, redirect, Outlet } from "@tanstack/react-router";
+import { createFileRoute, redirect, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/components/layout/Shell";
 
-// Auth-protected layout.
-// `ssr: false` ensures no protected HTML is rendered server-side before the
-// session check runs — the SSR shell stays generic, RLS protects the data
-// API, and the gate below blocks the client render until the session is
-// validated. This addresses SERVER_FN_MISSING_AUTH by preventing any
-// authenticated-route HTML payload from leaking to anonymous viewers and
-// keeps every protected query/mutation behind the user's JWT + RLS.
+// Auth-protected layout with provisioning gate.
+// `ssr: false` keeps protected HTML out of SSR. The post-auth effect
+// checks if the user has been approved (org member or super_admin); if
+// not, they're routed to /pending with no data access.
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async ({ location }) => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      });
+      throw redirect({ to: "/login", search: { redirect: location.href } });
     }
   },
   component: AuthGate,
@@ -26,6 +20,10 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthGate() {
   const [authed, setAuthed] = useState(true);
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const [provisionChecked, setProvisionChecked] = useState(false);
+  const [provisioned, setProvisioned] = useState(true);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -37,7 +35,31 @@ function AuthGate() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user || !mounted) return;
+      const [{ data: roles }, { data: members }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", u.user.id),
+        supabase.from("organization_members").select("org_id").eq("user_id", u.user.id),
+      ]);
+      if (!mounted) return;
+      const isSuper = (roles ?? []).some((r: { role: string }) => r.role === "super_admin");
+      const ok = isSuper || (members ?? []).length > 0;
+      setProvisioned(ok);
+      setProvisionChecked(true);
+      if (!ok && path !== "/pending") {
+        navigate({ to: "/pending" });
+      } else if (ok && path === "/pending") {
+        navigate({ to: "/" });
+      }
+    })();
+    return () => { mounted = false; };
+  }, [path, navigate]);
+
   if (!authed) return null;
+  if (!provisionChecked) return null;
+  if (!provisioned && path !== "/pending") return null;
   return <Shell />;
 }
-
