@@ -1,10 +1,43 @@
 import { useEffect, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { Building2, Sun, Moon, Languages, Menu } from "lucide-react";
+import { Building2, Sun, Moon, Languages, Menu, Layers } from "lucide-react";
 import { CommandInput } from "@/components/ui/CommandInput";
 import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { useMyOrgs, useCurrentOrgId } from "@/hooks/use-org";
 import { useUiStore } from "@/stores/uiStore";
+import { useMyCategories, useCurrentCategory, CATEGORY_LABEL, CATEGORY_ACCENT, type SkytrackCategory } from "@/hooks/use-category";
+
+function CategorySwitcher() {
+  const [orgId] = useCurrentOrgId();
+  const { data: cats = [] } = useMyCategories(orgId);
+  const [current, setCurrent] = useCurrentCategory();
+  if (cats.length === 0) return null;
+  if (cats.length === 1) {
+    const c = cats[0];
+    return (
+      <div className="hidden md:flex items-center gap-1.5">
+        <Layers className="w-3.5 h-3.5" style={{ color: CATEGORY_ACCENT[c] }} />
+        <span className="font-display text-[11px] uppercase tracking-[0.14em]" style={{ color: CATEGORY_ACCENT[c] }}>
+          {CATEGORY_LABEL[c]}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className="hidden md:flex items-center gap-1.5">
+      <Layers className="w-3.5 h-3.5" style={{ color: current ? CATEGORY_ACCENT[current] : "currentColor" }} />
+      <select
+        value={current ?? ""}
+        onChange={(e) => setCurrent(e.target.value as SkytrackCategory)}
+        className="bg-transparent border rounded px-2 py-1 text-[11px] font-mono focus:outline-none"
+        style={{ borderColor: "var(--border-subtle)", color: current ? CATEGORY_ACCENT[current] : "currentColor" }}
+        aria-label="Switch category"
+      >
+        {cats.map((c) => <option key={c} value={c}>{CATEGORY_LABEL[c]}</option>)}
+      </select>
+    </div>
+  );
+}
 
 function OrgSwitcher() {
   const { data: orgs = [] } = useMyOrgs();
