@@ -123,6 +123,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <OrgSwitcher />
+        <CategorySwitcher />
         <div className="hidden md:block"><CommandInput /></div>
         <span className="hidden sm:inline font-mono text-xs text-secondary-fg" suppressHydrationWarning>{utc || "—"}</span>
         <ThemeToggle />
