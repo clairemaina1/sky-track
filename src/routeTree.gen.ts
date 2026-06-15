@@ -15,16 +15,20 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as GuideAircraftManagementRouteImport } from './routes/guide.aircraft-management'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
+import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticated/pending'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
+import { Route as AuthenticatedLogbookRouteImport } from './routes/_authenticated/logbook'
 import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
 import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authenticated/disruption'
 import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/crew'
 import { Route as AuthenticatedCargoRouteImport } from './routes/_authenticated/cargo'
 import { Route as AuthenticatedCarbonRouteImport } from './routes/_authenticated/carbon'
+import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedFlightsIdRouteImport } from './routes/_authenticated/flights.$id'
 import { Route as AuthenticatedFleetIdRouteImport } from './routes/_authenticated/fleet.$id'
@@ -59,6 +63,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
+  id: '/superadmin',
+  path: '/superadmin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -69,6 +78,11 @@ const AuthenticatedRoutingRoute = AuthenticatedRoutingRouteImport.update({
   path: '/routing',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPendingRoute = AuthenticatedPendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -77,6 +91,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
 const AuthenticatedMroRoute = AuthenticatedMroRouteImport.update({
   id: '/mro',
   path: '/mro',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedLogbookRoute = AuthenticatedLogbookRouteImport.update({
+  id: '/logbook',
+  path: '/logbook',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedFlightsRoute = AuthenticatedFlightsRouteImport.update({
@@ -109,6 +128,11 @@ const AuthenticatedCarbonRoute = AuthenticatedCarbonRouteImport.update({
   path: '/carbon',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -135,16 +159,20 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pending': typeof AuthenticatedPendingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/superadmin': typeof AuthenticatedSuperadminRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/crew/$id': typeof AuthenticatedCrewIdRoute
@@ -155,16 +183,20 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/pending': typeof AuthenticatedPendingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/superadmin': typeof AuthenticatedSuperadminRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/': typeof AuthenticatedIndexRoute
@@ -178,16 +210,20 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/carbon': typeof AuthenticatedCarbonRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
   '/_authenticated/crew': typeof AuthenticatedCrewRouteWithChildren
   '/_authenticated/disruption': typeof AuthenticatedDisruptionRoute
   '/_authenticated/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/_authenticated/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/_authenticated/logbook': typeof AuthenticatedLogbookRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -202,16 +238,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/admin'
+    | '/approvals'
     | '/carbon'
     | '/cargo'
     | '/crew'
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/logbook'
     | '/mro'
     | '/onboarding'
+    | '/pending'
     | '/routing'
     | '/settings'
+    | '/superadmin'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/crew/$id'
@@ -222,16 +262,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/admin'
+    | '/approvals'
     | '/carbon'
     | '/cargo'
     | '/crew'
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/logbook'
     | '/mro'
     | '/onboarding'
+    | '/pending'
     | '/routing'
     | '/settings'
+    | '/superadmin'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/'
@@ -244,16 +288,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/_authenticated/admin'
+    | '/_authenticated/approvals'
     | '/_authenticated/carbon'
     | '/_authenticated/cargo'
     | '/_authenticated/crew'
     | '/_authenticated/disruption'
     | '/_authenticated/fleet'
     | '/_authenticated/flights'
+    | '/_authenticated/logbook'
     | '/_authenticated/mro'
     | '/_authenticated/onboarding'
+    | '/_authenticated/pending'
     | '/_authenticated/routing'
     | '/_authenticated/settings'
+    | '/_authenticated/superadmin'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/_authenticated/'
@@ -314,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/superadmin': {
+      id: '/_authenticated/superadmin'
+      path: '/superadmin'
+      fullPath: '/superadmin'
+      preLoaderRoute: typeof AuthenticatedSuperadminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -328,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRoutingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pending': {
+      id: '/_authenticated/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof AuthenticatedPendingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -340,6 +402,13 @@ declare module '@tanstack/react-router' {
       path: '/mro'
       fullPath: '/mro'
       preLoaderRoute: typeof AuthenticatedMroRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/logbook': {
+      id: '/_authenticated/logbook'
+      path: '/logbook'
+      fullPath: '/logbook'
+      preLoaderRoute: typeof AuthenticatedLogbookRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/flights': {
@@ -382,6 +451,13 @@ declare module '@tanstack/react-router' {
       path: '/carbon'
       fullPath: '/carbon'
       preLoaderRoute: typeof AuthenticatedCarbonRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/approvals': {
+      id: '/_authenticated/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -450,31 +526,39 @@ const AuthenticatedFlightsRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedCarbonRoute: typeof AuthenticatedCarbonRoute
   AuthenticatedCargoRoute: typeof AuthenticatedCargoRoute
   AuthenticatedCrewRoute: typeof AuthenticatedCrewRouteWithChildren
   AuthenticatedDisruptionRoute: typeof AuthenticatedDisruptionRoute
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRouteWithChildren
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRouteWithChildren
+  AuthenticatedLogbookRoute: typeof AuthenticatedLogbookRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedCarbonRoute: AuthenticatedCarbonRoute,
   AuthenticatedCargoRoute: AuthenticatedCargoRoute,
   AuthenticatedCrewRoute: AuthenticatedCrewRouteWithChildren,
   AuthenticatedDisruptionRoute: AuthenticatedDisruptionRoute,
   AuthenticatedFleetRoute: AuthenticatedFleetRouteWithChildren,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRouteWithChildren,
+  AuthenticatedLogbookRoute: AuthenticatedLogbookRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedPendingRoute: AuthenticatedPendingRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 

@@ -17,7 +17,12 @@ export type Database = {
       aircraft: {
         Row: {
           airline: string
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           base_airport: string
+          category: Database["public"]["Enums"]["skytrack_category"] | null
+          created_by: string | null
           current_airport: string | null
           current_fuel_kg: number | null
           flight_hours_total: number
@@ -34,7 +39,12 @@ export type Database = {
         }
         Insert: {
           airline: string
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           base_airport: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
+          created_by?: string | null
           current_airport?: string | null
           current_fuel_kg?: number | null
           flight_hours_total?: number
@@ -51,7 +61,12 @@ export type Database = {
         }
         Update: {
           airline?: string
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           base_airport?: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
+          created_by?: string | null
           current_airport?: string | null
           current_fuel_kg?: number | null
           flight_hours_total?: number
@@ -80,8 +95,13 @@ export type Database = {
         Row: {
           acknowledged: boolean
           acknowledged_by: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           body: string
+          category: Database["public"]["Enums"]["skytrack_category"] | null
           created_at: string
+          created_by: string | null
           id: string
           org_id: string
           severity: string
@@ -93,8 +113,13 @@ export type Database = {
         Insert: {
           acknowledged?: boolean
           acknowledged_by?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           body: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           created_at?: string
+          created_by?: string | null
           id?: string
           org_id: string
           severity?: string
@@ -106,8 +131,13 @@ export type Database = {
         Update: {
           acknowledged?: boolean
           acknowledged_by?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           body?: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           created_at?: string
+          created_by?: string | null
           id?: string
           org_id?: string
           severity?: string
@@ -128,9 +158,14 @@ export type Database = {
       }
       cargo: {
         Row: {
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           awb_number: string
+          category: Database["public"]["Enums"]["skytrack_category"] | null
           commodity_type: string | null
           consignee: string
+          created_by: string | null
           delay_notified: boolean
           destination_icao: string
           flight_id: string | null
@@ -144,9 +179,14 @@ export type Database = {
           weight_kg: number
         }
         Insert: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           awb_number: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           commodity_type?: string | null
           consignee: string
+          created_by?: string | null
           delay_notified?: boolean
           destination_icao: string
           flight_id?: string | null
@@ -160,9 +200,14 @@ export type Database = {
           weight_kg: number
         }
         Update: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           awb_number?: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           commodity_type?: string | null
           consignee?: string
+          created_by?: string | null
           delay_notified?: boolean
           destination_icao?: string
           flight_id?: string | null
@@ -194,8 +239,13 @@ export type Database = {
       }
       crew: {
         Row: {
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           base_airport: string
+          category: Database["public"]["Enums"]["skytrack_category"] | null
           certifications: string[]
+          created_by: string | null
           current_assignment: string | null
           duty_time_remaining_hrs: number
           employee_id: string
@@ -209,8 +259,13 @@ export type Database = {
           total_flight_hours: number
         }
         Insert: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           base_airport: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           certifications?: string[]
+          created_by?: string | null
           current_assignment?: string | null
           duty_time_remaining_hrs?: number
           employee_id: string
@@ -224,8 +279,13 @@ export type Database = {
           total_flight_hours?: number
         }
         Update: {
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           base_airport?: string
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           certifications?: string[]
+          created_by?: string | null
           current_assignment?: string | null
           duty_time_remaining_hrs?: number
           employee_id?: string
@@ -260,7 +320,12 @@ export type Database = {
           actual_arrival: string | null
           actual_departure: string | null
           aircraft_id: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
+          category: Database["public"]["Enums"]["skytrack_category"] | null
           created_at: string
+          created_by: string | null
           delay_reason: string | null
           destination_icao: string
           flight_number: string
@@ -278,7 +343,12 @@ export type Database = {
           actual_arrival?: string | null
           actual_departure?: string | null
           aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           created_at?: string
+          created_by?: string | null
           delay_reason?: string | null
           destination_icao: string
           flight_number: string
@@ -296,7 +366,12 @@ export type Database = {
           actual_arrival?: string | null
           actual_departure?: string | null
           aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           created_at?: string
+          created_by?: string | null
           delay_reason?: string | null
           destination_icao?: string
           flight_number?: string
@@ -375,8 +450,13 @@ export type Database = {
         Row: {
           actual_hours: number | null
           aircraft_id: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           assigned_team: string | null
+          category: Database["public"]["Enums"]["skytrack_category"] | null
           completed_at: string | null
+          created_by: string | null
           description: string | null
           estimated_hours: number | null
           id: string
@@ -393,8 +473,13 @@ export type Database = {
         Insert: {
           actual_hours?: number | null
           aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_team?: string | null
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           completed_at?: string | null
+          created_by?: string | null
           description?: string | null
           estimated_hours?: number | null
           id?: string
@@ -411,8 +496,13 @@ export type Database = {
         Update: {
           actual_hours?: number | null
           aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           assigned_team?: string | null
+          category?: Database["public"]["Enums"]["skytrack_category"] | null
           completed_at?: string | null
+          created_by?: string | null
           description?: string | null
           estimated_hours?: number | null
           id?: string
@@ -436,6 +526,38 @@ export type Database = {
           },
           {
             foreignKeyName: "maintenance_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_categories: {
+        Row: {
+          brand_label: string
+          category: Database["public"]["Enums"]["skytrack_category"]
+          created_at: string
+          id: string
+          org_id: string
+        }
+        Insert: {
+          brand_label: string
+          category: Database["public"]["Enums"]["skytrack_category"]
+          created_at?: string
+          id?: string
+          org_id: string
+        }
+        Update: {
+          brand_label?: string
+          category?: Database["public"]["Enums"]["skytrack_category"]
+          created_at?: string
+          id?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_categories_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -499,6 +621,179 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_users: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          notes: string | null
+          requested_org: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id?: string
+          notes?: string | null
+          requested_org?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          notes?: string | null
+          requested_org?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pilot_logbook_entries: {
+        Row: {
+          aircraft_id: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
+          arrival_icao: string | null
+          created_at: string
+          created_by: string | null
+          departure_icao: string | null
+          flight_date: string
+          id: string
+          ifr_time_min: number
+          instructor_user_id: string | null
+          landings_day: number
+          landings_night: number
+          night_time_min: number
+          org_id: string
+          pic_name: string | null
+          pic_time_min: number
+          pilot_user_id: string
+          remarks: string | null
+          route: string | null
+          sic_name: string | null
+          sic_time_min: number
+          sim_time_min: number
+          total_time_min: number
+          updated_at: string
+        }
+        Insert: {
+          aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          arrival_icao?: string | null
+          created_at?: string
+          created_by?: string | null
+          departure_icao?: string | null
+          flight_date: string
+          id?: string
+          ifr_time_min?: number
+          instructor_user_id?: string | null
+          landings_day?: number
+          landings_night?: number
+          night_time_min?: number
+          org_id: string
+          pic_name?: string | null
+          pic_time_min?: number
+          pilot_user_id: string
+          remarks?: string | null
+          route?: string | null
+          sic_name?: string | null
+          sic_time_min?: number
+          sim_time_min?: number
+          total_time_min?: number
+          updated_at?: string
+        }
+        Update: {
+          aircraft_id?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          arrival_icao?: string | null
+          created_at?: string
+          created_by?: string | null
+          departure_icao?: string | null
+          flight_date?: string
+          id?: string
+          ifr_time_min?: number
+          instructor_user_id?: string | null
+          landings_day?: number
+          landings_night?: number
+          night_time_min?: number
+          org_id?: string
+          pic_name?: string | null
+          pic_time_min?: number
+          pilot_user_id?: string
+          remarks?: string | null
+          route?: string | null
+          sic_name?: string | null
+          sic_time_min?: number
+          sim_time_min?: number
+          total_time_min?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_logbook_entries_aircraft_id_fkey"
+            columns: ["aircraft_id"]
+            isOneToOne: false
+            referencedRelation: "aircraft"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pilot_logbook_entries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_category_access: {
+        Row: {
+          category: Database["public"]["Enums"]["skytrack_category"]
+          created_at: string
+          id: string
+          org_id: string
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["skytrack_category"]
+          created_at?: string
+          id?: string
+          org_id: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["skytrack_category"]
+          created_at?: string
+          id?: string
+          org_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_category_access_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -525,6 +820,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_pending_user: {
+        Args: {
+          _categories: Database["public"]["Enums"]["skytrack_category"][]
+          _org_id: string
+          _pending_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: undefined
+      }
       create_organization_with_admin: {
         Args: { _name: string; _tier: string }
         Returns: string
@@ -540,6 +844,15 @@ export type Database = {
         Args: { _email: string; _user_id: string }
         Returns: boolean
       }
+      is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      user_has_category: {
+        Args: {
+          _cat: Database["public"]["Enums"]["skytrack_category"]
+          _org: string
+          _uid: string
+        }
+        Returns: boolean
+      }
       user_has_org_role: {
         Args: {
           _org_id: string
@@ -552,6 +865,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      user_is_provisioned: { Args: { _uid: string }; Returns: boolean }
     }
     Enums: {
       aircraft_status:
@@ -561,7 +875,7 @@ export type Database = {
         | "Maintenance"
         | "Delayed"
         | "Standby"
-      app_role: "admin" | "dispatcher" | "crew" | "maintenance"
+      app_role: "admin" | "dispatcher" | "crew" | "maintenance" | "super_admin"
       cargo_status:
         | "Loaded"
         | "In-Transit"
@@ -575,6 +889,7 @@ export type Database = {
         | "Fatigue-Hold"
         | "In-Flight"
       org_tier: "commercial" | "flight_school"
+      skytrack_category: "flight_school" | "icao" | "airline" | "cargo"
       work_order_status:
         | "Open"
         | "In-Progress"
@@ -716,7 +1031,7 @@ export const Constants = {
         "Delayed",
         "Standby",
       ],
-      app_role: ["admin", "dispatcher", "crew", "maintenance"],
+      app_role: ["admin", "dispatcher", "crew", "maintenance", "super_admin"],
       cargo_status: [
         "Loaded",
         "In-Transit",
@@ -732,6 +1047,7 @@ export const Constants = {
         "In-Flight",
       ],
       org_tier: ["commercial", "flight_school"],
+      skytrack_category: ["flight_school", "icao", "airline", "cargo"],
       work_order_status: [
         "Open",
         "In-Progress",

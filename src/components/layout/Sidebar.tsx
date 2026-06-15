@@ -16,11 +16,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
+  BookOpen,
+  Inbox,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
+import { useCurrentCategory, useSuperAdmin, CATEGORY_LABEL, CATEGORY_ACCENT } from "@/hooks/use-category";
 import {
   getPermittedNavItems,
   getTierMeta,
@@ -66,6 +70,8 @@ export function Sidebar({
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
+  const [category] = useCurrentCategory();
+  const { data: isSuper = false } = useSuperAdmin();
   const [collapsedState, setCollapsed] = useState(false);
   const collapsed = forceExpanded ? false : collapsedState;
   const [role, setRole] = useState<UserRole>("crew");
@@ -229,7 +235,26 @@ export function Sidebar({
             {!collapsed && <span className="flex-1 truncate">Admin</span>}
           </Link>
         )}
+        {category === "flight_school" && (
+          <ExtraLink to="/logbook" icon={BookOpen} label="Logbook" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
+        {(currentOrg?.role === "admin" || isSuper) && (
+          <ExtraLink to="/approvals" icon={Inbox} label="Approvals" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
+        {isSuper && (
+          <ExtraLink to="/superadmin" icon={ShieldAlert} label="Super Admin" path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
+        )}
       </nav>
+
+      {/* Active category brand badge */}
+      {category && !collapsed && (
+        <div className="mx-2 mb-2 px-2.5 py-2 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
+          <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: CATEGORY_ACCENT[category] }}>
+            {CATEGORY_LABEL[category]}
+          </div>
+        </div>
+      )}
+
 
       {/* Tier badge */}
       <div
@@ -291,3 +316,29 @@ export function Sidebar({
     </aside>
   );
 }
+
+function ExtraLink({
+  to, icon: Icon, label, path, collapsed, onNavigate, accent,
+}: {
+  to: string; icon: LucideIcon; label: string; path: string; collapsed: boolean;
+  onNavigate?: () => void; accent?: string;
+}) {
+  const active = path === to || path.startsWith(to + "/");
+  return (
+    <Link
+      to={to}
+      onClick={onNavigate}
+      title={collapsed ? label : label}
+      className="relative flex items-center gap-3 mx-2 mt-1 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
+      style={{
+        background: active ? "var(--bg-elevated)" : "transparent",
+        color: accent ?? (active ? "var(--text-primary)" : "var(--text-secondary)"),
+        borderRadius: 2,
+      }}
+    >
+      <Icon className="w-4 h-4 shrink-0" />
+      {!collapsed && <span className="flex-1 truncate">{label}</span>}
+    </Link>
+  );
+}
+
