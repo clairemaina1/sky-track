@@ -235,7 +235,26 @@ export function Sidebar({
             {!collapsed && <span className="flex-1 truncate">Admin</span>}
           </Link>
         )}
+        {category === "flight_school" && (
+          <ExtraLink to="/logbook" icon={BookOpen} label="Logbook" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
+        {(currentOrg?.role === "admin" || isSuper) && (
+          <ExtraLink to="/approvals" icon={Inbox} label="Approvals" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
+        {isSuper && (
+          <ExtraLink to="/superadmin" icon={ShieldAlert} label="Super Admin" path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
+        )}
       </nav>
+
+      {/* Active category brand badge */}
+      {category && !collapsed && (
+        <div className="mx-2 mb-2 px-2.5 py-2 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
+          <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: CATEGORY_ACCENT[category] }}>
+            {CATEGORY_LABEL[category]}
+          </div>
+        </div>
+      )}
+
 
       {/* Tier badge */}
       <div
