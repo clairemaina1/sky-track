@@ -845,6 +845,8 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      org_admin_count: { Args: { _org_id: string }; Returns: number }
+      realtime_topic_org_id: { Args: { _topic: string }; Returns: string }
       user_has_category: {
         Args: {
           _cat: Database["public"]["Enums"]["skytrack_category"]
