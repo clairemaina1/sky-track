@@ -25,6 +25,8 @@ function AllocationPage() {
   const [orgId] = useCurrentOrgId();
   const qc = useQueryClient();
   const [selectedFlight, setSelectedFlight] = useState<string | null>(null);
+  const [windowMin, setWindowMin] = useState<number>(15);
+
 
   const flightsQ = useQuery({
     queryKey: ["allocation-flights", orgId],
