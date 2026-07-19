@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Bell, Check } from "lucide-react";
 import { useAlertStore } from "@/stores/alertStore";
 import type { Alert } from "@/lib/types";
+import { PushEnableButton } from "@/components/layout/PushEnableButton";
 
 function timeAgo(iso: string): string {
   const d = Date.now() - new Date(iso).getTime();
