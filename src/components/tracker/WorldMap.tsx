@@ -8,6 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { fetchLiveAircraft, type LiveAircraft } from "@/lib/opensky.functions";
 import { getWeatherTileUrl } from "@/lib/weather.functions";
 import { FIR_LINES, VOR_HUBS } from "./aviation-fir";
+import { NOTAMS, NOTAM_COLOR } from "./notams";
 
 const AIRPORT_COORDS: Record<string, [number, number]> = {
   HKJK: [-1.319, 36.927], HKWL: [-1.323, 36.806], HKNW: [-1.322, 36.815],
@@ -82,6 +83,7 @@ export default function WorldMap({
   const [showWeather, setShowWeather] = useState(false);
   const [showAdsb, setShowAdsb] = useState(true);
   const [showFir, setShowFir] = useState(true);
+  const [showNotams, setShowNotams] = useState(true);
 
   const fetchAdsb = useServerFn(fetchLiveAircraft);
   const fetchWx = useServerFn(getWeatherTileUrl);
@@ -201,6 +203,31 @@ export default function WorldMap({
           </LayerGroup>
         )}
 
+        {/* NOTAMs / airspace advisories */}
+        {showNotams && NOTAMS.map((n) => {
+          const color = NOTAM_COLOR[n.severity];
+          const radiusMeters = n.radiusNm * 1852;
+          return (
+            <CircleMarker
+              key={`notam-${n.id}`}
+              center={[n.lat, n.lon]}
+              radius={Math.max(6, Math.min(18, n.radiusNm / 2))}
+              pathOptions={{
+                color, fillColor: color, fillOpacity: 0.12,
+                weight: 1.4, dashArray: n.severity === "warning" ? undefined : "3 4",
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -6]} opacity={0.95}>
+                <div className="text-[10px] font-mono max-w-[220px]">
+                  <div className="font-bold" style={{ color }}>{n.id} · {n.icao} · {n.severity.toUpperCase()}</div>
+                  <div className="text-slate-500 uppercase tracking-wider text-[9px]">{n.category} · {n.radiusNm}NM · valid to {new Date(n.expires).toUTCString().slice(5, 22)}Z</div>
+                  <div className="mt-1 text-slate-300 whitespace-normal">{n.summary}</div>
+                </div>
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+
         {/* Scheduled/known routes */}
         {routes.map((r) => (
           <Polyline
@@ -303,6 +330,9 @@ export default function WorldMap({
         </button>
         <button className="weather-toggle-chip" data-active={showFir} onClick={() => setShowFir(v => !v)}>
           FIR / VOR
+        </button>
+        <button className="weather-toggle-chip" data-active={showNotams} onClick={() => setShowNotams(v => !v)}>
+          NOTAM {NOTAMS.length > 0 && `· ${NOTAMS.length}`}
         </button>
       </div>
 
