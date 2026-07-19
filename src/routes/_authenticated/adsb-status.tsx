@@ -3,7 +3,7 @@ import { pageHead } from "@/lib/routeHead";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-org";
-import { getLiveStates } from "@/lib/opensky.functions";
+import { fetchLiveAircraft } from "@/lib/opensky.functions";
 import { Radar, CheckCircle2, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/adsb-status")({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/adsb-status")({
   component: AdsbStatusPage,
 });
 
-type Row = { tail: string; model: string; hex: string | null; tracked: boolean; lastSeen?: string; alt?: number; gs?: number };
+type Row = { tail: string; model: string; hex: string | null; tracked: boolean; alt?: number | null; gs?: number | null };
 
 function AdsbStatusPage() {
   const org = useCurrentOrg();
@@ -27,18 +27,18 @@ function AdsbStatusPage() {
         .select("tail_number, model, icao24_hex")
         .eq("org_id", org.org_id);
       const list = ac ?? [];
-      let live: Awaited<ReturnType<typeof getLiveStates>> = { states: [], time: Date.now() / 1000 } as never;
-      try { live = await getLiveStates({ data: {} }); } catch { /* offline ok */ }
-      const map = new Map<string, (typeof live.states)[number]>();
-      for (const s of live.states ?? []) if (s.icao24) map.set(s.icao24.toLowerCase(), s);
+      let live: Awaited<ReturnType<typeof fetchLiveAircraft>> = [];
+      try { live = await fetchLiveAircraft(); } catch { /* offline ok */ }
+      const map = new Map<string, (typeof live)[number]>();
+      for (const s of live) if (s.icao24) map.set(s.icao24.toLowerCase(), s);
       const merged: Row[] = list.map((a) => {
         const h = (a.icao24_hex ?? "").toLowerCase();
         const s = h ? map.get(h) : undefined;
         return {
           tail: a.tail_number, model: a.model, hex: a.icao24_hex,
           tracked: !!s,
-          alt: s?.baro_altitude ?? undefined,
-          gs: s?.velocity ?? undefined,
+          alt: s?.alt_m ?? undefined,
+          gs: s?.velocity_ms ?? undefined,
         };
       });
       if (!cancel) { setRows(merged); setLoading(false); }
