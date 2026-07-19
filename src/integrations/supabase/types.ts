@@ -464,6 +464,7 @@ export type Database = {
           id: string
           org_id: string
           origin_icao: string
+          progress_pct: number | null
           route_waypoints: Json | null
           scheduled_arrival: string
           scheduled_departure: string
@@ -487,6 +488,7 @@ export type Database = {
           id?: string
           org_id: string
           origin_icao: string
+          progress_pct?: number | null
           route_waypoints?: Json | null
           scheduled_arrival: string
           scheduled_departure: string
@@ -510,6 +512,7 @@ export type Database = {
           id?: string
           org_id?: string
           origin_icao?: string
+          progress_pct?: number | null
           route_waypoints?: Json | null
           scheduled_arrival?: string
           scheduled_departure?: string
