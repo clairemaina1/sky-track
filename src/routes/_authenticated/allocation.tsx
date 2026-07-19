@@ -103,7 +103,7 @@ function AllocationPage() {
       const scored = [...pilots]
         .map((p) => ({
           p,
-          score: (p.base_station === currentFlight.origin ? 10 : 0) + Math.random() * 3,
+          score: (p.base_airport === currentFlight.origin_icao ? 10 : 0) + Math.random() * 3,
         }))
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
@@ -113,7 +113,7 @@ function AllocationPage() {
         org_id: orgId, flight_id: currentFlight.id, crew_id: p.id,
         layer: "pilot" as const, status: "offered" as const, rank: i + 1,
         expires_at: expiresAt,
-        reason: `Rank ${i + 1}: score=${score.toFixed(1)} · base=${p.base_station ?? "—"}`,
+        reason: `Rank ${i + 1}: score=${score.toFixed(1)} · base=${p.base_airport ?? "—"}`,
       }));
       if (rows.length) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
