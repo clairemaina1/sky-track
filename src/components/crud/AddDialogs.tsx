@@ -74,6 +74,11 @@ export function AddCrewDialog({ open, onClose }: { open: boolean; onClose: () =>
         <Field label="Certifications (comma-separated)">
           <input value={form.certifications} onChange={(e) => setForm({ ...form, certifications: e.target.value })} className="select-input" placeholder="A320, B737, ATPL" />
         </Field>
+        <Field label="Link user account (auth user UUID — optional)">
+          <input value={form.user_id} onChange={(e) => setForm({ ...form, user_id: e.target.value })} className="select-input" placeholder="00000000-0000-0000-0000-000000000000" />
+          <div className="text-[10px] text-secondary-fg mt-1">Enables push notifications for this crew member when they sign in.</div>
+        </Field>
+
         {err && <div className="text-xs text-red-400">{err}</div>}
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" onClick={onClose} className="btn-cmd-ghost">Cancel</button>
