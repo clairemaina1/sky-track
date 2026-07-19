@@ -112,9 +112,17 @@ Signed on behalf of Controller: ___________________________
         </section>
 
         <section className="border border-border-subtle bg-panel p-4 space-y-3">
-          <div className="flex items-center gap-2 text-primary-fg"><FileText className="w-4 h-4" /><span className="font-display uppercase text-xs tracking-widest">Documents</span></div>
+          <div className="flex items-center gap-2 text-primary-fg"><FileText className="w-4 h-4" /><span className="font-display uppercase text-xs tracking-widest">Documents & Evidence</span></div>
           <button onClick={downloadDPA} className="inline-flex items-center gap-2 text-xs text-accent hover:underline"><Download className="w-3.5 h-3.5" />Download DPA (draft)</button>
-          <p className="text-[11px] text-secondary-fg">SOC 2 Type I & ISO 27001 attestation packs available on request while certification is in progress.</p>
+          <button
+            onClick={exportSignedJsonl}
+            disabled={signing}
+            className="inline-flex items-center gap-2 text-xs text-accent hover:underline disabled:opacity-50"
+            title="Hash-chained JSONL of every audit event for this org, signed with HMAC-SHA256"
+          >
+            <Fingerprint className="w-3.5 h-3.5" />{signing ? "Signing…" : "Signed audit export (JSONL)"}
+          </button>
+          <p className="text-[11px] text-secondary-fg">The signed export is a hash-chained, HMAC-sealed evidence bundle — tamper-evident and admissible for SOC 2 / ISO 27001 auditors.</p>
         </section>
       </div>
 
