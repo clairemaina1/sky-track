@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Bell, Check } from "lucide-react";
 import { useAlertStore } from "@/stores/alertStore";
 import type { Alert } from "@/lib/types";
+import { PushEnableButton } from "@/components/layout/PushEnableButton";
 
 function timeAgo(iso: string): string {
   const d = Date.now() - new Date(iso).getTime();
@@ -87,6 +88,8 @@ export function NotificationCenter() {
               {mounted ? `${unread} unread · ${alerts.length} total` : "—"}
             </span>
           </div>
+
+          <PushEnableButton />
 
           <div className="max-h-[60vh] overflow-y-auto divide-y" style={{ borderColor: "var(--border-subtle)" }}>
             {recent.length === 0 && (

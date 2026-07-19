@@ -3,8 +3,10 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSuperAdmin } from "@/hooks/use-category";
-import { Shield, CheckCircle2, XCircle, Building2, Users2, Plane } from "lucide-react";
+import { Shield, CheckCircle2, XCircle, Building2, Users2, Plane, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { resetDemoOrg } from "@/lib/demo-reset.functions";
 
 export const Route = createFileRoute("/_authenticated/superadmin")({
   beforeLoad: async () => {
@@ -107,6 +109,7 @@ function SuperAdminPage() {
         <div className="grid md:grid-cols-2 gap-3">
           {orgs.map((o: { id: string; name: string; tier: string }) => {
             const count = members.filter((m: { org_id: string }) => m.org_id === o.id).length;
+            const isDemo = /demo/i.test(o.name);
             return (
               <div key={o.id} className="p-3 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 3 }}>
                 <div className="flex items-center justify-between">
@@ -114,6 +117,7 @@ function SuperAdminPage() {
                     <div className="font-display text-sm">{o.name}</div>
                     <div className="text-[10px] font-mono uppercase tracking-[0.14em] text-secondary-fg">{o.tier} · {count} members</div>
                   </div>
+                  {isDemo && <DemoResetButton orgId={o.id} orgName={o.name} />}
                 </div>
               </div>
             );
@@ -121,6 +125,35 @@ function SuperAdminPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function DemoResetButton({ orgId, orgName }: { orgId: string; orgName: string }) {
+  const reset = useServerFn(resetDemoOrg);
+  const qc = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      disabled={busy}
+      onClick={async () => {
+        if (!confirm(`Wipe ALL operational data from "${orgName}"?\nThis deletes aircraft, flights, crew, cargo, MRO, alerts, and notifications.\nThe organization and its members are preserved.`)) return;
+        setBusy(true);
+        try {
+          const r = await reset({ data: { orgId } });
+          const total = Object.values(r.deleted).reduce((s, n) => s + (n as number), 0);
+          toast.success(`Clean slate — deleted ${total} rows across ${Object.keys(r.deleted).length} tables`);
+          qc.invalidateQueries();
+        } catch (e) {
+          toast.error((e as Error).message);
+        } finally {
+          setBusy(false);
+        }
+      }}
+      className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-display uppercase tracking-[0.14em] border text-red-400 border-red-400/40 hover:bg-red-500/10"
+      title="Wipe operational data for a fresh customer demo"
+    >
+      <Trash2 className="w-3 h-3" /> {busy ? "Wiping…" : "Reset demo"}
+    </button>
   );
 }
 

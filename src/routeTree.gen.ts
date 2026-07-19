@@ -27,6 +27,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
 import { Route as AuthenticatedRegulatorRouteImport } from './routes/_authenticated/regulator'
 import { Route as AuthenticatedPredictiveRouteImport } from './routes/_authenticated/predictive'
+import { Route as AuthenticatedPitchRouteImport } from './routes/_authenticated/pitch'
 import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticated/pending'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
@@ -144,6 +145,11 @@ const AuthenticatedRegulatorRoute = AuthenticatedRegulatorRouteImport.update({
 const AuthenticatedPredictiveRoute = AuthenticatedPredictiveRouteImport.update({
   id: '/predictive',
   path: '/predictive',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPitchRoute = AuthenticatedPitchRouteImport.update({
+  id: '/pitch',
+  path: '/pitch',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPendingRoute = AuthenticatedPendingRouteImport.update({
@@ -321,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pending': typeof AuthenticatedPendingRoute
+  '/pitch': typeof AuthenticatedPitchRoute
   '/predictive': typeof AuthenticatedPredictiveRoute
   '/regulator': typeof AuthenticatedRegulatorRoute
   '/routing': typeof AuthenticatedRoutingRoute
@@ -367,6 +374,7 @@ export interface FileRoutesByTo {
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pending': typeof AuthenticatedPendingRoute
+  '/pitch': typeof AuthenticatedPitchRoute
   '/predictive': typeof AuthenticatedPredictiveRoute
   '/regulator': typeof AuthenticatedRegulatorRoute
   '/routing': typeof AuthenticatedRoutingRoute
@@ -416,6 +424,7 @@ export interface FileRoutesById {
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
+  '/_authenticated/pitch': typeof AuthenticatedPitchRoute
   '/_authenticated/predictive': typeof AuthenticatedPredictiveRoute
   '/_authenticated/regulator': typeof AuthenticatedRegulatorRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
@@ -466,6 +475,7 @@ export interface FileRouteTypes {
     | '/mro'
     | '/onboarding'
     | '/pending'
+    | '/pitch'
     | '/predictive'
     | '/regulator'
     | '/routing'
@@ -512,6 +522,7 @@ export interface FileRouteTypes {
     | '/mro'
     | '/onboarding'
     | '/pending'
+    | '/pitch'
     | '/predictive'
     | '/regulator'
     | '/routing'
@@ -560,6 +571,7 @@ export interface FileRouteTypes {
     | '/_authenticated/mro'
     | '/_authenticated/onboarding'
     | '/_authenticated/pending'
+    | '/_authenticated/pitch'
     | '/_authenticated/predictive'
     | '/_authenticated/regulator'
     | '/_authenticated/routing'
@@ -723,6 +735,13 @@ declare module '@tanstack/react-router' {
       path: '/predictive'
       fullPath: '/predictive'
       preLoaderRoute: typeof AuthenticatedPredictiveRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pitch': {
+      id: '/_authenticated/pitch'
+      path: '/pitch'
+      fullPath: '/pitch'
+      preLoaderRoute: typeof AuthenticatedPitchRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pending': {
@@ -978,6 +997,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
+  AuthenticatedPitchRoute: typeof AuthenticatedPitchRoute
   AuthenticatedPredictiveRoute: typeof AuthenticatedPredictiveRoute
   AuthenticatedRegulatorRoute: typeof AuthenticatedRegulatorRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
@@ -1010,6 +1030,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMroRoute: AuthenticatedMroRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPendingRoute: AuthenticatedPendingRoute,
+  AuthenticatedPitchRoute: AuthenticatedPitchRoute,
   AuthenticatedPredictiveRoute: AuthenticatedPredictiveRoute,
   AuthenticatedRegulatorRoute: AuthenticatedRegulatorRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,

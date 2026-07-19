@@ -3,8 +3,11 @@ import { pageHead } from "@/lib/routeHead";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-org";
-import { Shield, Download, MapPin, FileText } from "lucide-react";
+import { Shield, Download, MapPin, FileText, Fingerprint } from "lucide-react";
 import { toCSV } from "@/lib/csv";
+import { useServerFn } from "@tanstack/react-start";
+import { exportSignedAudit } from "@/lib/audit-export.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/audit")({
   head: pageHead({ title: "Audit & Compliance — SkyTrack", description: "Audit log, data residency, and DPA download.", path: "/audit" }),
@@ -17,6 +20,28 @@ function AuditPage() {
   const org = useCurrentOrg();
   const [rows, setRows] = useState<Row[]>([]);
   const [region, setRegion] = useState<string>("eu-west");
+  const [signing, setSigning] = useState(false);
+  const signedExport = useServerFn(exportSignedAudit);
+
+  async function exportSignedJsonl() {
+    if (!org?.org_id) return;
+    setSigning(true);
+    try {
+      const r = await signedExport({ data: { orgId: org.org_id, limit: 10000 } });
+      const blob = new Blob([r.jsonl], { type: "application/x-ndjson" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `skytrack-audit-signed-${new Date().toISOString().slice(0,10)}.jsonl`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${r.count} events · root ${r.root_hash.slice(0,10)}…`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSigning(false);
+    }
+  }
 
   useEffect(() => {
     if (!org?.org_id) return;
@@ -87,9 +112,17 @@ Signed on behalf of Controller: ___________________________
         </section>
 
         <section className="border border-border-subtle bg-panel p-4 space-y-3">
-          <div className="flex items-center gap-2 text-primary-fg"><FileText className="w-4 h-4" /><span className="font-display uppercase text-xs tracking-widest">Documents</span></div>
+          <div className="flex items-center gap-2 text-primary-fg"><FileText className="w-4 h-4" /><span className="font-display uppercase text-xs tracking-widest">Documents & Evidence</span></div>
           <button onClick={downloadDPA} className="inline-flex items-center gap-2 text-xs text-accent hover:underline"><Download className="w-3.5 h-3.5" />Download DPA (draft)</button>
-          <p className="text-[11px] text-secondary-fg">SOC 2 Type I & ISO 27001 attestation packs available on request while certification is in progress.</p>
+          <button
+            onClick={exportSignedJsonl}
+            disabled={signing}
+            className="inline-flex items-center gap-2 text-xs text-accent hover:underline disabled:opacity-50"
+            title="Hash-chained JSONL of every audit event for this org, signed with HMAC-SHA256"
+          >
+            <Fingerprint className="w-3.5 h-3.5" />{signing ? "Signing…" : "Signed audit export (JSONL)"}
+          </button>
+          <p className="text-[11px] text-secondary-fg">The signed export is a hash-chained, HMAC-sealed evidence bundle — tamper-evident and admissible for SOC 2 / ISO 27001 auditors.</p>
         </section>
       </div>
 

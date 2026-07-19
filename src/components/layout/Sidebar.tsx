@@ -31,6 +31,7 @@ import {
   Palette,
   CloudRain,
   FileText,
+  Presentation,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
@@ -273,6 +274,7 @@ export function Sidebar({
             <ExtraLink to="/import" icon={Upload} label={tr("import","CSV Import")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/branding" icon={Palette} label={tr("branding","Branding")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/audit" icon={FileText} label={tr("audit","Audit & DPA")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/pitch" icon={Presentation} label={tr("pitch","Sales One-Pager")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
           </>
