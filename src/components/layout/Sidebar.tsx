@@ -24,6 +24,8 @@ import {
   Radar,
   Flame,
   FlaskConical,
+  Handshake,
+  FileCheck2,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
@@ -250,6 +252,8 @@ export function Sidebar({
         <ExtraLink to="/tracker" icon={Radar} label={tr("tracker","Live Tracker")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         <ExtraLink to="/fuel-burn" icon={Flame} label={tr("fuel_burn","Fuel Burn")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         <ExtraLink to="/simulator" icon={FlaskConical} label={tr("simulator","What-If Sim")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        <ExtraLink to="/marketplace" icon={Handshake} label={tr("marketplace","Marketplace")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        <ExtraLink to="/regulator" icon={FileCheck2} label={tr("regulator","Regulator Export")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         {(role === "admin" || role === "dispatcher") && (
           <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}

@@ -713,6 +713,71 @@ export type Database = {
           },
         ]
       }
+      marketplace_listings: {
+        Row: {
+          aircraft_type: string | null
+          available_from: string | null
+          available_to: string | null
+          base_iata: string | null
+          contact_email: string | null
+          created_at: string
+          created_by: string | null
+          hourly_rate_usd: number | null
+          id: string
+          kind: string
+          notes: string | null
+          org_id: string
+          status: string
+          tail: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          aircraft_type?: string | null
+          available_from?: string | null
+          available_to?: string | null
+          base_iata?: string | null
+          contact_email?: string | null
+          created_at?: string
+          created_by?: string | null
+          hourly_rate_usd?: number | null
+          id?: string
+          kind: string
+          notes?: string | null
+          org_id: string
+          status?: string
+          tail?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          aircraft_type?: string | null
+          available_from?: string | null
+          available_to?: string | null
+          base_iata?: string | null
+          contact_email?: string | null
+          created_at?: string
+          created_by?: string | null
+          hourly_rate_usd?: number | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          org_id?: string
+          status?: string
+          tail?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           action_url: string | null
