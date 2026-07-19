@@ -19,6 +19,7 @@ import { Route as GuideAircraftManagementRouteImport } from './routes/guide.airc
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
+import { Route as AuthenticatedSimulatorRouteImport } from './routes/_authenticated/simulator'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
 import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticated/pending'
@@ -26,6 +27,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
 import { Route as AuthenticatedLogbookRouteImport } from './routes/_authenticated/logbook'
 import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated/integrations'
+import { Route as AuthenticatedFuelBurnRouteImport } from './routes/_authenticated/fuel-burn'
 import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
 import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authenticated/disruption'
@@ -92,6 +94,11 @@ const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
   path: '/superadmin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedSimulatorRoute = AuthenticatedSimulatorRouteImport.update({
+  id: '/simulator',
+  path: '/simulator',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -128,6 +135,11 @@ const AuthenticatedIntegrationsRoute =
     path: '/integrations',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedFuelBurnRoute = AuthenticatedFuelBurnRouteImport.update({
+  id: '/fuel-burn',
+  path: '/fuel-burn',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedFlightsRoute = AuthenticatedFlightsRouteImport.update({
   id: '/flights',
   path: '/flights',
@@ -229,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
@@ -236,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/pending': typeof AuthenticatedPendingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
@@ -262,6 +276,7 @@ export interface FileRoutesByTo {
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
@@ -269,6 +284,7 @@ export interface FileRoutesByTo {
   '/pending': typeof AuthenticatedPendingRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
@@ -298,6 +314,7 @@ export interface FileRoutesById {
   '/_authenticated/disruption': typeof AuthenticatedDisruptionRoute
   '/_authenticated/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/_authenticated/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/_authenticated/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/logbook': typeof AuthenticatedLogbookRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
@@ -305,6 +322,7 @@ export interface FileRoutesById {
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/simulator': typeof AuthenticatedSimulatorRoute
   '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
@@ -335,6 +353,7 @@ export interface FileRouteTypes {
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/fuel-burn'
     | '/integrations'
     | '/logbook'
     | '/mro'
@@ -342,6 +361,7 @@ export interface FileRouteTypes {
     | '/pending'
     | '/routing'
     | '/settings'
+    | '/simulator'
     | '/superadmin'
     | '/tracker'
     | '/api/chat'
@@ -368,6 +388,7 @@ export interface FileRouteTypes {
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/fuel-burn'
     | '/integrations'
     | '/logbook'
     | '/mro'
@@ -375,6 +396,7 @@ export interface FileRouteTypes {
     | '/pending'
     | '/routing'
     | '/settings'
+    | '/simulator'
     | '/superadmin'
     | '/tracker'
     | '/api/chat'
@@ -403,6 +425,7 @@ export interface FileRouteTypes {
     | '/_authenticated/disruption'
     | '/_authenticated/fleet'
     | '/_authenticated/flights'
+    | '/_authenticated/fuel-burn'
     | '/_authenticated/integrations'
     | '/_authenticated/logbook'
     | '/_authenticated/mro'
@@ -410,6 +433,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pending'
     | '/_authenticated/routing'
     | '/_authenticated/settings'
+    | '/_authenticated/simulator'
     | '/_authenticated/superadmin'
     | '/_authenticated/tracker'
     | '/api/chat'
@@ -508,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSuperadminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/simulator': {
+      id: '/_authenticated/simulator'
+      path: '/simulator'
+      fullPath: '/simulator'
+      preLoaderRoute: typeof AuthenticatedSimulatorRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/settings': {
       id: '/_authenticated/settings'
       path: '/settings'
@@ -555,6 +586,13 @@ declare module '@tanstack/react-router' {
       path: '/integrations'
       fullPath: '/integrations'
       preLoaderRoute: typeof AuthenticatedIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/fuel-burn': {
+      id: '/_authenticated/fuel-burn'
+      path: '/fuel-burn'
+      fullPath: '/fuel-burn'
+      preLoaderRoute: typeof AuthenticatedFuelBurnRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/flights': {
@@ -715,6 +753,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDisruptionRoute: typeof AuthenticatedDisruptionRoute
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRouteWithChildren
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRouteWithChildren
+  AuthenticatedFuelBurnRoute: typeof AuthenticatedFuelBurnRoute
   AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedLogbookRoute: typeof AuthenticatedLogbookRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
@@ -722,6 +761,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSimulatorRoute: typeof AuthenticatedSimulatorRoute
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
   AuthenticatedTrackerRoute: typeof AuthenticatedTrackerRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -737,6 +777,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDisruptionRoute: AuthenticatedDisruptionRoute,
   AuthenticatedFleetRoute: AuthenticatedFleetRouteWithChildren,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRouteWithChildren,
+  AuthenticatedFuelBurnRoute: AuthenticatedFuelBurnRoute,
   AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedLogbookRoute: AuthenticatedLogbookRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
@@ -744,6 +785,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPendingRoute: AuthenticatedPendingRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSimulatorRoute: AuthenticatedSimulatorRoute,
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
   AuthenticatedTrackerRoute: AuthenticatedTrackerRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
