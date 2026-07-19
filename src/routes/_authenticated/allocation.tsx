@@ -202,7 +202,7 @@ function AllocationPage() {
                     <Plane className="w-3.5 h-3.5 text-accent" />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm text-primary-fg font-medium">{f.flight_number}</div>
-                      <div className="text-[11px] text-secondary-fg truncate">{f.origin} → {f.destination}</div>
+                      <div className="text-[11px] text-secondary-fg truncate">{f.origin_icao} → {f.destination_icao}</div>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-secondary-fg" />
                   </button>
