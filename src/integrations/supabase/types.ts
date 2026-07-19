@@ -159,6 +159,50 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          entity: string | null
+          entity_id: string | null
+          id: string
+          ip: unknown
+          metadata: Json
+          org_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          ip?: unknown
+          metadata?: Json
+          org_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity?: string | null
+          entity_id?: string | null
+          id?: string
+          ip?: unknown
+          metadata?: Json
+          org_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cargo: {
         Row: {
           approval_status: string
@@ -897,26 +941,35 @@ export type Database = {
       }
       organizations: {
         Row: {
+          accent_color: string | null
           created_at: string
           created_by: string | null
           id: string
+          logo_url: string | null
           name: string
+          subdomain: string | null
           tier: Database["public"]["Enums"]["org_tier"]
           updated_at: string
         }
         Insert: {
+          accent_color?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          logo_url?: string | null
           name: string
+          subdomain?: string | null
           tier?: Database["public"]["Enums"]["org_tier"]
           updated_at?: string
         }
         Update: {
+          accent_color?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
+          subdomain?: string | null
           tier?: Database["public"]["Enums"]["org_tier"]
           updated_at?: string
         }
