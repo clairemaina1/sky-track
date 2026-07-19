@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Radar, ExternalLink, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSuperAdmin } from "@/hooks/use-category";
 import { pageHead } from "@/lib/routeHead";
+
+const WorldMap = lazy(() => import("@/components/tracker/WorldMap"));
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: pageHead({
