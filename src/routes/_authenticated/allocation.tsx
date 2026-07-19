@@ -33,12 +33,12 @@ function AllocationPage() {
     enabled: !!orgId,
     queryFn: async (): Promise<Flight[]> => {
       const { data } = await supabase
-        .from("flights").select("id, flight_number, origin, destination, status, scheduled_departure, aircraft_id")
+        .from("flights").select("id, flight_number, origin_icao, destination_icao, status, scheduled_departure, aircraft_id")
         .eq("org_id", orgId!)
-        .in("status", ["scheduled", "boarding", "delayed"])
+        .in("status", ["Scheduled", "Boarding", "Delayed"])
         .order("scheduled_departure", { ascending: true })
         .limit(50);
-      return (data ?? []) as Flight[];
+      return (data ?? []) as unknown as Flight[];
     },
   });
 
@@ -47,10 +47,10 @@ function AllocationPage() {
     enabled: !!orgId,
     queryFn: async (): Promise<Crew[]> => {
       const { data } = await supabase
-        .from("crew").select("id, full_name, role, status, base_station")
+        .from("crew").select("id, full_name, role, status, base_airport")
         .eq("org_id", orgId!)
-        .eq("status", "available");
-      return (data ?? []) as Crew[];
+        .in("status", ["On-Duty", "Off-Duty"]);
+      return (data ?? []) as unknown as Crew[];
     },
   });
 
