@@ -206,7 +206,6 @@ export default function WorldMap({
         {/* NOTAMs / airspace advisories */}
         {showNotams && NOTAMS.map((n) => {
           const color = NOTAM_COLOR[n.severity];
-          const radiusMeters = n.radiusNm * 1852;
           return (
             <CircleMarker
               key={`notam-${n.id}`}
