@@ -256,31 +256,49 @@ function AllocationPage() {
 
               {/* Layer B — Pilots */}
               <section>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-accent" />
                     <h2 className="font-display uppercase text-xs tracking-[0.14em] text-primary-fg">
                       Layer B · Pilot command-choice
                     </h2>
                   </div>
-                  <button
-                    onClick={() => offerPilots.mutate()}
-                    disabled={offerPilots.isPending || assignments.some((a) => a.layer === "pilot")}
-                    className="btn-cmd text-[10px]"
-                  >
-                    {offerPilots.isPending ? "Sending offers…" : "Send bid-offer to top 3 pilots"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-secondary-fg flex items-center gap-1.5">
+                      Response window
+                      <input
+                        type="number"
+                        min={1}
+                        max={240}
+                        value={windowMin}
+                        onChange={(e) => setWindowMin(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-14 px-1.5 py-0.5 text-xs bg-transparent border rounded text-primary-fg"
+                        style={{ borderColor: "var(--border-subtle)" }}
+                      />
+                      min
+                    </label>
+                    <button
+                      onClick={() => offerPilots.mutate()}
+                      disabled={offerPilots.isPending || assignments.some((a) => a.layer === "pilot")}
+                      className="btn-cmd text-[10px]"
+                    >
+                      {offerPilots.isPending ? "Sending offers…" : `Send bid-offer (${windowMin}m)`}
+                    </button>
+                  </div>
                 </div>
                 <p className="text-[11px] text-secondary-fg mb-2">
-                  Behind-the-scenes filter: type ratings, FDP limits, rest, currency, pairing preferences. 15-minute countdown per rank; auto-cascades on decline or expiry.
+                  Behind-the-scenes filter: type ratings, FDP limits, rest, currency, pairing preferences. Countdown auto-declines and cascades to the next-ranked pilot when it hits zero.
                 </p>
                 <PilotOfferRows
                   rows={assignments.filter((a) => a.layer === "pilot")}
                   nameOf={nameOf}
                   onAccept={(id) => updateStatus.mutate({ id, status: "accepted" })}
                   onDecline={(a) => cascade.mutate(a)}
+                  onExtend={(id) => extend.mutate({ id, minutes: windowMin })}
+                  onExpire={(a) => cascade.mutate(a)}
                 />
               </section>
+
             </div>
           )}
         </div>
