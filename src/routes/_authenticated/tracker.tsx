@@ -18,15 +18,6 @@ export const Route = createFileRoute("/_authenticated/tracker")({
   component: TrackerPage,
 });
 
-const AIRPORT_COORDS: Record<string, [number, number]> = {
-  HKJK: [-1.319, 36.927], HKWL: [-1.323, 36.806], HKNW: [-1.322, 36.815],
-  HTDA: [-6.878, 39.202], HAAB: [8.978, 38.799], FYYY: [-22.48, 17.47],
-  FAOR: [-26.139, 28.246], DNMM: [6.577, 3.321], DIAP: [5.254, -3.927],
-  EGLL: [51.477, -0.461], LFPG: [49.009, 2.548], OMDB: [25.253, 55.365],
-  RJTT: [35.549, 139.78], KLAX: [33.942, -118.408], KJFK: [40.64, -73.779],
-  YSSY: [-33.946, 151.177], HRYR: [-1.9686, 30.1395], HUEN: [0.0424, 32.4435],
-  HSSS: [15.5895, 32.5532], FZAA: [-4.3858, 15.4446],
-};
 
 // Deterministic vivid color per org id — golden-angle hue spacing so
 // adjacent orgs (alphabetically or by insertion) never collide visually.
