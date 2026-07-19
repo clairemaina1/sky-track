@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
@@ -31,7 +31,6 @@ type UIState = "idle" | "loading" | "success" | "error";
 type Mode = "magic" | "signin" | "signup";
 
 function LoginPage() {
-  const nav = useNavigate();
   const { next } = Route.useSearch();
   const target = safeNext(next);
   const [email, setEmail] = useState("");
