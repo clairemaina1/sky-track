@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrustRouteImport } from './routes/trust'
+import { Route as StatusRouteImport } from './routes/status'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
@@ -22,9 +23,11 @@ import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authentic
 import { Route as AuthenticatedSimulatorRouteImport } from './routes/_authenticated/simulator'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
+import { Route as AuthenticatedRegulatorRouteImport } from './routes/_authenticated/regulator'
 import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticated/pending'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
+import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated/marketplace'
 import { Route as AuthenticatedLogbookRouteImport } from './routes/_authenticated/logbook'
 import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated/integrations'
 import { Route as AuthenticatedFuelBurnRouteImport } from './routes/_authenticated/fuel-burn'
@@ -48,6 +51,11 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
   path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -109,6 +117,11 @@ const AuthenticatedRoutingRoute = AuthenticatedRoutingRouteImport.update({
   path: '/routing',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedRegulatorRoute = AuthenticatedRegulatorRouteImport.update({
+  id: '/regulator',
+  path: '/regulator',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPendingRoute = AuthenticatedPendingRouteImport.update({
   id: '/pending',
   path: '/pending',
@@ -124,6 +137,12 @@ const AuthenticatedMroRoute = AuthenticatedMroRouteImport.update({
   path: '/mro',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMarketplaceRoute =
+  AuthenticatedMarketplaceRouteImport.update({
+    id: '/marketplace',
+    path: '/marketplace',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedLogbookRoute = AuthenticatedLogbookRouteImport.update({
   id: '/logbook',
   path: '/logbook',
@@ -229,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/trust': typeof TrustRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -244,9 +264,11 @@ export interface FileRoutesByFullPath {
   '/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
+  '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pending': typeof AuthenticatedPendingRoute
+  '/regulator': typeof AuthenticatedRegulatorRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/simulator': typeof AuthenticatedSimulatorRoute
@@ -264,6 +286,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/trust': typeof TrustRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -279,9 +302,11 @@ export interface FileRoutesByTo {
   '/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
+  '/marketplace': typeof AuthenticatedMarketplaceRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/pending': typeof AuthenticatedPendingRoute
+  '/regulator': typeof AuthenticatedRegulatorRoute
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/simulator': typeof AuthenticatedSimulatorRoute
@@ -302,6 +327,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/status': typeof StatusRoute
   '/trust': typeof TrustRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -317,9 +343,11 @@ export interface FileRoutesById {
   '/_authenticated/fuel-burn': typeof AuthenticatedFuelBurnRoute
   '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/logbook': typeof AuthenticatedLogbookRoute
+  '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
+  '/_authenticated/regulator': typeof AuthenticatedRegulatorRoute
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/simulator': typeof AuthenticatedSimulatorRoute
@@ -341,6 +369,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/sitemap.xml'
+    | '/status'
     | '/trust'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -356,9 +385,11 @@ export interface FileRouteTypes {
     | '/fuel-burn'
     | '/integrations'
     | '/logbook'
+    | '/marketplace'
     | '/mro'
     | '/onboarding'
     | '/pending'
+    | '/regulator'
     | '/routing'
     | '/settings'
     | '/simulator'
@@ -376,6 +407,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/sitemap.xml'
+    | '/status'
     | '/trust'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -391,9 +423,11 @@ export interface FileRouteTypes {
     | '/fuel-burn'
     | '/integrations'
     | '/logbook'
+    | '/marketplace'
     | '/mro'
     | '/onboarding'
     | '/pending'
+    | '/regulator'
     | '/routing'
     | '/settings'
     | '/simulator'
@@ -413,6 +447,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/sitemap.xml'
+    | '/status'
     | '/trust'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -428,9 +463,11 @@ export interface FileRouteTypes {
     | '/_authenticated/fuel-burn'
     | '/_authenticated/integrations'
     | '/_authenticated/logbook'
+    | '/_authenticated/marketplace'
     | '/_authenticated/mro'
     | '/_authenticated/onboarding'
     | '/_authenticated/pending'
+    | '/_authenticated/regulator'
     | '/_authenticated/routing'
     | '/_authenticated/settings'
     | '/_authenticated/simulator'
@@ -451,6 +488,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StatusRoute: typeof StatusRoute
   TrustRoute: typeof TrustRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -467,6 +505,13 @@ declare module '@tanstack/react-router' {
       path: '/trust'
       fullPath: '/trust'
       preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -553,6 +598,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRoutingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/regulator': {
+      id: '/_authenticated/regulator'
+      path: '/regulator'
+      fullPath: '/regulator'
+      preLoaderRoute: typeof AuthenticatedRegulatorRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/pending': {
       id: '/_authenticated/pending'
       path: '/pending'
@@ -572,6 +624,13 @@ declare module '@tanstack/react-router' {
       path: '/mro'
       fullPath: '/mro'
       preLoaderRoute: typeof AuthenticatedMroRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/marketplace': {
+      id: '/_authenticated/marketplace'
+      path: '/marketplace'
+      fullPath: '/marketplace'
+      preLoaderRoute: typeof AuthenticatedMarketplaceRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/logbook': {
@@ -756,9 +815,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFuelBurnRoute: typeof AuthenticatedFuelBurnRoute
   AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedLogbookRoute: typeof AuthenticatedLogbookRoute
+  AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
+  AuthenticatedRegulatorRoute: typeof AuthenticatedRegulatorRoute
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSimulatorRoute: typeof AuthenticatedSimulatorRoute
@@ -780,9 +841,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFuelBurnRoute: AuthenticatedFuelBurnRoute,
   AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedLogbookRoute: AuthenticatedLogbookRoute,
+  AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPendingRoute: AuthenticatedPendingRoute,
+  AuthenticatedRegulatorRoute: AuthenticatedRegulatorRoute,
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSimulatorRoute: AuthenticatedSimulatorRoute,
@@ -800,6 +863,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   McpRoute: McpRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StatusRoute: StatusRoute,
   TrustRoute: TrustRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
