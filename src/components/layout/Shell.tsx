@@ -6,6 +6,8 @@ import { AlertToast } from "@/components/ui/AlertToast";
 import { OnboardingGate } from "./OnboardingGate";
 import { useUiStore } from "@/stores/uiStore";
 import { SkyChat } from "@/components/ai/SkyChat";
+import { PushNotifier } from "./PushNotifier";
+
 
 export function Shell() {
   const mobileOpen = useUiStore((s) => s.mobileNavOpen);
@@ -45,7 +47,9 @@ export function Shell() {
       </div>
       <StatusStrip />
       <AlertToast />
+      <PushNotifier />
       <SkyChat />
+
     </div>
   );
 }

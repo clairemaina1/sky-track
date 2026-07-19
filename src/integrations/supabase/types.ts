@@ -257,6 +257,7 @@ export type Database = {
           role: string
           status: Database["public"]["Enums"]["crew_status"]
           total_flight_hours: number
+          user_id: string | null
         }
         Insert: {
           approval_status?: string
@@ -277,6 +278,7 @@ export type Database = {
           role: string
           status?: Database["public"]["Enums"]["crew_status"]
           total_flight_hours?: number
+          user_id?: string | null
         }
         Update: {
           approval_status?: string
@@ -297,6 +299,7 @@ export type Database = {
           role?: string
           status?: Database["public"]["Enums"]["crew_status"]
           total_flight_hours?: number
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -704,6 +707,62 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          action_url: string | null
+          body: string | null
+          category: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          metadata: Json
+          org_id: string
+          priority: Database["public"]["Enums"]["notification_priority"]
+          read_at: string | null
+          target_role: Database["public"]["Enums"]["app_role"] | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          action_url?: string | null
+          body?: string | null
+          category?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          org_id: string
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          target_role?: Database["public"]["Enums"]["app_role"] | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          action_url?: string | null
+          body?: string | null
+          category?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          metadata?: Json
+          org_id?: string
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          target_role?: Database["public"]["Enums"]["app_role"] | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_categories: {
         Row: {
           brand_label: string
@@ -1008,6 +1067,20 @@ export type Database = {
         Args: { _crew_id: string; _days?: number }
         Returns: boolean
       }
+      emit_notification: {
+        Args: {
+          _action_url: string
+          _body: string
+          _category: string
+          _metadata?: Json
+          _org_id: string
+          _priority: Database["public"]["Enums"]["notification_priority"]
+          _target_role: Database["public"]["Enums"]["app_role"]
+          _title: string
+          _user_id: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1074,6 +1147,7 @@ export type Database = {
         | "On-Leave"
         | "Fatigue-Hold"
         | "In-Flight"
+      notification_priority: "critical" | "high" | "normal" | "low"
       org_tier: "commercial" | "flight_school"
       skytrack_category: "flight_school" | "icao" | "airline" | "cargo"
       work_order_status:
@@ -1242,6 +1316,7 @@ export const Constants = {
         "Fatigue-Hold",
         "In-Flight",
       ],
+      notification_priority: ["critical", "high", "normal", "low"],
       org_tier: ["commercial", "flight_school"],
       skytrack_category: ["flight_school", "icao", "airline", "cargo"],
       work_order_status: [
