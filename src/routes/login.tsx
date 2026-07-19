@@ -5,6 +5,9 @@ import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : "",
+  }),
   head: () => ({
     meta: [
       { title: "Sign In — SkyTrack AAOS" },
@@ -17,6 +20,12 @@ export const Route = createFileRoute("/login")({
     links: [{ rel: "canonical", href: "/login" }],
   }),
 });
+
+function safeNext(next: string): string {
+  // Same-origin relative path only
+  if (!next.startsWith("/") || next.startsWith("//")) return "/";
+  return next;
+}
 
 type UIState = "idle" | "loading" | "success" | "error";
 type Mode = "magic" | "signin" | "signup";
