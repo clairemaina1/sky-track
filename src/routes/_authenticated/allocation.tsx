@@ -142,7 +142,7 @@ function AllocationPage() {
       await updateStatus.mutateAsync({ id: from.id, status: "cascaded" });
       const next = assignments.find((a) => a.layer === "pilot" && a.rank === from.rank + 1);
       if (next) {
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+        const expiresAt = new Date(Date.now() + Math.max(1, windowMin) * 60 * 1000).toISOString();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase as any)
           .from("crew_assignments")
@@ -152,6 +152,18 @@ function AllocationPage() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["allocation-assignments"] }),
   });
+
+  const extend = useMutation({
+    mutationFn: async (payload: { id: string; minutes: number }) => {
+      const expiresAt = new Date(Date.now() + payload.minutes * 60 * 1000).toISOString();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from("crew_assignments").update({ expires_at: expiresAt }).eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["allocation-assignments"] }),
+  });
+
 
   const nameOf = (id: string) => crew.find((c) => c.id === id)?.full_name ?? id.slice(0, 8);
 
