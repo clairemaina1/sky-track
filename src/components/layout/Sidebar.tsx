@@ -27,6 +27,10 @@ import {
   Handshake,
   FileCheck2,
   Activity,
+  Upload,
+  Palette,
+  CloudRain,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
@@ -262,8 +266,13 @@ export function Sidebar({
         {category === "flight_school" && (
           <ExtraLink to="/logbook" icon={BookOpen} label={tr("logbook","Logbook")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
+        <ExtraLink to="/adsb-status" icon={Radar} label={tr("adsb","ADS-B Status")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        <ExtraLink to="/weather-risk" icon={CloudRain} label={tr("wx_risk","Weather Risk")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         {(currentOrg?.role === "admin" || isSuper) && (
           <>
+            <ExtraLink to="/import" icon={Upload} label={tr("import","CSV Import")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/branding" icon={Palette} label={tr("branding","Branding")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/audit" icon={FileText} label={tr("audit","Audit & DPA")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
             <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
           </>
