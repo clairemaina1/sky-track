@@ -107,7 +107,8 @@ function AllocationPage() {
         }))
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + Math.max(1, windowMin) * 60 * 1000).toISOString();
+
       const rows = scored.map(({ p, score }, i) => ({
         org_id: orgId, flight_id: currentFlight.id, crew_id: p.id,
         layer: "pilot" as const, status: "offered" as const, rank: i + 1,
