@@ -135,7 +135,11 @@ function TrackerPage() {
         </div>
       </header>
 
-      <Radar2DMap flights={visibleFlights} selectedFlightId={selectedFlightId} />
+      <ClientOnly fallback={<div className="h-[520px] rounded-2xl bg-slate-950/60 animate-pulse" />}>
+        <Suspense fallback={<div className="h-[520px] rounded-2xl bg-slate-950/60 animate-pulse" />}>
+          <WorldMap flights={visibleFlights} selectedFlightId={selectedFlightId} onSelect={setSelectedFlightId} />
+        </Suspense>
+      </ClientOnly>
 
       {orgs.length > 0 && (
         <section
