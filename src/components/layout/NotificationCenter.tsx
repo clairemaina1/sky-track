@@ -89,6 +89,8 @@ export function NotificationCenter() {
             </span>
           </div>
 
+          <PushEnableButton />
+
           <div className="max-h-[60vh] overflow-y-auto divide-y" style={{ borderColor: "var(--border-subtle)" }}>
             {recent.length === 0 && (
               <div className="px-6 py-10 text-center text-xs text-secondary-fg">
