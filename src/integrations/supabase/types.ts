@@ -28,6 +28,7 @@ export type Database = {
           flight_hours_total: number
           fuel_capacity_kg: number | null
           health_score: number
+          icao24_hex: string | null
           id: string
           last_updated: string
           metadata: Json | null
@@ -50,6 +51,7 @@ export type Database = {
           flight_hours_total?: number
           fuel_capacity_kg?: number | null
           health_score?: number
+          icao24_hex?: string | null
           id?: string
           last_updated?: string
           metadata?: Json | null
@@ -72,6 +74,7 @@ export type Database = {
           flight_hours_total?: number
           fuel_capacity_kg?: number | null
           health_score?: number
+          icao24_hex?: string | null
           id?: string
           last_updated?: string
           metadata?: Json | null
