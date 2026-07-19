@@ -17,7 +17,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as GuideAircraftManagementRouteImport } from './routes/guide.aircraft-management'
+import { Route as DocsApiRouteImport } from './routes/docs.api'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedWeatherRiskRouteImport } from './routes/_authenticated/weather-risk'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
 import { Route as AuthenticatedSimulatorRouteImport } from './routes/_authenticated/simulator'
@@ -31,6 +33,7 @@ import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mr
 import { Route as AuthenticatedMarketplaceRouteImport } from './routes/_authenticated/marketplace'
 import { Route as AuthenticatedLogbookRouteImport } from './routes/_authenticated/logbook'
 import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated/integrations'
+import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedFuelBurnRouteImport } from './routes/_authenticated/fuel-burn'
 import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
@@ -38,8 +41,11 @@ import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/crew'
 import { Route as AuthenticatedCargoRouteImport } from './routes/_authenticated/cargo'
 import { Route as AuthenticatedCarbonRouteImport } from './routes/_authenticated/carbon'
+import { Route as AuthenticatedBrandingRouteImport } from './routes/_authenticated/branding'
+import { Route as AuthenticatedAuditRouteImport } from './routes/_authenticated/audit'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
 import { Route as AuthenticatedAllocationRouteImport } from './routes/_authenticated/allocation'
+import { Route as AuthenticatedAdsbStatusRouteImport } from './routes/_authenticated/adsb-status'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -48,6 +54,7 @@ import { Route as AuthenticatedFleetIdRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCrewIdRouteImport } from './routes/_authenticated/crew.$id'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as ApiPublicV1OpenapiJsonRouteImport } from './routes/api/public/v1.openapi.json'
 
 const TrustRoute = TrustRouteImport.update({
   id: '/trust',
@@ -88,11 +95,22 @@ const GuideAircraftManagementRoute = GuideAircraftManagementRouteImport.update({
   path: '/guide/aircraft-management',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsApiRoute = DocsApiRouteImport.update({
+  id: '/docs/api',
+  path: '/docs/api',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedWeatherRiskRoute =
+  AuthenticatedWeatherRiskRouteImport.update({
+    id: '/weather-risk',
+    path: '/weather-risk',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedTrackerRoute = AuthenticatedTrackerRouteImport.update({
   id: '/tracker',
   path: '/tracker',
@@ -160,6 +178,11 @@ const AuthenticatedIntegrationsRoute =
     path: '/integrations',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedFuelBurnRoute = AuthenticatedFuelBurnRouteImport.update({
   id: '/fuel-burn',
   path: '/fuel-burn',
@@ -195,6 +218,16 @@ const AuthenticatedCarbonRoute = AuthenticatedCarbonRouteImport.update({
   path: '/carbon',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBrandingRoute = AuthenticatedBrandingRouteImport.update({
+  id: '/branding',
+  path: '/branding',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAuditRoute = AuthenticatedAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -203,6 +236,11 @@ const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
 const AuthenticatedAllocationRoute = AuthenticatedAllocationRouteImport.update({
   id: '/allocation',
   path: '/allocation',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdsbStatusRoute = AuthenticatedAdsbStatusRouteImport.update({
+  id: '/adsb-status',
+  path: '/adsb-status',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -248,6 +286,11 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicV1OpenapiJsonRoute = ApiPublicV1OpenapiJsonRouteImport.update({
+  id: '/api/public/v1/openapi/json',
+  path: '/api/public/v1/openapi/json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -259,8 +302,11 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/adsb-status': typeof AuthenticatedAdsbStatusRoute
   '/allocation': typeof AuthenticatedAllocationRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit': typeof AuthenticatedAuditRoute
+  '/branding': typeof AuthenticatedBrandingRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -268,6 +314,7 @@ export interface FileRoutesByFullPath {
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
   '/fuel-burn': typeof AuthenticatedFuelBurnRoute
+  '/import': typeof AuthenticatedImportRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
@@ -281,13 +328,16 @@ export interface FileRoutesByFullPath {
   '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
   '/tracker': typeof AuthenticatedTrackerRoute
+  '/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
+  '/docs/api': typeof DocsApiRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/crew/$id': typeof AuthenticatedCrewIdRoute
   '/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -298,8 +348,11 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/adsb-status': typeof AuthenticatedAdsbStatusRoute
   '/allocation': typeof AuthenticatedAllocationRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/audit': typeof AuthenticatedAuditRoute
+  '/branding': typeof AuthenticatedBrandingRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
   '/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -307,6 +360,7 @@ export interface FileRoutesByTo {
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
   '/fuel-burn': typeof AuthenticatedFuelBurnRoute
+  '/import': typeof AuthenticatedImportRoute
   '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/marketplace': typeof AuthenticatedMarketplaceRoute
@@ -320,7 +374,9 @@ export interface FileRoutesByTo {
   '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
   '/tracker': typeof AuthenticatedTrackerRoute
+  '/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
+  '/docs/api': typeof DocsApiRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -328,6 +384,7 @@ export interface FileRoutesByTo {
   '/crew/$id': typeof AuthenticatedCrewIdRoute
   '/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -340,8 +397,11 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/adsb-status': typeof AuthenticatedAdsbStatusRoute
   '/_authenticated/allocation': typeof AuthenticatedAllocationRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/audit': typeof AuthenticatedAuditRoute
+  '/_authenticated/branding': typeof AuthenticatedBrandingRoute
   '/_authenticated/carbon': typeof AuthenticatedCarbonRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
   '/_authenticated/crew': typeof AuthenticatedCrewRouteWithChildren
@@ -349,6 +409,7 @@ export interface FileRoutesById {
   '/_authenticated/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/_authenticated/flights': typeof AuthenticatedFlightsRouteWithChildren
   '/_authenticated/fuel-burn': typeof AuthenticatedFuelBurnRoute
+  '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/logbook': typeof AuthenticatedLogbookRoute
   '/_authenticated/marketplace': typeof AuthenticatedMarketplaceRoute
@@ -362,7 +423,9 @@ export interface FileRoutesById {
   '/_authenticated/simulator': typeof AuthenticatedSimulatorRoute
   '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
+  '/_authenticated/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
+  '/docs/api': typeof DocsApiRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -370,6 +433,7 @@ export interface FileRoutesById {
   '/_authenticated/crew/$id': typeof AuthenticatedCrewIdRoute
   '/_authenticated/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/_authenticated/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -383,8 +447,11 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/adsb-status'
     | '/allocation'
     | '/approvals'
+    | '/audit'
+    | '/branding'
     | '/carbon'
     | '/cargo'
     | '/crew'
@@ -392,6 +459,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/flights'
     | '/fuel-burn'
+    | '/import'
     | '/integrations'
     | '/logbook'
     | '/marketplace'
@@ -405,13 +473,16 @@ export interface FileRouteTypes {
     | '/simulator'
     | '/superadmin'
     | '/tracker'
+    | '/weather-risk'
     | '/api/chat'
+    | '/docs/api'
     | '/guide/aircraft-management'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/crew/$id'
     | '/fleet/$id'
     | '/flights/$id'
+    | '/api/public/v1/openapi/json'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -422,8 +493,11 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/adsb-status'
     | '/allocation'
     | '/approvals'
+    | '/audit'
+    | '/branding'
     | '/carbon'
     | '/cargo'
     | '/crew'
@@ -431,6 +505,7 @@ export interface FileRouteTypes {
     | '/fleet'
     | '/flights'
     | '/fuel-burn'
+    | '/import'
     | '/integrations'
     | '/logbook'
     | '/marketplace'
@@ -444,7 +519,9 @@ export interface FileRouteTypes {
     | '/simulator'
     | '/superadmin'
     | '/tracker'
+    | '/weather-risk'
     | '/api/chat'
+    | '/docs/api'
     | '/guide/aircraft-management'
     | '/'
     | '/.lovable/oauth/consent'
@@ -452,6 +529,7 @@ export interface FileRouteTypes {
     | '/crew/$id'
     | '/fleet/$id'
     | '/flights/$id'
+    | '/api/public/v1/openapi/json'
   id:
     | '__root__'
     | '/_authenticated'
@@ -463,8 +541,11 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
+    | '/_authenticated/adsb-status'
     | '/_authenticated/allocation'
     | '/_authenticated/approvals'
+    | '/_authenticated/audit'
+    | '/_authenticated/branding'
     | '/_authenticated/carbon'
     | '/_authenticated/cargo'
     | '/_authenticated/crew'
@@ -472,6 +553,7 @@ export interface FileRouteTypes {
     | '/_authenticated/fleet'
     | '/_authenticated/flights'
     | '/_authenticated/fuel-burn'
+    | '/_authenticated/import'
     | '/_authenticated/integrations'
     | '/_authenticated/logbook'
     | '/_authenticated/marketplace'
@@ -485,7 +567,9 @@ export interface FileRouteTypes {
     | '/_authenticated/simulator'
     | '/_authenticated/superadmin'
     | '/_authenticated/tracker'
+    | '/_authenticated/weather-risk'
     | '/api/chat'
+    | '/docs/api'
     | '/guide/aircraft-management'
     | '/_authenticated/'
     | '/.lovable/oauth/consent'
@@ -493,6 +577,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crew/$id'
     | '/_authenticated/fleet/$id'
     | '/_authenticated/flights/$id'
+    | '/api/public/v1/openapi/json'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -505,9 +590,11 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
+  DocsApiRoute: typeof DocsApiRoute
   GuideAircraftManagementRoute: typeof GuideAircraftManagementRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicV1OpenapiJsonRoute: typeof ApiPublicV1OpenapiJsonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -568,12 +655,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuideAircraftManagementRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/api': {
+      id: '/docs/api'
+      path: '/docs/api'
+      fullPath: '/docs/api'
+      preLoaderRoute: typeof DocsApiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/weather-risk': {
+      id: '/_authenticated/weather-risk'
+      path: '/weather-risk'
+      fullPath: '/weather-risk'
+      preLoaderRoute: typeof AuthenticatedWeatherRiskRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/tracker': {
       id: '/_authenticated/tracker'
@@ -666,6 +767,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIntegrationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/import': {
+      id: '/_authenticated/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AuthenticatedImportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/fuel-burn': {
       id: '/_authenticated/fuel-burn'
       path: '/fuel-burn'
@@ -715,6 +823,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCarbonRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/branding': {
+      id: '/_authenticated/branding'
+      path: '/branding'
+      fullPath: '/branding'
+      preLoaderRoute: typeof AuthenticatedBrandingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/audit': {
+      id: '/_authenticated/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuthenticatedAuditRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/approvals': {
       id: '/_authenticated/approvals'
       path: '/approvals'
@@ -727,6 +849,13 @@ declare module '@tanstack/react-router' {
       path: '/allocation'
       fullPath: '/allocation'
       preLoaderRoute: typeof AuthenticatedAllocationRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/adsb-status': {
+      id: '/_authenticated/adsb-status'
+      path: '/adsb-status'
+      fullPath: '/adsb-status'
+      preLoaderRoute: typeof AuthenticatedAdsbStatusRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -785,6 +914,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/v1/openapi/json': {
+      id: '/api/public/v1/openapi/json'
+      path: '/api/public/v1/openapi/json'
+      fullPath: '/api/public/v1/openapi/json'
+      preLoaderRoute: typeof ApiPublicV1OpenapiJsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -823,8 +959,11 @@ const AuthenticatedFlightsRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdsbStatusRoute: typeof AuthenticatedAdsbStatusRoute
   AuthenticatedAllocationRoute: typeof AuthenticatedAllocationRoute
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedAuditRoute: typeof AuthenticatedAuditRoute
+  AuthenticatedBrandingRoute: typeof AuthenticatedBrandingRoute
   AuthenticatedCarbonRoute: typeof AuthenticatedCarbonRoute
   AuthenticatedCargoRoute: typeof AuthenticatedCargoRoute
   AuthenticatedCrewRoute: typeof AuthenticatedCrewRouteWithChildren
@@ -832,6 +971,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRouteWithChildren
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRouteWithChildren
   AuthenticatedFuelBurnRoute: typeof AuthenticatedFuelBurnRoute
+  AuthenticatedImportRoute: typeof AuthenticatedImportRoute
   AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedLogbookRoute: typeof AuthenticatedLogbookRoute
   AuthenticatedMarketplaceRoute: typeof AuthenticatedMarketplaceRoute
@@ -845,13 +985,17 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSimulatorRoute: typeof AuthenticatedSimulatorRoute
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
   AuthenticatedTrackerRoute: typeof AuthenticatedTrackerRoute
+  AuthenticatedWeatherRiskRoute: typeof AuthenticatedWeatherRiskRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdsbStatusRoute: AuthenticatedAdsbStatusRoute,
   AuthenticatedAllocationRoute: AuthenticatedAllocationRoute,
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedAuditRoute: AuthenticatedAuditRoute,
+  AuthenticatedBrandingRoute: AuthenticatedBrandingRoute,
   AuthenticatedCarbonRoute: AuthenticatedCarbonRoute,
   AuthenticatedCargoRoute: AuthenticatedCargoRoute,
   AuthenticatedCrewRoute: AuthenticatedCrewRouteWithChildren,
@@ -859,6 +1003,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFleetRoute: AuthenticatedFleetRouteWithChildren,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRouteWithChildren,
   AuthenticatedFuelBurnRoute: AuthenticatedFuelBurnRoute,
+  AuthenticatedImportRoute: AuthenticatedImportRoute,
   AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedLogbookRoute: AuthenticatedLogbookRoute,
   AuthenticatedMarketplaceRoute: AuthenticatedMarketplaceRoute,
@@ -872,6 +1017,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSimulatorRoute: AuthenticatedSimulatorRoute,
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
   AuthenticatedTrackerRoute: AuthenticatedTrackerRoute,
+  AuthenticatedWeatherRiskRoute: AuthenticatedWeatherRiskRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
@@ -890,9 +1036,11 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
+  DocsApiRoute: DocsApiRoute,
   GuideAircraftManagementRoute: GuideAircraftManagementRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicV1OpenapiJsonRoute: ApiPublicV1OpenapiJsonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
