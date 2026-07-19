@@ -96,18 +96,10 @@ function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="flex flex-col items-center mb-8">
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)" }}
-            aria-hidden
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 12l9-4-3 8 4-2 4 4 6-14z" />
-            </svg>
-          </div>
+          <SkytrackLogo size={56} showWordmark={false} className="mb-4" />
           <h1 className="text-2xl font-semibold text-primary-fg tracking-tight">SkyTrack</h1>
-          <p className="text-sm text-secondary-fg mt-1">Aviation operations, simplified.</p>
         </div>
+
 
         {/* Card */}
         <div
