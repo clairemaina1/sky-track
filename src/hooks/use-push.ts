@@ -7,8 +7,6 @@ type Status = "unsupported" | "denied" | "granted" | "default" | "unknown";
 
 async function getRegistration(): Promise<ServiceWorkerRegistration | null> {
   if (typeof window === "undefined" || !("serviceWorker" in navigator) || !("PushManager" in window)) return null;
-  const existing = await navigator.serviceWorker.getRegistration("/sw.js");
-  if (existing) return existing;
   return navigator.serviceWorker.register("/sw.js");
 }
 
