@@ -31,6 +31,7 @@ import {
   Palette,
   CloudRain,
   FileText,
+  Presentation,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
