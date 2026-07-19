@@ -14,6 +14,7 @@ export function AddCrewDialog({ open, onClose }: { open: boolean; onClose: () =>
     base_airport: "",
     status: "Off-Duty" as "On-Duty" | "Off-Duty" | "Rest" | "Training",
     certifications: "",
+    user_id: "",
   });
   const [err, setErr] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -23,6 +24,10 @@ export function AddCrewDialog({ open, onClose }: { open: boolean; onClose: () =>
     e.preventDefault();
     if (!orgId) return;
     setSaving(true); setErr(null);
+    const uid = form.user_id.trim();
+    if (uid && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uid)) {
+      setSaving(false); setErr("Linked user ID must be a valid UUID (or leave blank)."); return;
+    }
     const { error } = await supabase.from("crew").insert({
       employee_id: form.employee_id.toUpperCase().trim(),
       full_name: form.full_name.trim(),
@@ -31,12 +36,14 @@ export function AddCrewDialog({ open, onClose }: { open: boolean; onClose: () =>
       status: form.status,
       certifications: form.certifications.split(",").map((s) => s.trim()).filter(Boolean),
       org_id: orgId,
+      user_id: uid || null,
     });
     setSaving(false);
     if (error) { setErr(error.message); return; }
     qc.invalidateQueries({ queryKey: ["crew"] });
     onClose();
   }
+
 
   return (
     <Modal title="Add Crew Member" onClose={onClose}>
