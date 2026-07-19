@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrgId } from "@/hooks/use-org";
@@ -317,7 +317,7 @@ function PilotRow({ r, name, onAccept, onDecline }: {
   onAccept: (id: string) => void; onDecline: (a: Assignment) => void;
 }) {
   const [now, setNow] = useState(Date.now());
-  useMemo(() => {
+  useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
   }, []);
