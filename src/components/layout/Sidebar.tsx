@@ -19,6 +19,8 @@ import {
   BookOpen,
   Inbox,
   ShieldAlert,
+  UserCheck,
+  Plug,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
@@ -235,11 +237,17 @@ export function Sidebar({
             {!collapsed && <span className="flex-1 truncate">Admin</span>}
           </Link>
         )}
+        {(role === "admin" || role === "dispatcher") && (
+          <ExtraLink to="/allocation" icon={UserCheck} label="Allocation" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
         {category === "flight_school" && (
           <ExtraLink to="/logbook" icon={BookOpen} label="Logbook" path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
         {(currentOrg?.role === "admin" || isSuper) && (
-          <ExtraLink to="/approvals" icon={Inbox} label="Approvals" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+          <>
+            <ExtraLink to="/approvals" icon={Inbox} label="Approvals" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/integrations" icon={Plug} label="Integrations" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+          </>
         )}
         {isSuper && (
           <ExtraLink to="/superadmin" icon={ShieldAlert} label="Super Admin" path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
