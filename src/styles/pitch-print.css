@@ -1,0 +1,29 @@
+@media print {
+  html, body {
+    background: white !important;
+    color: black !important;
+  }
+  .pitch-root {
+    padding: 0 !important;
+  }
+  .pitch-sheet {
+    background: white !important;
+    color: black !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .pitch-sheet * {
+    color: black !important;
+  }
+  .pitch-sheet .text-accent,
+  .pitch-sheet [style*="var(--accent-primary)"] {
+    color: #007a6b !important;
+  }
+  aside, nav, header.topbar, .sidebar, [data-sidebar] {
+    display: none !important;
+  }
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+}
