@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as GuideAircraftManagementRouteImport } from './routes/guide.aircraft-management'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedRoutingRouteImport } from './routes/_authenticated/routing'
@@ -74,6 +75,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTrackerRoute = AuthenticatedTrackerRouteImport.update({
+  id: '/tracker',
+  path: '/tracker',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
   id: '/superadmin',
@@ -224,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/routing': typeof AuthenticatedRoutingRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/': typeof AuthenticatedIndexRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/_authenticated/routing': typeof AuthenticatedRoutingRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
+  '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/api/chat': typeof ApiChatRoute
   '/guide/aircraft-management': typeof GuideAircraftManagementRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/routing'
     | '/settings'
     | '/superadmin'
+    | '/tracker'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/.lovable/oauth/consent'
@@ -355,6 +365,7 @@ export interface FileRouteTypes {
     | '/routing'
     | '/settings'
     | '/superadmin'
+    | '/tracker'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/_authenticated/routing'
     | '/_authenticated/settings'
     | '/_authenticated/superadmin'
+    | '/_authenticated/tracker'
     | '/api/chat'
     | '/guide/aircraft-management'
     | '/_authenticated/'
@@ -461,6 +473,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tracker': {
+      id: '/_authenticated/tracker'
+      path: '/tracker'
+      fullPath: '/tracker'
+      preLoaderRoute: typeof AuthenticatedTrackerRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/superadmin': {
       id: '/_authenticated/superadmin'
@@ -684,6 +703,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedRoutingRoute: typeof AuthenticatedRoutingRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
+  AuthenticatedTrackerRoute: typeof AuthenticatedTrackerRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
@@ -705,6 +725,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedRoutingRoute: AuthenticatedRoutingRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
+  AuthenticatedTrackerRoute: AuthenticatedTrackerRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
