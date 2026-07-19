@@ -85,7 +85,7 @@ function AllocationPage() {
       const rows = picks.map((c, i) => ({
         org_id: orgId, flight_id: currentFlight.id, crew_id: c.id,
         layer: "cabin" as const, status: "auto_assigned" as const, rank: i + 1,
-        reason: `Auto-dispatched: base=${c.base_station ?? "—"}, role=${c.role}`,
+        reason: `Auto-dispatched: base=${c.base_airport ?? "—"}, role=${c.role}`,
       }));
       if (rows.length) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
