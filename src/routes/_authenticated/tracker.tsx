@@ -42,9 +42,11 @@ type Row = {
   progress_pct: number | null;
   scheduled_departure: string;
   org_id: string;
-  aircraft: { id: string; tail_number: string; airline: string | null } | null;
+  // aircraft.icao24_hex included below for ADS-B live-match on the map
+  aircraft: { id: string; tail_number: string; airline: string | null; icao24_hex: string | null } | null;
   organizations: { name: string } | null;
 };
+
 
 
 function TrackerPage() {
