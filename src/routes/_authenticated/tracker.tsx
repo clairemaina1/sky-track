@@ -46,9 +46,6 @@ type Row = {
   organizations: { name: string } | null;
 };
 
-function project(lat: number, lon: number, w: number, h: number): [number, number] {
-  return [((lon + 180) / 360) * w, ((90 - lat) / 180) * h];
-}
 
 function TrackerPage() {
   const { data: isSuper = false } = useSuperAdmin();
