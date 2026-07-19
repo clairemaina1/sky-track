@@ -17,8 +17,8 @@ export const Route = createFileRoute("/_authenticated/allocation")({
 
 type Layer = "cabin" | "pilot";
 type Status = "offered" | "accepted" | "declined" | "expired" | "cascaded" | "locked" | "auto_assigned";
-interface Flight { id: string; flight_number: string; origin: string; destination: string; status: string; scheduled_departure: string | null; aircraft_id: string | null; }
-interface Crew { id: string; full_name: string; role: string; status: string; base_station: string | null; }
+interface Flight { id: string; flight_number: string; origin_icao: string; destination_icao: string; status: string; scheduled_departure: string | null; aircraft_id: string | null; }
+interface Crew { id: string; full_name: string; role: string; status: string; base_airport: string | null; }
 interface Assignment { id: string; flight_id: string; crew_id: string; layer: Layer; status: Status; rank: number; expires_at: string | null; reason: string | null; }
 
 function AllocationPage() {
@@ -33,12 +33,12 @@ function AllocationPage() {
     enabled: !!orgId,
     queryFn: async (): Promise<Flight[]> => {
       const { data } = await supabase
-        .from("flights").select("id, flight_number, origin, destination, status, scheduled_departure, aircraft_id")
+        .from("flights").select("id, flight_number, origin_icao, destination_icao, status, scheduled_departure, aircraft_id")
         .eq("org_id", orgId!)
-        .in("status", ["scheduled", "boarding", "delayed"])
+        .in("status", ["Scheduled", "Boarding", "Delayed"])
         .order("scheduled_departure", { ascending: true })
         .limit(50);
-      return (data ?? []) as Flight[];
+      return (data ?? []) as unknown as Flight[];
     },
   });
 
@@ -47,10 +47,10 @@ function AllocationPage() {
     enabled: !!orgId,
     queryFn: async (): Promise<Crew[]> => {
       const { data } = await supabase
-        .from("crew").select("id, full_name, role, status, base_station")
+        .from("crew").select("id, full_name, role, status, base_airport")
         .eq("org_id", orgId!)
-        .eq("status", "available");
-      return (data ?? []) as Crew[];
+        .in("status", ["On-Duty", "Off-Duty"]);
+      return (data ?? []) as unknown as Crew[];
     },
   });
 
@@ -85,7 +85,7 @@ function AllocationPage() {
       const rows = picks.map((c, i) => ({
         org_id: orgId, flight_id: currentFlight.id, crew_id: c.id,
         layer: "cabin" as const, status: "auto_assigned" as const, rank: i + 1,
-        reason: `Auto-dispatched: base=${c.base_station ?? "—"}, role=${c.role}`,
+        reason: `Auto-dispatched: base=${c.base_airport ?? "—"}, role=${c.role}`,
       }));
       if (rows.length) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,7 +103,7 @@ function AllocationPage() {
       const scored = [...pilots]
         .map((p) => ({
           p,
-          score: (p.base_station === currentFlight.origin ? 10 : 0) + Math.random() * 3,
+          score: (p.base_airport === currentFlight.origin_icao ? 10 : 0) + Math.random() * 3,
         }))
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
@@ -113,7 +113,7 @@ function AllocationPage() {
         org_id: orgId, flight_id: currentFlight.id, crew_id: p.id,
         layer: "pilot" as const, status: "offered" as const, rank: i + 1,
         expires_at: expiresAt,
-        reason: `Rank ${i + 1}: score=${score.toFixed(1)} · base=${p.base_station ?? "—"}`,
+        reason: `Rank ${i + 1}: score=${score.toFixed(1)} · base=${p.base_airport ?? "—"}`,
       }));
       if (rows.length) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,7 +202,7 @@ function AllocationPage() {
                     <Plane className="w-3.5 h-3.5 text-accent" />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm text-primary-fg font-medium">{f.flight_number}</div>
-                      <div className="text-[11px] text-secondary-fg truncate">{f.origin} → {f.destination}</div>
+                      <div className="text-[11px] text-secondary-fg truncate">{f.origin_icao} → {f.destination_icao}</div>
                     </div>
                     <ChevronRight className="w-3.5 h-3.5 text-secondary-fg" />
                   </button>
@@ -224,7 +224,7 @@ function AllocationPage() {
                 <div>
                   <div className="font-display text-lg text-primary-fg">{currentFlight.flight_number}</div>
                   <div className="text-sm text-secondary-fg">
-                    {currentFlight.origin} → {currentFlight.destination} · {currentFlight.scheduled_departure
+                    {currentFlight.origin_icao} → {currentFlight.destination_icao} · {currentFlight.scheduled_departure
                       ? new Date(currentFlight.scheduled_departure).toLocaleString()
                       : "TBD"}
                   </div>
