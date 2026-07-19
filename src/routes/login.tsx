@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
+
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
