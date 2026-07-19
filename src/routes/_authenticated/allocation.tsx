@@ -172,8 +172,9 @@ function AllocationPage() {
       <div>
         <h1 className="font-display text-xl text-primary-fg">Crew Allocation</h1>
         <p className="text-sm text-secondary-fg mt-1">
-          Dual-layer engine — cabin crew dispatch is fully automatic; pilots receive a ranked bid-offer with a 15-minute command-choice window.
+          Dual-layer engine — cabin crew dispatch is fully automatic; pilots receive a ranked bid-offer with a command-choice window you set below. Offers auto-decline and cascade to the next pilot when the timer hits zero.
         </p>
+
       </div>
 
       <div className="grid gap-4 md:grid-cols-[320px_1fr]">
