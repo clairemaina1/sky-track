@@ -3,8 +3,11 @@ import { pageHead } from "@/lib/routeHead";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrg } from "@/hooks/use-org";
-import { Shield, Download, MapPin, FileText } from "lucide-react";
+import { Shield, Download, MapPin, FileText, Fingerprint } from "lucide-react";
 import { toCSV } from "@/lib/csv";
+import { useServerFn } from "@tanstack/react-start";
+import { exportSignedAudit } from "@/lib/audit-export.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/audit")({
   head: pageHead({ title: "Audit & Compliance — SkyTrack", description: "Audit log, data residency, and DPA download.", path: "/audit" }),
