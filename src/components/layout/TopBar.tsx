@@ -106,7 +106,8 @@ export function TopBar() {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-  const utc = now ? now.toISOString().slice(11, 19) + " UTC" : "";
+  const tz = typeof Intl !== "undefined" ? Intl.DateTimeFormat().resolvedOptions().timeZone.split("/").pop()?.replace("_", " ") ?? "" : "";
+  const utc = now ? now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }) + (tz ? ` ${tz}` : "") : "";
   const seg = path.replace("/", "").split("/")[0];
   const label = path === "/" ? t("top.commandCenter") : (t(`nav.${seg}`) === `nav.${seg}` ? seg.toUpperCase() : String(t(`nav.${seg}`)).toUpperCase());
   return (
