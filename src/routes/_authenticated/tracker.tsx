@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
+import { ClientOnly } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Radar, ExternalLink, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSuperAdmin } from "@/hooks/use-category";
 import { pageHead } from "@/lib/routeHead";
+
+const WorldMap = lazy(() => import("@/components/tracker/WorldMap"));
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: pageHead({
@@ -15,15 +18,6 @@ export const Route = createFileRoute("/_authenticated/tracker")({
   component: TrackerPage,
 });
 
-const AIRPORT_COORDS: Record<string, [number, number]> = {
-  HKJK: [-1.319, 36.927], HKWL: [-1.323, 36.806], HKNW: [-1.322, 36.815],
-  HTDA: [-6.878, 39.202], HAAB: [8.978, 38.799], FYYY: [-22.48, 17.47],
-  FAOR: [-26.139, 28.246], DNMM: [6.577, 3.321], DIAP: [5.254, -3.927],
-  EGLL: [51.477, -0.461], LFPG: [49.009, 2.548], OMDB: [25.253, 55.365],
-  RJTT: [35.549, 139.78], KLAX: [33.942, -118.408], KJFK: [40.64, -73.779],
-  YSSY: [-33.946, 151.177], HRYR: [-1.9686, 30.1395], HUEN: [0.0424, 32.4435],
-  HSSS: [15.5895, 32.5532], FZAA: [-4.3858, 15.4446],
-};
 
 // Deterministic vivid color per org id — golden-angle hue spacing so
 // adjacent orgs (alphabetically or by insertion) never collide visually.
@@ -52,9 +46,6 @@ type Row = {
   organizations: { name: string } | null;
 };
 
-function project(lat: number, lon: number, w: number, h: number): [number, number] {
-  return [((lon + 180) / 360) * w, ((90 - lat) / 180) * h];
-}
 
 function TrackerPage() {
   const { data: isSuper = false } = useSuperAdmin();
@@ -132,7 +123,11 @@ function TrackerPage() {
         </div>
       </header>
 
-      <Radar2DMap flights={visibleFlights} selectedFlightId={selectedFlightId} />
+      <ClientOnly fallback={<div className="h-[520px] rounded-2xl bg-slate-950/60 animate-pulse" />}>
+        <Suspense fallback={<div className="h-[520px] rounded-2xl bg-slate-950/60 animate-pulse" />}>
+          <WorldMap flights={visibleFlights} selectedFlightId={selectedFlightId} onSelect={setSelectedFlightId} />
+        </Suspense>
+      </ClientOnly>
 
       {orgs.length > 0 && (
         <section
@@ -185,165 +180,6 @@ function TrackerPage() {
   );
 }
 
-function Radar2DMap({ flights, selectedFlightId }: { flights: Row[]; selectedFlightId: string | null }) {
-  const uid = useId().replace(/:/g, "");
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<number | null>(null);
-  const tRef = useRef<Map<string, number>>(new Map());
-  const [dims, setDims] = useState({ w: 900, h: 460 });
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const ro = new ResizeObserver((es) => {
-      for (const e of es) setDims({ w: e.contentRect.width, h: 460 });
-    });
-    ro.observe(containerRef.current);
-    setDims({ w: containerRef.current.offsetWidth, h: 460 });
-    return () => ro.disconnect();
-  }, []);
-
-  const routes = useMemo(() => {
-    return flights
-      .map((f) => {
-        const o = AIRPORT_COORDS[f.origin_icao];
-        const d = AIRPORT_COORDS[f.destination_icao];
-        if (!o || !d) return null;
-        return { f, o, d, color: orgColor(f.org_id) };
-      })
-      .filter((x): x is NonNullable<typeof x> => !!x);
-  }, [flights]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    canvas.width = dims.w;
-    canvas.height = dims.h;
-
-    function tick() {
-      ctx!.clearRect(0, 0, dims.w, dims.h);
-      for (const r of routes) {
-        const [ox, oy] = project(r.o[0], r.o[1], dims.w, dims.h);
-        const [dx, dy] = project(r.d[0], r.d[1], dims.w, dims.h);
-        const mx = (ox + dx) / 2, my = (oy + dy) / 2;
-        const fdx = dx - ox, fdy = dy - oy;
-        const dist = Math.sqrt(fdx * fdx + fdy * fdy) || 1;
-        const cpx = mx - (fdy / dist) * dist * 0.22;
-        const cpy = my + (fdx / dist) * dist * 0.22;
-
-        let t = tRef.current.get(r.f.id) ?? (r.f.progress_pct ?? 20) / 100;
-        const active = r.f.status === "En_Route" || r.f.status === "Departed" || r.f.status === "Approach";
-        if (active) t += 0.0009;
-        if (t > 1) t = 0;
-        tRef.current.set(r.f.id, t);
-
-        const mt = 1 - t;
-        const px = mt * mt * ox + 2 * mt * t * cpx + t * t * dx;
-        const py = mt * mt * oy + 2 * mt * t * cpy + t * t * dy;
-
-        const isSel = selectedFlightId === r.f.id;
-        const radius = isSel ? 24 : 16;
-        const glow = ctx!.createRadialGradient(px, py, 0, px, py, radius);
-        glow.addColorStop(0, `${r.color}`);
-        glow.addColorStop(0.4, `${r.color}44`);
-        glow.addColorStop(1, "transparent");
-        ctx!.beginPath();
-        ctx!.arc(px, py, radius, 0, Math.PI * 2);
-        ctx!.fillStyle = glow;
-        ctx!.fill();
-
-        ctx!.beginPath();
-        ctx!.arc(px, py, isSel ? 5 : 3.5, 0, Math.PI * 2);
-        ctx!.fillStyle = r.color;
-        ctx!.fill();
-
-        if (isSel) {
-          ctx!.strokeStyle = "rgba(255,255,255,0.9)";
-          ctx!.lineWidth = 1.5;
-          ctx!.beginPath();
-          ctx!.arc(px, py, 10, 0, Math.PI * 2);
-          ctx!.stroke();
-        }
-
-        ctx!.fillStyle = isSel ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.85)";
-        ctx!.font = `${isSel ? 11 : 10}px 'JetBrains Mono', monospace`;
-        ctx!.fillText(r.f.aircraft?.tail_number ?? r.f.flight_number, px + 7, py + 3);
-      }
-      animRef.current = requestAnimationFrame(tick);
-    }
-    animRef.current = requestAnimationFrame(tick);
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
-  }, [routes, dims, selectedFlightId]);
-
-  const airportDots = new Map<string, { x: number; y: number; icao: string }>();
-  for (const r of routes) {
-    const [ox, oy] = project(r.o[0], r.o[1], dims.w, dims.h);
-    const [dx, dy] = project(r.d[0], r.d[1], dims.w, dims.h);
-    airportDots.set(r.f.origin_icao, { x: ox, y: oy, icao: r.f.origin_icao });
-    airportDots.set(r.f.destination_icao, { x: dx, y: dy, icao: r.f.destination_icao });
-  }
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative w-full overflow-hidden rounded-2xl"
-      style={{
-        height: 460,
-        background: "radial-gradient(ellipse at 30% 40%, #071427 0%, #030812 70%)",
-        border: "1px solid rgba(52,211,153,0.1)",
-      }}
-    >
-      <svg width={dims.w} height={dims.h} className="absolute inset-0" aria-hidden="true">
-        <defs>
-          <pattern id={`${uid}-grid`} width={dims.w / 16} height={dims.h / 8} patternUnits="userSpaceOnUse">
-            <path d={`M ${dims.w / 16} 0 L 0 0 0 ${dims.h / 8}`} fill="none" stroke="rgba(52,211,153,0.05)" strokeWidth="0.5" />
-          </pattern>
-        </defs>
-        <rect width={dims.w} height={dims.h} fill={`url(#${uid}-grid)`} />
-        {routes.map((r, i) => {
-          const [ox, oy] = project(r.o[0], r.o[1], dims.w, dims.h);
-          const [dx, dy] = project(r.d[0], r.d[1], dims.w, dims.h);
-          const mx = (ox + dx) / 2, my = (oy + dy) / 2;
-          const fdx = dx - ox, fdy = dy - oy;
-          const dist = Math.sqrt(fdx * fdx + fdy * fdy) || 1;
-          const cpx = mx - (fdy / dist) * dist * 0.22;
-          const cpy = my + (fdx / dist) * dist * 0.22;
-          const isSel = selectedFlightId === r.f.id;
-          return (
-            <path
-              key={r.f.id + i}
-              d={`M ${ox} ${oy} Q ${cpx} ${cpy} ${dx} ${dy}`}
-              fill="none"
-              stroke={r.color}
-              strokeOpacity={isSel ? 0.85 : 0.35}
-              strokeWidth={isSel ? 2 : 1.2}
-              strokeDasharray={isSel ? "0" : "4 4"}
-            />
-          );
-        })}
-        {Array.from(airportDots.values()).map((a) => (
-          <g key={a.icao}>
-            <circle cx={a.x} cy={a.y} r={3} fill="rgba(255,255,255,0.55)" />
-            <text x={a.x + 6} y={a.y - 6} fill="rgba(255,255,255,0.5)" fontSize={8} fontFamily="'JetBrains Mono', monospace">
-              {a.icao}
-            </text>
-          </g>
-        ))}
-      </svg>
-      <canvas ref={canvasRef} className="absolute inset-0" style={{ pointerEvents: "none" }} />
-      <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full px-2.5 py-1"
-        style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.15)" }}>
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-        </span>
-        <span className="text-[9px] font-semibold text-emerald-400 font-mono">LIVE</span>
-      </div>
-    </div>
-  );
-}
 
 function TrackerTable({
   flights, isSuper, selectedId, onSelect,
