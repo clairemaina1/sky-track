@@ -20,6 +20,28 @@ function AuditPage() {
   const org = useCurrentOrg();
   const [rows, setRows] = useState<Row[]>([]);
   const [region, setRegion] = useState<string>("eu-west");
+  const [signing, setSigning] = useState(false);
+  const signedExport = useServerFn(exportSignedAudit);
+
+  async function exportSignedJsonl() {
+    if (!org?.org_id) return;
+    setSigning(true);
+    try {
+      const r = await signedExport({ data: { orgId: org.org_id, limit: 10000 } });
+      const blob = new Blob([r.jsonl], { type: "application/x-ndjson" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `skytrack-audit-signed-${new Date().toISOString().slice(0,10)}.jsonl`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Exported ${r.count} events · root ${r.root_hash.slice(0,10)}…`);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSigning(false);
+    }
+  }
 
   useEffect(() => {
     if (!org?.org_id) return;
