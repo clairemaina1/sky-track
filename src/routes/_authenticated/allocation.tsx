@@ -224,7 +224,7 @@ function AllocationPage() {
                 <div>
                   <div className="font-display text-lg text-primary-fg">{currentFlight.flight_number}</div>
                   <div className="text-sm text-secondary-fg">
-                    {currentFlight.origin} → {currentFlight.destination} · {currentFlight.scheduled_departure
+                    {currentFlight.origin_icao} → {currentFlight.destination_icao} · {currentFlight.scheduled_departure
                       ? new Date(currentFlight.scheduled_departure).toLocaleString()
                       : "TBD"}
                   </div>
