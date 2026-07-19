@@ -32,6 +32,8 @@ type Mode = "magic" | "signin" | "signup";
 
 function LoginPage() {
   const nav = useNavigate();
+  const { next } = Route.useSearch();
+  const target = safeNext(next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<Mode>("magic");
@@ -42,11 +44,11 @@ function LoginPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) nav({ to: "/" });
+      if (data.session) window.location.href = target;
     });
     const t = setTimeout(() => inputRef.current?.focus(), 500);
     return () => clearTimeout(t);
-  }, [nav]);
+  }, [target]);
 
   function validEmail(v: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -69,27 +71,28 @@ function LoginPage() {
     setUi("loading");
     setErrorMsg("");
 
+    const redirectUrl = window.location.origin + target;
+
     try {
       if (mode === "magic") {
         const { error } = await supabase.auth.signInWithOtp({
           email: trimmed,
-          options: { emailRedirectTo: window.location.origin, shouldCreateUser: true },
+          options: { emailRedirectTo: redirectUrl, shouldCreateUser: true },
         });
         if (error) throw error;
         setUi("success");
       } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email: trimmed, password });
         if (error) throw error;
-        nav({ to: "/" });
+        window.location.href = target;
       } else {
-        // explicit signup — no silent fallback from signin
         const { error } = await supabase.auth.signUp({
           email: trimmed,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: redirectUrl },
         });
         if (error) throw error;
-        nav({ to: "/" });
+        window.location.href = target;
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed.";
