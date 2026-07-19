@@ -62,7 +62,7 @@ function TrackerPage() {
       // via the `is_super_admin(auth.uid())` branch in the flights SELECT policy.
       const { data } = await supabase
         .from("flights")
-        .select("id, flight_number, origin_icao, destination_icao, status, progress_pct, scheduled_departure, org_id, aircraft(id, tail_number, airline), organizations(name)")
+        .select("id, flight_number, origin_icao, destination_icao, status, progress_pct, scheduled_departure, org_id, aircraft(id, tail_number, airline, icao24_hex), organizations(name)")
         .in("status", ["En_Route", "Departed", "Approach", "Scheduled", "Boarding"])
         .order("scheduled_departure", { ascending: true })
         .limit(400);
