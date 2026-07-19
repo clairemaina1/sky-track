@@ -17,8 +17,8 @@ export const Route = createFileRoute("/_authenticated/allocation")({
 
 type Layer = "cabin" | "pilot";
 type Status = "offered" | "accepted" | "declined" | "expired" | "cascaded" | "locked" | "auto_assigned";
-interface Flight { id: string; flight_number: string; origin: string; destination: string; status: string; scheduled_departure: string | null; aircraft_id: string | null; }
-interface Crew { id: string; full_name: string; role: string; status: string; base_station: string | null; }
+interface Flight { id: string; flight_number: string; origin_icao: string; destination_icao: string; status: string; scheduled_departure: string | null; aircraft_id: string | null; }
+interface Crew { id: string; full_name: string; role: string; status: string; base_airport: string | null; }
 interface Assignment { id: string; flight_id: string; crew_id: string; layer: Layer; status: Status; rank: number; expires_at: string | null; reason: string | null; }
 
 function AllocationPage() {
