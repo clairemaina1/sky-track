@@ -245,6 +245,7 @@ export function Sidebar({
             {!collapsed && <span className="flex-1 truncate">{tr("admin","Admin")}</span>}
           </Link>
         )}
+        <ExtraLink to="/tracker" icon={Radar} label={tr("tracker","Live Tracker")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         {(role === "admin" || role === "dispatcher") && (
           <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
