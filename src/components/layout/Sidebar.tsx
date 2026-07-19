@@ -21,6 +21,7 @@ import {
   ShieldAlert,
   UserCheck,
   Plug,
+  Radar,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
