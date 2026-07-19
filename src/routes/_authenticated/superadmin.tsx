@@ -3,8 +3,10 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSuperAdmin } from "@/hooks/use-category";
-import { Shield, CheckCircle2, XCircle, Building2, Users2, Plane } from "lucide-react";
+import { Shield, CheckCircle2, XCircle, Building2, Users2, Plane, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { resetDemoOrg } from "@/lib/demo-reset.functions";
 
 export const Route = createFileRoute("/_authenticated/superadmin")({
   beforeLoad: async () => {
