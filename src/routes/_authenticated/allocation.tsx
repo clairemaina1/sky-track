@@ -25,6 +25,8 @@ function AllocationPage() {
   const [orgId] = useCurrentOrgId();
   const qc = useQueryClient();
   const [selectedFlight, setSelectedFlight] = useState<string | null>(null);
+  const [windowMin, setWindowMin] = useState<number>(15);
+
 
   const flightsQ = useQuery({
     queryKey: ["allocation-flights", orgId],
@@ -105,7 +107,8 @@ function AllocationPage() {
         }))
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + Math.max(1, windowMin) * 60 * 1000).toISOString();
+
       const rows = scored.map(({ p, score }, i) => ({
         org_id: orgId, flight_id: currentFlight.id, crew_id: p.id,
         layer: "pilot" as const, status: "offered" as const, rank: i + 1,
@@ -139,7 +142,7 @@ function AllocationPage() {
       await updateStatus.mutateAsync({ id: from.id, status: "cascaded" });
       const next = assignments.find((a) => a.layer === "pilot" && a.rank === from.rank + 1);
       if (next) {
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+        const expiresAt = new Date(Date.now() + Math.max(1, windowMin) * 60 * 1000).toISOString();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase as any)
           .from("crew_assignments")
@@ -150,6 +153,18 @@ function AllocationPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["allocation-assignments"] }),
   });
 
+  const extend = useMutation({
+    mutationFn: async (payload: { id: string; minutes: number }) => {
+      const expiresAt = new Date(Date.now() + payload.minutes * 60 * 1000).toISOString();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from("crew_assignments").update({ expires_at: expiresAt }).eq("id", payload.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["allocation-assignments"] }),
+  });
+
+
   const nameOf = (id: string) => crew.find((c) => c.id === id)?.full_name ?? id.slice(0, 8);
 
   return (
@@ -157,8 +172,9 @@ function AllocationPage() {
       <div>
         <h1 className="font-display text-xl text-primary-fg">Crew Allocation</h1>
         <p className="text-sm text-secondary-fg mt-1">
-          Dual-layer engine — cabin crew dispatch is fully automatic; pilots receive a ranked bid-offer with a 15-minute command-choice window.
+          Dual-layer engine — cabin crew dispatch is fully automatic; pilots receive a ranked bid-offer with a command-choice window you set below. Offers auto-decline and cascade to the next pilot when the timer hits zero.
         </p>
+
       </div>
 
       <div className="grid gap-4 md:grid-cols-[320px_1fr]">
@@ -240,31 +256,49 @@ function AllocationPage() {
 
               {/* Layer B — Pilots */}
               <section>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-accent" />
                     <h2 className="font-display uppercase text-xs tracking-[0.14em] text-primary-fg">
                       Layer B · Pilot command-choice
                     </h2>
                   </div>
-                  <button
-                    onClick={() => offerPilots.mutate()}
-                    disabled={offerPilots.isPending || assignments.some((a) => a.layer === "pilot")}
-                    className="btn-cmd text-[10px]"
-                  >
-                    {offerPilots.isPending ? "Sending offers…" : "Send bid-offer to top 3 pilots"}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-secondary-fg flex items-center gap-1.5">
+                      Response window
+                      <input
+                        type="number"
+                        min={1}
+                        max={240}
+                        value={windowMin}
+                        onChange={(e) => setWindowMin(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-14 px-1.5 py-0.5 text-xs bg-transparent border rounded text-primary-fg"
+                        style={{ borderColor: "var(--border-subtle)" }}
+                      />
+                      min
+                    </label>
+                    <button
+                      onClick={() => offerPilots.mutate()}
+                      disabled={offerPilots.isPending || assignments.some((a) => a.layer === "pilot")}
+                      className="btn-cmd text-[10px]"
+                    >
+                      {offerPilots.isPending ? "Sending offers…" : `Send bid-offer (${windowMin}m)`}
+                    </button>
+                  </div>
                 </div>
                 <p className="text-[11px] text-secondary-fg mb-2">
-                  Behind-the-scenes filter: type ratings, FDP limits, rest, currency, pairing preferences. 15-minute countdown per rank; auto-cascades on decline or expiry.
+                  Behind-the-scenes filter: type ratings, FDP limits, rest, currency, pairing preferences. Countdown auto-declines and cascades to the next-ranked pilot when it hits zero.
                 </p>
                 <PilotOfferRows
                   rows={assignments.filter((a) => a.layer === "pilot")}
                   nameOf={nameOf}
                   onAccept={(id) => updateStatus.mutate({ id, status: "accepted" })}
                   onDecline={(a) => cascade.mutate(a)}
+                  onExtend={(id) => extend.mutate({ id, minutes: windowMin })}
+                  onExpire={(a) => cascade.mutate(a)}
                 />
               </section>
+
             </div>
           )}
         </div>
@@ -300,23 +334,26 @@ function AssignmentRows({ rows, nameOf, onCancel }: { rows: Assignment[]; nameOf
   );
 }
 
-function PilotOfferRows({ rows, nameOf, onAccept, onDecline }: {
+function PilotOfferRows({ rows, nameOf, onAccept, onDecline, onExtend, onExpire }: {
   rows: Assignment[]; nameOf: (id: string) => string;
   onAccept: (id: string) => void; onDecline: (a: Assignment) => void;
+  onExtend: (id: string) => void; onExpire: (a: Assignment) => void;
 }) {
   if (rows.length === 0) return <div className="text-xs text-secondary-fg italic">No pilot offers sent yet.</div>;
   return (
     <div className="space-y-2">
-      {rows.map((r) => <PilotRow key={r.id} r={r} name={nameOf(r.crew_id)} onAccept={onAccept} onDecline={onDecline} />)}
+      {rows.map((r) => <PilotRow key={r.id} r={r} name={nameOf(r.crew_id)} onAccept={onAccept} onDecline={onDecline} onExtend={onExtend} onExpire={onExpire} />)}
     </div>
   );
 }
 
-function PilotRow({ r, name, onAccept, onDecline }: {
+function PilotRow({ r, name, onAccept, onDecline, onExtend, onExpire }: {
   r: Assignment; name: string;
   onAccept: (id: string) => void; onDecline: (a: Assignment) => void;
+  onExtend: (id: string) => void; onExpire: (a: Assignment) => void;
 }) {
   const [now, setNow] = useState(Date.now());
+  const [firedExpiry, setFiredExpiry] = useState(false);
   useEffect(() => {
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
@@ -326,8 +363,18 @@ function PilotRow({ r, name, onAccept, onDecline }: {
   const mm = Math.max(0, Math.floor(expMs / 60000));
   const ss = Math.max(0, Math.floor((expMs % 60000) / 1000));
 
+  // Auto-decline on expiry: when the offer window elapses, cascade to next rank.
+  useEffect(() => {
+    if (r.status === "offered" && r.expires_at && expMs <= 0 && !firedExpiry) {
+      setFiredExpiry(true);
+      onExpire(r);
+    }
+  }, [expMs, r, firedExpiry, onExpire]);
+
+  const urgent = active && expMs < 2 * 60 * 1000;
+
   return (
-    <div className="p-3 border rounded" style={{ borderColor: active ? "var(--accent-primary)" : "var(--border-subtle)", background: active ? "color-mix(in oklab, var(--accent-primary) 6%, transparent)" : "transparent" }}>
+    <div className="p-3 border rounded" style={{ borderColor: active ? (urgent ? "var(--status-amber)" : "var(--accent-primary)") : "var(--border-subtle)", background: active ? `color-mix(in oklab, ${urgent ? "var(--status-amber)" : "var(--accent-primary)"} 6%, transparent)` : "transparent" }}>
       <div className="flex items-center gap-3">
         <span className="text-[10px] font-mono text-secondary-fg w-6">#{r.rank}</span>
         <div className="flex-1 min-w-0">
@@ -335,7 +382,7 @@ function PilotRow({ r, name, onAccept, onDecline }: {
           <div className="text-[11px] text-secondary-fg truncate">{r.reason}</div>
         </div>
         {active && (
-          <div className="flex items-center gap-1.5 text-[11px] font-mono" style={{ color: "var(--accent-primary)" }}>
+          <div className="flex items-center gap-1.5 text-[11px] font-mono" style={{ color: urgent ? "var(--status-amber)" : "var(--accent-primary)" }}>
             <Clock className="w-3.5 h-3.5" />
             {String(mm).padStart(2, "0")}:{String(ss).padStart(2, "0")}
           </div>
@@ -343,15 +390,19 @@ function PilotRow({ r, name, onAccept, onDecline }: {
         <span className="text-[10px] font-mono uppercase tracking-wider" style={{ color: statusColor(r.status) }}>{r.status}</span>
       </div>
       {active && (
-        <div className="flex gap-2 mt-2">
+        <div className="flex gap-2 mt-2 flex-wrap">
           <button onClick={() => onAccept(r.id)} className="btn-cmd text-[10px] flex-1 justify-center" style={{ background: "var(--status-green)", color: "black" }}>
             <Check className="w-3.5 h-3.5" /> Accept command
           </button>
           <button onClick={() => onDecline(r)} className="btn-cmd text-[10px]">
             <X className="w-3.5 h-3.5" /> Decline · cascade
           </button>
+          <button onClick={() => onExtend(r.id)} className="btn-cmd text-[10px]" title="Reset the countdown using the window above">
+            <Clock className="w-3.5 h-3.5" /> Extend
+          </button>
         </div>
       )}
     </div>
   );
 }
+
