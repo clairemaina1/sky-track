@@ -42,9 +42,11 @@ type Row = {
   progress_pct: number | null;
   scheduled_departure: string;
   org_id: string;
-  aircraft: { id: string; tail_number: string; airline: string | null } | null;
+  // aircraft.icao24_hex included below for ADS-B live-match on the map
+  aircraft: { id: string; tail_number: string; airline: string | null; icao24_hex: string | null } | null;
   organizations: { name: string } | null;
 };
+
 
 
 function TrackerPage() {
@@ -60,7 +62,7 @@ function TrackerPage() {
       // via the `is_super_admin(auth.uid())` branch in the flights SELECT policy.
       const { data } = await supabase
         .from("flights")
-        .select("id, flight_number, origin_icao, destination_icao, status, progress_pct, scheduled_departure, org_id, aircraft(id, tail_number, airline), organizations(name)")
+        .select("id, flight_number, origin_icao, destination_icao, status, progress_pct, scheduled_departure, org_id, aircraft(id, tail_number, airline, icao24_hex), organizations(name)")
         .in("status", ["En_Route", "Departed", "Approach", "Scheduled", "Boarding"])
         .order("scheduled_departure", { ascending: true })
         .limit(400);

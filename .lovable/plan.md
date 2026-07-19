@@ -1,74 +1,49 @@
-# SkyTrack — Super-Admin Lockdown, Categories, Approvals & Logbook
 
-Big architectural pass. Four interlocking pieces — best to land together so RLS stays consistent.
+## Scope
 
-## 1. Super-admin (only you)
+You picked "everything, in sequence" plus 3 called out (ADS-B, Weather/SIGMET, aviation theme) and placeholder trust assets. Realistically that's 13 substantial features + a redesign. I'll ship them in 4 turns so each one is actually solid rather than half-built.
 
-- New `app_role` value: `super_admin`. Hardcoded email in a migration seed grants it to your account on first sign-in (trigger on `auth.users` matches the email → inserts into `user_roles`).
-- **What email should I hardcode?** Need that before I run the migration.
-- Helper: `public.is_super_admin(uid) → bool` (SECURITY DEFINER). Used in every RLS policy as an unconditional bypass so you see everything across every org and every category.
-- A `/superadmin` route, hidden from everyone else, shows: all orgs, all users, all pending approvals, cross-org KPIs.
+### Turn 1 (this turn) — Live Ops core
 
-## 2. Sign-up & invitations
+1. **Real ADS-B via OpenSky** — TanStack server function `fetchLiveAircraft()` polling `https://opensky-network.org/api/states/all` (free, no auth). Bounding box for Africa + Europe by default. Cached 10s server-side. Merged into `WorldMap.tsx`: gray/dim icons = OpenSky background traffic, colored icons = tenant fleet (matched by `icao24` or `callsign` on `aircraft` table — new nullable column `icao24_hex`). Superadmin sees everything colored per-org.
+2. **Weather + SIGMET overlay** — Google Maps Weather connector already linked. Server fn `fetchWeatherTiles` returns tile URL template; render as Leaflet TileLayer with opacity slider. Toggle chips: Clouds / Precip / Turbulence.
+3. **Dark aviation theme on tracker** — swap CARTO dark → custom Leaflet CSS: near-black bg (`#0a0e1a`), magenta airways hint (SVG overlay of major FIR boundaries), amber airport dots, VOR-rose marker for major hubs. New `src/routes/_authenticated/tracker.css` with sectional-chart tokens.
+4. **Trust & Compliance page** (`/trust`, public) — placeholder cert badges (ISO 27001 in progress, SOC 2 Type I roadmap, KCAA-aligned, GDPR), 2 named launch partners with placeholder logos ("Skyward Aviation Ltd" + "Astral Flight Academy" — clearly swappable), security posture blurb, data residency note.
 
-- Public sign-up stays **enabled** but every new `auth.users` row triggers a row in `public.pending_users` with `status='pending'`, no org, no role. They land on a "Waiting for approval" screen — zero data access (RLS denies everything until approved).
-- Two approval paths:
-  - You (super_admin) approve from `/superadmin` → assign org(s), category access, and role. Role is **permanent**; only you can change it afterwards (RLS on `user_roles` UPDATE/DELETE = super_admin only).
-  - You can also send invites directly (`invitations` table already exists) with org + category + role pre-baked.
-- Org admins can request to add a user, but the request goes to your queue — they cannot finalise role assignment.
+### Turn 2 — Financial intelligence
 
-## 3. Categories (multi-category orgs)
+5. Fuel-burn heatmap page (`/analytics/fuel`) — kg/seat-km per route, sortable table + heat-colored route lines on mini map.
+6. What-if AOG simulator (`/ops/whatif`) — select tail + date, returns swap candidates (available aircraft same type), delay cost estimate, crew legality check via existing `crew_is_clear` fn.
+7. NOTAM/TFR overlay on tracker — FAA NOTAM API (free) + manual entry table `notams` (org-scoped).
 
-- New table `categories` with fixed rows: `flight_school`, `icao`, `airline`, `cargo`.
-- New table `organization_categories(org_id, category_id, brand_label)` — an org can hold any subset. `brand_label` lets each show as e.g. "SkyTrack Cargo".
-- New table `user_category_access(user_id, org_id, category_id)` — gates which categories a member sees. RLS on every domain table adds a category check (e.g. `flights` rows tagged with `category`; users only read rows whose category is in their access set).
-- Top bar gets a **category switcher** (only categories the user has access to). The whole shell rebrands: logo wordmark, nav manifest, accent color all swap per category. One org with multiple categories = one switcher; single-category orgs = no switcher, name is fixed.
-- `tierGuard.ts` is replaced by `categoryGuard.ts` with the four categories driving nav visibility. Existing `tier` column on `organizations` is kept for back-compat but no longer drives UI.
-- **Cross-tenant isolation:** every domain table already has `org_id` + RLS. I'll add a category column where missing (`flights`, `aircraft`, `cargo`, `maintenance`, etc.) and extend policies so a user can only read rows in `(their org) AND (a category they have access to)`. Super_admin bypasses both.
+### Turn 3 — Revenue / stickiness
 
-## 4. Approval workflow (everything by default)
+8. Public passenger status page `/status/$flightNumber` — public route, no auth, live status + ETA.
+9. Regulator export packs — PDF bundle generator (KCAA/EASA/FAA templated) via server fn using existing PDF pipeline.
+10. Carbon offset marketplace stub — "Buy offsets" CTA on carbon report, links to partner (placeholder Gold Standard), tracks intent in DB for commission reporting.
+11. Wet-lease/crew-swap marketplace — new table `marketplace_listings`, tenants post available assets, others browse (cross-org read allowed for this table only).
 
-- New columns on every user-writable table: `approval_status` ('pending'|'approved'|'rejected'), `approved_by`, `approved_at`, `created_by`.
-- RLS SELECT policy changes: non-admins see `approved` rows + their own pending rows. Org admins / higher roles see all pending in their org. Super_admin sees everything.
-- INSERT defaults `approval_status='pending'` unless the inserter is admin/super_admin (their inserts auto-approve).
-- A single `/approvals` inbox per role:
-  - Super_admin: every pending row, every org.
-  - Org admin: pending rows in their org.
-  - Higher-role-than-creator: pending rows from their subordinates (e.g. instructor approves student's logbook entry).
-- Approval/reject is one click → flips status, stamps `approved_by`.
+### Turn 4 — Delight
 
-## 5. Pilot Logbook (Flight School category)
+12. Voice command in SkyChat — Web Speech API mic button → existing chat pipeline.
+13. Slack/Teams webhook alerts on AOG — org-level webhook URL in Settings, fires from existing `alerts` insert trigger.
+14. Mobile pilot logbook shortcut — PWA manifest + `/pilot` mobile-first route for quick logbook entry.
 
-- New table `pilot_logbook_entries`: date, aircraft_id, pic/sic, departure, arrival, route, total_time, day/night, IFR/VFR, sim time, instructor sign-off, remarks. Tied to org + flight_school category + user_id + `approval_status`.
-- New dashboard widget on Command (when active category = flight_school) showing recent entries + totals (last 30d, last 90d, total PIC, total night, etc.).
-- New route `/logbook` (flight_school only): table with inline editing (reuses `EditableCell`), "Add Entry" dialog, PDF export of last N entries.
-- Entries are pending until an instructor or admin signs them off.
+Apple Watch app is out of scope (needs native Xcode project, not something Lovable can ship).
 
-## Technical Plan
+### Technical details (Turn 1 specifics)
 
-**Migrations (single batch, in order):**
-1. Add `super_admin` enum + hardcoded-email seed trigger + `is_super_admin()` helper.
-2. `categories`, `organization_categories`, `user_category_access` tables + GRANTs + RLS.
-3. `pending_users` table + trigger on `auth.users` insert.
-4. Add `category_id`, `approval_status`, `approved_by`, `approved_at`, `created_by` to domain tables; backfill existing rows as `approved` so nothing disappears.
-5. Replace all existing RLS policies on domain tables with the new (org + category + approval + super_admin bypass) versions.
-6. `pilot_logbook_entries` table + RLS.
-7. Lock `user_roles` mutations to super_admin only.
+- **DB migration**: `ALTER TABLE aircraft ADD COLUMN icao24_hex text` (nullable, lowercase hex mode-S code). No RLS changes.
+- **Server fn**: `src/lib/opensky.functions.ts` — GET, no auth, 10s in-memory cache keyed by bbox. Returns `{ icao24, callsign, lon, lat, alt_m, velocity_ms, heading, on_ground }[]`.
+- **WorldMap changes**: two marker layers (background dim + tenant highlighted). Match rule: `aircraft.icao24_hex === state.icao24` OR `aircraft.tail_number === state.callsign?.trim()`.
+- **Weather**: server fn `getWeatherTileUrl(layer: 'clouds'|'precip'|'turbulence')` calls Google Maps Weather via connector gateway, returns signed tile template. Cached 5min.
+- **Aviation theme**: keeps Leaflet, restyles via CSS class `.tracker--aviation` on map container. FIR/airway lines rendered as SVG `<Polyline>` layers with magenta stroke, low opacity.
+- **/trust route**: public SSR route, static content, proper `<head>` OG tags, JSON-LD `Organization` schema for SEO.
 
-**Code:**
-- `src/lib/categoryGuard.ts` (replaces `tierGuard.ts` — old file deleted).
-- `src/hooks/use-category.ts` (current category + switcher).
-- `src/components/layout/CategorySwitcher.tsx` in TopBar.
-- `src/components/layout/Shell.tsx`, `Sidebar.tsx`, `SkytrackLogo.tsx`: brand per category.
-- `src/routes/_authenticated/superadmin.tsx` (gated to super_admin).
-- `src/routes/_authenticated/approvals.tsx`.
-- `src/routes/_authenticated/logbook.tsx` + dashboard widget.
-- `src/routes/_authenticated/pending.tsx` (the "waiting for approval" screen — `_authenticated/route.tsx` redirects here when the user has no approved access).
-- Updates to `_authenticated/route.tsx` gate to check approval status.
+### What you'll need to swap later
 
-## What I need from you
+- OpenSky provides free anonymous access (~10s rate limit, limited history). For >100 aircraft/sec real-time or historical, register free OpenSky account and add `OPENSKY_USER` / `OPENSKY_PASS` secrets — I'll wire the env var but leave it optional.
+- Trust page logos + customer names — hardcoded placeholders you overwrite in `src/routes/trust.tsx`.
+- FIR/airway overlay uses simplified public-domain data (major boundaries only), not full aeronautical charts (those are licensed).
 
-1. **Your email** for the super_admin seed (will be hardcoded in the migration).
-2. Confirm the four category brand labels exactly: "SkyTrack Flight Schools", "SkyTrack ICAO", "SkyTrack Airlines", "SkyTrack Cargo" — or your preferred wording.
-
-Reply with those two and I'll run the migrations and ship the code in one pass.
+Ready for me to build Turn 1?
