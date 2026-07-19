@@ -34,7 +34,12 @@ function CommandCenter() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-display uppercase tracking-[0.12em] text-lg">Command Center</h1>
+      <div>
+        <h1 className="font-display uppercase tracking-[0.12em] text-lg">Command Center</h1>
+        <p className="text-sm text-secondary-fg mt-1">
+          Flight delay mitigation · Asset utilization · Compliance-ready carbon reporting.
+        </p>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {tiles.map((t) => (
           <Link key={t.to} to={t.to} className="panel p-4 hover:bg-[var(--bg-elevated)] transition">

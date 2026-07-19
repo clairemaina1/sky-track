@@ -315,6 +315,133 @@ export type Database = {
           },
         ]
       }
+      crew_assignments: {
+        Row: {
+          created_at: string
+          crew_id: string
+          expires_at: string | null
+          flight_id: string
+          id: string
+          layer: Database["public"]["Enums"]["crew_layer"]
+          offered_at: string | null
+          org_id: string
+          rank: number
+          reason: string | null
+          responded_at: string | null
+          status: Database["public"]["Enums"]["assignment_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          crew_id: string
+          expires_at?: string | null
+          flight_id: string
+          id?: string
+          layer: Database["public"]["Enums"]["crew_layer"]
+          offered_at?: string | null
+          org_id: string
+          rank?: number
+          reason?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          crew_id?: string
+          expires_at?: string | null
+          flight_id?: string
+          id?: string
+          layer?: Database["public"]["Enums"]["crew_layer"]
+          offered_at?: string | null
+          org_id?: string
+          rank?: number
+          reason?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crew_assignments_crew_id_fkey"
+            columns: ["crew_id"]
+            isOneToOne: false
+            referencedRelation: "crew"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crew_assignments_flight_id_fkey"
+            columns: ["flight_id"]
+            isOneToOne: false
+            referencedRelation: "flights"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crew_assignments_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crew_credentials: {
+        Row: {
+          created_at: string
+          credential_type: string
+          crew_id: string
+          expires_on: string
+          id: string
+          issued_on: string | null
+          issuing_authority: string | null
+          notes: string | null
+          org_id: string
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credential_type: string
+          crew_id: string
+          expires_on: string
+          id?: string
+          issued_on?: string | null
+          issuing_authority?: string | null
+          notes?: string | null
+          org_id: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credential_type?: string
+          crew_id?: string
+          expires_on?: string
+          id?: string
+          issued_on?: string | null
+          issuing_authority?: string | null
+          notes?: string | null
+          org_id?: string
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crew_credentials_crew_id_fkey"
+            columns: ["crew_id"]
+            isOneToOne: false
+            referencedRelation: "crew"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crew_credentials_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       flights: {
         Row: {
           actual_arrival: string | null
@@ -395,6 +522,50 @@ export type Database = {
           },
           {
             foreignKeyName: "flights_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integrations: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          last_error: string | null
+          last_sync_at: string | null
+          org_id: string
+          provider: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          org_id: string
+          provider: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          org_id?: string
+          provider?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrations_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -833,6 +1004,10 @@ export type Database = {
         Args: { _name: string; _tier: string }
         Returns: string
       }
+      crew_is_clear: {
+        Args: { _crew_id: string; _days?: number }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -878,12 +1053,21 @@ export type Database = {
         | "Delayed"
         | "Standby"
       app_role: "admin" | "dispatcher" | "crew" | "maintenance" | "super_admin"
+      assignment_status:
+        | "offered"
+        | "accepted"
+        | "declined"
+        | "expired"
+        | "cascaded"
+        | "locked"
+        | "auto_assigned"
       cargo_status:
         | "Loaded"
         | "In-Transit"
         | "Delayed"
         | "Offloaded"
         | "Held-Customs"
+      crew_layer: "cabin" | "pilot"
       crew_status:
         | "On-Duty"
         | "Off-Duty"
@@ -1034,6 +1218,15 @@ export const Constants = {
         "Standby",
       ],
       app_role: ["admin", "dispatcher", "crew", "maintenance", "super_admin"],
+      assignment_status: [
+        "offered",
+        "accepted",
+        "declined",
+        "expired",
+        "cascaded",
+        "locked",
+        "auto_assigned",
+      ],
       cargo_status: [
         "Loaded",
         "In-Transit",
@@ -1041,6 +1234,7 @@ export const Constants = {
         "Offloaded",
         "Held-Customs",
       ],
+      crew_layer: ["cabin", "pilot"],
       crew_status: [
         "On-Duty",
         "Off-Duty",

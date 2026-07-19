@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -10,11 +9,10 @@ export const Route = createFileRoute("/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign In — SkyTrack AAOS" },
-      { name: "description", content: "Sign in to SkyTrack AAOS — the agentic aviation operating system for fleet, MRO, crew, and operations command." },
-      { property: "og:title", content: "Sign In — SkyTrack AAOS" },
-      { property: "og:description", content: "Access your SkyTrack Aviation Command Center." },
-      { property: "og:url", content: "/login" },
+      { title: "Sign in — SkyTrack" },
+      { name: "description", content: "Sign in to SkyTrack — flight delay mitigation, asset utilization and compliance-ready carbon reporting for airlines and flight schools." },
+      { property: "og:title", content: "Sign in — SkyTrack" },
+      { property: "og:description", content: "Access your SkyTrack operations command center." },
       { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "/login" }],
@@ -22,30 +20,28 @@ export const Route = createFileRoute("/login")({
 });
 
 function safeNext(next: string): string {
-  // Same-origin relative path only
   if (!next.startsWith("/") || next.startsWith("//")) return "/";
   return next;
 }
 
 type UIState = "idle" | "loading" | "success" | "error";
-type Mode = "magic" | "signin" | "signup";
+type Mode = "signin" | "signup" | "magic";
 
 function LoginPage() {
   const { next } = Route.useSearch();
   const target = safeNext(next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mode, setMode] = useState<Mode>("magic");
+  const [mode, setMode] = useState<Mode>("signin");
   const [ui, setUi] = useState<UIState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [focused, setFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) window.location.href = target;
     });
-    const t = setTimeout(() => inputRef.current?.focus(), 500);
+    const t = setTimeout(() => inputRef.current?.focus(), 300);
     return () => clearTimeout(t);
   }, [target]);
 
@@ -56,20 +52,12 @@ function LoginPage() {
   async function submit(e?: React.FormEvent) {
     e?.preventDefault();
     const trimmed = email.trim();
-    if (!validEmail(trimmed)) {
-      setErrorMsg("Enter a valid email address.");
-      setUi("error");
-      return;
-    }
+    if (!validEmail(trimmed)) { setErrorMsg("Enter a valid email address."); setUi("error"); return; }
     if ((mode === "signin" || mode === "signup") && password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters.");
-      setUi("error");
-      return;
+      setErrorMsg("Password must be at least 6 characters."); setUi("error"); return;
     }
 
-    setUi("loading");
-    setErrorMsg("");
-
+    setUi("loading"); setErrorMsg("");
     const redirectUrl = window.location.origin + target;
 
     try {
@@ -86,8 +74,7 @@ function LoginPage() {
         window.location.href = target;
       } else {
         const { error } = await supabase.auth.signUp({
-          email: trimmed,
-          password,
+          email: trimmed, password,
           options: { emailRedirectTo: redirectUrl },
         });
         if (error) throw error;
@@ -95,284 +82,165 @@ function LoginPage() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Authentication failed.";
-      setErrorMsg(
-        msg.includes("60 seconds")
-          ? "Please wait 60 seconds before requesting another link."
-          : msg,
-      );
+      setErrorMsg(msg.includes("60 seconds") ? "Please wait 60 seconds before requesting another link." : msg);
       setUi("error");
     }
-  }
-
-  function reset() {
-    setEmail("");
-    setPassword("");
-    setUi("idle");
-    setErrorMsg("");
-    setTimeout(() => inputRef.current?.focus(), 100);
   }
 
   const interactive = ui !== "loading" && ui !== "success";
 
   return (
-    <>
-      <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-void p-4">
-        {/* Background layers */}
-        <div className="absolute inset-0 sky-grid pointer-events-none" />
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(600px 400px at 50% 40%, color-mix(in oklab, var(--accent-primary) 18%, transparent), transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute left-0 right-0 h-px sky-scanline pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent-primary) 60%, transparent), transparent)",
-            top: 0,
-          }}
-        />
-
-        {/* Corner telemetry */}
-        <div className="absolute top-4 left-4 font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg sky-fade-1">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 sky-pulse" />
-            SKYTRACK AAOS · LINK SECURE
+    <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{ background: "var(--bg-panel)" }}>
+      <div className="w-full max-w-sm">
+        {/* Brand */}
+        <div className="flex flex-col items-center mb-8">
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)" }}
+            aria-hidden
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M2 12l9-4-3 8 4-2 4 4 6-14z" />
+            </svg>
           </div>
-        </div>
-        <div className="absolute top-4 right-4 font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg sky-fade-1">
-          ICAO · <ClientClock />
-        </div>
-        <div className="absolute bottom-4 left-4 right-4 flex justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg sky-fade-1">
-          <span>AAOS v1.0</span>
-          <span>NODE · OPS-01 · NOMINAL</span>
+          <h1 className="text-2xl font-semibold text-primary-fg tracking-tight">SkyTrack</h1>
+          <p className="text-sm text-secondary-fg mt-1">Aviation operations, simplified.</p>
         </div>
 
         {/* Card */}
-        <div className="relative w-full max-w-[440px] sky-fade-2">
+        <div
+          className="rounded-2xl p-6 sm:p-7"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--border-subtle)",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 20px 40px -20px rgba(0,0,0,0.25)",
+          }}
+        >
+          {/* Tabs */}
           <div
-            className="absolute -inset-px rounded-sm pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(135deg, color-mix(in oklab, var(--accent-primary) 50%, transparent), transparent 60%)",
-              filter: "blur(1px)",
-            }}
-          />
-          <div
-            className="relative panel p-8"
-            style={{
-              backdropFilter: "blur(8px)",
-              background: "color-mix(in oklab, var(--surface) 92%, transparent)",
-            }}
+            className="flex p-0.5 rounded-lg mb-6"
+            style={{ background: "color-mix(in oklab, var(--bg-panel) 70%, transparent)" }}
           >
-            {/* Logo */}
-            <div className="flex items-center gap-3 mb-7 sky-fade-2">
-              <SkytrackLogo size={44} showWordmark={false} />
-              <div>
-                <div
-                  className="font-display font-bold text-xl tracking-[0.18em]"
+            {([
+              { id: "signin" as const, label: "Sign in" },
+              { id: "signup" as const, label: "Create account" },
+              { id: "magic" as const, label: "Magic link" },
+            ]).map((m) => {
+              const active = mode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => { setMode(m.id); setUi("idle"); setErrorMsg(""); }}
+                  className="flex-1 py-1.5 text-xs font-medium rounded-md transition-colors"
                   style={{
-                    background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
+                    background: active ? "var(--bg-elevated)" : "transparent",
+                    color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                    boxShadow: active ? "0 1px 2px rgba(0,0,0,0.08)" : "none",
                   }}
                 >
-                  SKYTRACK
-                </div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary-fg">
-                  Aviation Operating System
-                </div>
-              </div>
-            </div>
-
-            <div className="sky-fade-3 mb-1">
-              <h1 className="font-display text-2xl text-primary-fg">Authenticate</h1>
-            </div>
-            <p className="sky-fade-3 text-sm text-secondary-fg mb-6 leading-relaxed">
-              {mode === "magic"
-                ? "Enter your email — we'll send a secure, passwordless sign-in link valid for 60 minutes."
-                : mode === "signin"
-                  ? "Sign in with your email and password."
-                  : "Create a new SkyTrack account. You'll set up your organisation after signing in."}
-            </p>
-
-            {/* Mode tabs */}
-            <div className="sky-fade-3 flex gap-1 mb-4 border-b" style={{ borderColor: "var(--border-subtle)" }}>
-              {([
-                { id: "magic" as const, label: "Magic Link" },
-                { id: "signin" as const, label: "Sign In" },
-                { id: "signup" as const, label: "Create Account" },
-              ]).map((m) => {
-                const active = mode === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => { setMode(m.id); setUi("idle"); setErrorMsg(""); }}
-                    className="px-3 py-2 font-display text-[10px] uppercase tracking-[0.14em] -mb-px border-b-2"
-                    style={{
-                      color: active ? "var(--accent-primary)" : "var(--text-secondary)",
-                      borderColor: active ? "var(--accent-primary)" : "transparent",
-                    }}
-                  >
-                    {m.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {ui === "success" ? (
-              <div className="sky-fade-4 space-y-4">
-                <div
-                  className="flex items-center gap-3 p-4 border"
-                  style={{
-                    borderColor: "color-mix(in oklab, var(--accent-primary) 40%, transparent)",
-                    background: "color-mix(in oklab, var(--accent-primary) 8%, transparent)",
-                  }}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{ background: "var(--accent-primary)" }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-display text-sm text-primary-fg">Magic link transmitted</div>
-                    <div className="font-mono text-[11px] text-secondary-fg mt-0.5 break-all">
-                      → {email.trim()}
-                    </div>
-                  </div>
-                </div>
-                <button onClick={reset} className="btn-cmd w-full justify-center">
-                  Use a different email
+                  {m.label}
                 </button>
+              );
+            })}
+          </div>
+
+          {ui === "success" ? (
+            <div className="text-center py-4">
+              <div
+                className="w-10 h-10 rounded-full mx-auto flex items-center justify-center mb-3"
+                style={{ background: "color-mix(in oklab, var(--accent-primary) 15%, transparent)" }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
               </div>
-            ) : (
-              <form onSubmit={submit} className="sky-fade-4 space-y-4">
+              <div className="text-primary-fg font-medium">Check your inbox</div>
+              <div className="text-sm text-secondary-fg mt-1 break-words">We sent a sign-in link to {email.trim()}.</div>
+              <button
+                onClick={() => { setUi("idle"); setEmail(""); }}
+                className="mt-4 text-xs text-secondary-fg hover:text-primary-fg underline"
+              >
+                Use a different email
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={submit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-secondary-fg mb-1.5" htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  ref={inputRef}
+                  type="email"
+                  autoComplete="email"
+                  required
+                  disabled={!interactive}
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); if (ui === "error") { setUi("idle"); setErrorMsg(""); } }}
+                  placeholder="you@company.com"
+                  className="w-full px-3 py-2.5 rounded-lg text-sm text-primary-fg outline-none transition-colors"
+                  style={{
+                    background: "var(--bg-panel)",
+                    border: `1px solid ${ui === "error" ? "var(--status-red)" : "var(--border-subtle)"}`,
+                  }}
+                />
+              </div>
+
+              {(mode === "signin" || mode === "signup") && (
                 <div>
-                  <label className="font-display uppercase text-[10px] tracking-[0.18em] text-secondary-fg">
-                    Email
-                  </label>
+                  <label className="block text-xs font-medium text-secondary-fg mb-1.5" htmlFor="password">Password</label>
                   <input
-                    ref={inputRef}
-                    type="email"
+                    id="password"
+                    type="password"
+                    autoComplete={mode === "signup" ? "new-password" : "current-password"}
                     required
-                    autoComplete="email"
-                    value={email}
-                    placeholder="operator@airline.com"
+                    minLength={6}
                     disabled={!interactive}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (ui === "error") {
-                        setUi("idle");
-                        setErrorMsg("");
-                      }
-                    }}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    className="w-full mt-1.5 px-3 py-2.5 bg-surface border font-mono text-sm text-primary-fg placeholder:text-secondary-fg/60 outline-none transition-all disabled:opacity-50"
-                    style={{
-                      borderColor:
-                        ui === "error"
-                          ? "var(--status-red)"
-                          : focused
-                            ? "var(--accent-primary)"
-                            : "var(--border-subtle)",
-                      borderRadius: 2,
-                      boxShadow: focused
-                        ? "0 0 0 1px var(--accent-primary), 0 0 12px var(--accent-glow)"
-                        : "none",
-                      caretColor: "var(--accent-primary)",
-                    }}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm text-primary-fg outline-none"
+                    style={{ background: "var(--bg-panel)", border: "1px solid var(--border-subtle)" }}
                   />
                 </div>
+              )}
 
-                {(mode === "signin" || mode === "signup") && (
-                  <div>
-                    <label className="font-display uppercase text-[10px] tracking-[0.18em] text-secondary-fg">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      required
-                      minLength={6}
-                      autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                      value={password}
-                      disabled={!interactive}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full mt-1.5 px-3 py-2.5 bg-surface border font-mono text-sm text-primary-fg outline-none disabled:opacity-50"
-                      style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}
-                    />
-                  </div>
-                )}
+              {ui === "error" && errorMsg && (
+                <div className="text-xs" style={{ color: "var(--status-red)" }}>{errorMsg}</div>
+              )}
 
-                {ui === "error" && errorMsg && (
-                  <div
-                    className="flex items-start gap-2 p-2.5 border font-mono text-[11px]"
-                    style={{
-                      borderColor: "color-mix(in oklab, var(--status-red) 50%, transparent)",
-                      background: "color-mix(in oklab, var(--status-red) 10%, transparent)",
-                      color: "var(--status-red)",
-                    }}
-                  >
-                    <span>⚠</span>
-                    <span>{errorMsg}</span>
-                  </div>
-                )}
+              <button
+                type="submit"
+                disabled={!interactive}
+                className="w-full py-2.5 rounded-lg text-sm font-medium transition-opacity disabled:opacity-60"
+                style={{
+                  background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
+                  color: "white",
+                }}
+              >
+                {ui === "loading"
+                  ? "Please wait…"
+                  : mode === "magic" ? "Send magic link"
+                  : mode === "signin" ? "Sign in"
+                  : "Create account"}
+              </button>
 
-                <button
-                  type="submit"
-                  disabled={!interactive}
-                  className="btn-cmd w-full justify-center mt-2 disabled:opacity-60"
-                >
-                  {ui === "loading" ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="sky-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                      </svg>
-                      Transmitting…
-                    </span>
-                  ) : mode === "magic" ? (
-                    "Send Magic Link →"
-                  ) : mode === "signin" ? (
-                    "Sign In →"
-                  ) : (
-                    "Create Account →"
-                  )}
-                </button>
-              </form>
-            )}
-
-            <div
-              className="mt-6 pt-4 border-t text-[10px] font-mono uppercase tracking-[0.14em] text-secondary-fg leading-relaxed"
-              style={{ borderColor: "var(--border-subtle)" }}
-            >
-              By authenticating you accept SkyTrack operational terms. Platform
-              processes ICAO-compliant aviation data.
-            </div>
-          </div>
-
-          <div className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-secondary-fg sky-fade-4">
-            SKYTRACK AAOS v1.0 · ICAO COMPLIANT · CARBON NEUTRAL 2030
-          </div>
+              {mode === "signin" && (
+                <div className="text-center text-xs text-secondary-fg">
+                  New to SkyTrack?{" "}
+                  <button type="button" onClick={() => setMode("signup")} className="text-primary-fg hover:underline">
+                    Create an account
+                  </button>
+                </div>
+              )}
+            </form>
+          )}
         </div>
-      </div>
-    </>
-  );
-}
 
-function ClientClock() {
-  const [t, setT] = useState<string>("");
-  useEffect(() => {
-    const tick = () => setT(new Date().toISOString().slice(0, 16).replace("T", " ") + "Z");
-    tick();
-    const id = setInterval(tick, 30000);
-    return () => clearInterval(id);
-  }, []);
-  return <span suppressHydrationWarning>{t || "—"}</span>;
+        <p className="text-center text-[11px] text-secondary-fg mt-6 leading-relaxed">
+          By continuing you agree to SkyTrack&apos;s terms and privacy policy.
+        </p>
+      </div>
+    </div>
+  );
 }

@@ -23,6 +23,7 @@ import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMroRouteImport } from './routes/_authenticated/mro'
 import { Route as AuthenticatedLogbookRouteImport } from './routes/_authenticated/logbook'
+import { Route as AuthenticatedIntegrationsRouteImport } from './routes/_authenticated/integrations'
 import { Route as AuthenticatedFlightsRouteImport } from './routes/_authenticated/flights'
 import { Route as AuthenticatedFleetRouteImport } from './routes/_authenticated/fleet'
 import { Route as AuthenticatedDisruptionRouteImport } from './routes/_authenticated/disruption'
@@ -30,6 +31,7 @@ import { Route as AuthenticatedCrewRouteImport } from './routes/_authenticated/c
 import { Route as AuthenticatedCargoRouteImport } from './routes/_authenticated/cargo'
 import { Route as AuthenticatedCarbonRouteImport } from './routes/_authenticated/carbon'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
+import { Route as AuthenticatedAllocationRouteImport } from './routes/_authenticated/allocation'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -108,6 +110,12 @@ const AuthenticatedLogbookRoute = AuthenticatedLogbookRouteImport.update({
   path: '/logbook',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedIntegrationsRoute =
+  AuthenticatedIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedFlightsRoute = AuthenticatedFlightsRouteImport.update({
   id: '/flights',
   path: '/flights',
@@ -141,6 +149,11 @@ const AuthenticatedCarbonRoute = AuthenticatedCarbonRouteImport.update({
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAllocationRoute = AuthenticatedAllocationRouteImport.update({
+  id: '/allocation',
+  path: '/allocation',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -195,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/allocation': typeof AuthenticatedAllocationRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
@@ -202,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -224,6 +239,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/allocation': typeof AuthenticatedAllocationRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/carbon': typeof AuthenticatedCarbonRoute
   '/cargo': typeof AuthenticatedCargoRoute
@@ -231,6 +247,7 @@ export interface FileRoutesByTo {
   '/disruption': typeof AuthenticatedDisruptionRoute
   '/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/integrations': typeof AuthenticatedIntegrationsRoute
   '/logbook': typeof AuthenticatedLogbookRoute
   '/mro': typeof AuthenticatedMroRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -256,6 +273,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/allocation': typeof AuthenticatedAllocationRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/carbon': typeof AuthenticatedCarbonRoute
   '/_authenticated/cargo': typeof AuthenticatedCargoRoute
@@ -263,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/disruption': typeof AuthenticatedDisruptionRoute
   '/_authenticated/fleet': typeof AuthenticatedFleetRouteWithChildren
   '/_authenticated/flights': typeof AuthenticatedFlightsRouteWithChildren
+  '/_authenticated/integrations': typeof AuthenticatedIntegrationsRoute
   '/_authenticated/logbook': typeof AuthenticatedLogbookRoute
   '/_authenticated/mro': typeof AuthenticatedMroRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -289,6 +308,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/allocation'
     | '/approvals'
     | '/carbon'
     | '/cargo'
@@ -296,6 +316,7 @@ export interface FileRouteTypes {
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/integrations'
     | '/logbook'
     | '/mro'
     | '/onboarding'
@@ -318,6 +339,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/allocation'
     | '/approvals'
     | '/carbon'
     | '/cargo'
@@ -325,6 +347,7 @@ export interface FileRouteTypes {
     | '/disruption'
     | '/fleet'
     | '/flights'
+    | '/integrations'
     | '/logbook'
     | '/mro'
     | '/onboarding'
@@ -349,6 +372,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
+    | '/_authenticated/allocation'
     | '/_authenticated/approvals'
     | '/_authenticated/carbon'
     | '/_authenticated/cargo'
@@ -356,6 +380,7 @@ export interface FileRouteTypes {
     | '/_authenticated/disruption'
     | '/_authenticated/fleet'
     | '/_authenticated/flights'
+    | '/_authenticated/integrations'
     | '/_authenticated/logbook'
     | '/_authenticated/mro'
     | '/_authenticated/onboarding'
@@ -486,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLogbookRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/integrations': {
+      id: '/_authenticated/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof AuthenticatedIntegrationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/flights': {
       id: '/_authenticated/flights'
       path: '/flights'
@@ -533,6 +565,13 @@ declare module '@tanstack/react-router' {
       path: '/approvals'
       fullPath: '/approvals'
       preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/allocation': {
+      id: '/_authenticated/allocation'
+      path: '/allocation'
+      fullPath: '/allocation'
+      preLoaderRoute: typeof AuthenticatedAllocationRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -629,6 +668,7 @@ const AuthenticatedFlightsRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAllocationRoute: typeof AuthenticatedAllocationRoute
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedCarbonRoute: typeof AuthenticatedCarbonRoute
   AuthenticatedCargoRoute: typeof AuthenticatedCargoRoute
@@ -636,6 +676,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDisruptionRoute: typeof AuthenticatedDisruptionRoute
   AuthenticatedFleetRoute: typeof AuthenticatedFleetRouteWithChildren
   AuthenticatedFlightsRoute: typeof AuthenticatedFlightsRouteWithChildren
+  AuthenticatedIntegrationsRoute: typeof AuthenticatedIntegrationsRoute
   AuthenticatedLogbookRoute: typeof AuthenticatedLogbookRoute
   AuthenticatedMroRoute: typeof AuthenticatedMroRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -648,6 +689,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAllocationRoute: AuthenticatedAllocationRoute,
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedCarbonRoute: AuthenticatedCarbonRoute,
   AuthenticatedCargoRoute: AuthenticatedCargoRoute,
@@ -655,6 +697,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDisruptionRoute: AuthenticatedDisruptionRoute,
   AuthenticatedFleetRoute: AuthenticatedFleetRouteWithChildren,
   AuthenticatedFlightsRoute: AuthenticatedFlightsRouteWithChildren,
+  AuthenticatedIntegrationsRoute: AuthenticatedIntegrationsRoute,
   AuthenticatedLogbookRoute: AuthenticatedLogbookRoute,
   AuthenticatedMroRoute: AuthenticatedMroRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
