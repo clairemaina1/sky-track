@@ -6,6 +6,7 @@ import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import { useMyOrgs, useCurrentOrgId } from "@/hooks/use-org";
 import { useUiStore } from "@/stores/uiStore";
 import { useMyCategories, useCurrentCategory, CATEGORY_LABEL, CATEGORY_ACCENT, type SkytrackCategory } from "@/hooks/use-category";
+import { useTranslation } from "react-i18next";
 
 function CategorySwitcher() {
   const [orgId] = useCurrentOrgId();
@@ -97,6 +98,8 @@ function LangToggle() {
 export function TopBar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const setMobileNav = useUiStore((s) => s.setMobileNav);
+  const { t, i18n } = useTranslation();
+  void i18n.language; // re-render on lang change
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     setNow(new Date());
@@ -104,6 +107,8 @@ export function TopBar() {
     return () => clearInterval(id);
   }, []);
   const utc = now ? now.toISOString().slice(11, 19) + " UTC" : "";
+  const seg = path.replace("/", "").split("/")[0];
+  const label = path === "/" ? t("top.commandCenter") : (t(`nav.${seg}`) === `nav.${seg}` ? seg.toUpperCase() : String(t(`nav.${seg}`)).toUpperCase());
   return (
     <header
       className="h-12 flex items-center justify-between px-2 sm:px-4 border-b bg-panel gap-2"
@@ -118,7 +123,7 @@ export function TopBar() {
           <Menu className="w-4 h-4" />
         </button>
         <div className="font-display uppercase text-xs tracking-[0.12em] text-secondary-fg truncate">
-          {path === "/" ? "Command Center" : path.replace("/", "").toUpperCase()}
+          {label}
         </div>
       </div>
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">

@@ -3,11 +3,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Aircraft, Alert } from "@/lib/types";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: pageHead({ title: "Command Center — SkyTrack AAOS", description: "SkyTrack AAOS command center: live overview of fleet, flights, maintenance, crew, and disruptions.", path: "/" }), component: CommandCenter });
 
 function CommandCenter() {
+  const { t, i18n } = useTranslation();
+  void i18n.language;
   const { data: fleet = [] } = useQuery({
     queryKey: ["aircraft"],
     queryFn: async () => (await supabase.from("aircraft").select("*")).data as Aircraft[],
@@ -26,19 +29,17 @@ function CommandCenter() {
   };
 
   const tiles = [
-    { to: "/fleet", label: "Fleet", value: `${stats.total} TAILS`, sub: `${stats.flying} airborne` },
-    { to: "/mro", label: "Fleet Health", value: `${stats.avgHealth.toFixed(1)}%`, sub: `avg score` },
-    { to: "/disruption", label: "Active Alerts", value: `${alerts.length}`, sub: "unacknowledged" },
-    { to: "/cargo", label: "Operations", value: stats.aog > 0 ? "AOG" : "NOMINAL", sub: stats.aog > 0 ? `${stats.aog} grounded` : "all systems go" },
+    { to: "/fleet", label: t("dash.fleet"), value: `${stats.total} ${t("dash.tails")}`, sub: `${stats.flying} ${t("dash.airborne")}` },
+    { to: "/mro", label: t("dash.fleetHealth"), value: `${stats.avgHealth.toFixed(1)}%`, sub: t("dash.avgScore") },
+    { to: "/disruption", label: t("dash.activeAlerts"), value: `${alerts.length}`, sub: t("dash.unack") },
+    { to: "/cargo", label: t("dash.operations"), value: stats.aog > 0 ? t("dash.aog") : t("dash.nominal"), sub: stats.aog > 0 ? `${stats.aog} ${t("dash.grounded")}` : t("dash.allGo") },
   ];
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="font-display uppercase tracking-[0.12em] text-lg">Command Center</h1>
-        <p className="text-sm text-secondary-fg mt-1">
-          Flight delay mitigation · Asset utilization · Compliance-ready carbon reporting.
-        </p>
+        <h1 className="font-display uppercase tracking-[0.12em] text-lg">{t("dash.title")}</h1>
+        <p className="text-sm text-secondary-fg mt-1">{t("dash.tagline")}</p>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {tiles.map((t) => (
@@ -50,9 +51,9 @@ function CommandCenter() {
         ))}
       </div>
       <div className="panel p-4">
-        <div className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">Recent Alerts</div>
+        <div className="font-display uppercase text-xs tracking-wider text-secondary-fg mb-3">{t("dash.recentAlerts")}</div>
         <ul className="space-y-2">
-          {alerts.length === 0 && <li className="text-xs text-muted-fg">No active alerts.</li>}
+          {alerts.length === 0 && <li className="text-xs text-muted-fg">{t("dash.noAlerts")}</li>}
           {alerts.map((a) => (
             <li key={a.id} className="text-xs flex items-center gap-3">
               <span className="font-mono px-2 py-0.5" style={{ color: a.severity === "Critical" ? "var(--status-red)" : "var(--status-amber)", borderLeft: "2px solid currentColor" }}>{a.severity}</span>

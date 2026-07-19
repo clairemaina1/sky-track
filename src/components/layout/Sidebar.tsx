@@ -34,6 +34,7 @@ import {
   type PlatformTier,
   type UserRole,
 } from "@/lib/tierGuard";
+import { useTranslation } from "react-i18next";
 
 const ICONS: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -69,6 +70,12 @@ export function Sidebar({
   forceExpanded = false,
 }: { onNavigate?: () => void; forceExpanded?: boolean } = {}) {
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const { t } = useTranslation();
+  const tr = (id: string, fallback: string) => {
+    const k = `nav.${id}`;
+    const v = t(k);
+    return v === k ? fallback : v;
+  };
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
@@ -207,7 +214,7 @@ export function Sidebar({
                 <Icon className="w-4 h-4 shrink-0" />
                 {!collapsed && (
                   <>
-                    <span className="flex-1 truncate">{item.label}</span>
+                    <span className="flex-1 truncate">{tr(item.id, item.label)}</span>
                     {item.badge && (
                       <span
                         className={`font-mono text-[8px] tracking-[0.1em] px-1.5 py-[1px] border rounded-sm ${BADGE_STYLES[item.badge]}`}
@@ -234,23 +241,23 @@ export function Sidebar({
             }}
           >
             <Shield className="w-4 h-4 shrink-0" />
-            {!collapsed && <span className="flex-1 truncate">Admin</span>}
+            {!collapsed && <span className="flex-1 truncate">{tr("admin","Admin")}</span>}
           </Link>
         )}
         {(role === "admin" || role === "dispatcher") && (
-          <ExtraLink to="/allocation" icon={UserCheck} label="Allocation" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+          <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
         {category === "flight_school" && (
-          <ExtraLink to="/logbook" icon={BookOpen} label="Logbook" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+          <ExtraLink to="/logbook" icon={BookOpen} label={tr("logbook","Logbook")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
         {(currentOrg?.role === "admin" || isSuper) && (
           <>
-            <ExtraLink to="/approvals" icon={Inbox} label="Approvals" path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/integrations" icon={Plug} label="Integrations" path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
           </>
         )}
         {isSuper && (
-          <ExtraLink to="/superadmin" icon={ShieldAlert} label="Super Admin" path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
+          <ExtraLink to="/superadmin" icon={ShieldAlert} label={tr("superadmin","Super Admin")} path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
         )}
       </nav>
 
