@@ -26,6 +26,7 @@ import {
   FlaskConical,
   Handshake,
   FileCheck2,
+  Activity,
   type LucideIcon,
 } from "lucide-react";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
@@ -254,6 +255,7 @@ export function Sidebar({
         <ExtraLink to="/simulator" icon={FlaskConical} label={tr("simulator","What-If Sim")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         <ExtraLink to="/marketplace" icon={Handshake} label={tr("marketplace","Marketplace")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         <ExtraLink to="/regulator" icon={FileCheck2} label={tr("regulator","Regulator Export")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        <ExtraLink to="/predictive" icon={Activity} label={tr("predictive","Predictive")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         {(role === "admin" || role === "dispatcher") && (
           <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
