@@ -50,6 +50,7 @@ import { Route as AuthenticatedAdsbStatusRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicPushDispatchRouteImport } from './routes/api/public/push-dispatch'
 import { Route as AuthenticatedFlightsIdRouteImport } from './routes/_authenticated/flights.$id'
 import { Route as AuthenticatedFleetIdRouteImport } from './routes/_authenticated/fleet.$id'
 import { Route as AuthenticatedCrewIdRouteImport } from './routes/_authenticated/crew.$id'
@@ -266,6 +267,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPushDispatchRoute = ApiPublicPushDispatchRouteImport.update({
+  id: '/api/public/push-dispatch',
+  path: '/api/public/push-dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedFlightsIdRoute = AuthenticatedFlightsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/crew/$id': typeof AuthenticatedCrewIdRoute
   '/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRoutesByTo {
@@ -392,6 +399,7 @@ export interface FileRoutesByTo {
   '/crew/$id': typeof AuthenticatedCrewIdRoute
   '/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRoutesById {
@@ -442,6 +450,7 @@ export interface FileRoutesById {
   '/_authenticated/crew/$id': typeof AuthenticatedCrewIdRoute
   '/_authenticated/fleet/$id': typeof AuthenticatedFleetIdRoute
   '/_authenticated/flights/$id': typeof AuthenticatedFlightsIdRoute
+  '/api/public/push-dispatch': typeof ApiPublicPushDispatchRoute
   '/api/public/v1/openapi/json': typeof ApiPublicV1OpenapiJsonRoute
 }
 export interface FileRouteTypes {
@@ -492,6 +501,7 @@ export interface FileRouteTypes {
     | '/crew/$id'
     | '/fleet/$id'
     | '/flights/$id'
+    | '/api/public/push-dispatch'
     | '/api/public/v1/openapi/json'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -540,6 +550,7 @@ export interface FileRouteTypes {
     | '/crew/$id'
     | '/fleet/$id'
     | '/flights/$id'
+    | '/api/public/push-dispatch'
     | '/api/public/v1/openapi/json'
   id:
     | '__root__'
@@ -589,6 +600,7 @@ export interface FileRouteTypes {
     | '/_authenticated/crew/$id'
     | '/_authenticated/fleet/$id'
     | '/_authenticated/flights/$id'
+    | '/api/public/push-dispatch'
     | '/api/public/v1/openapi/json'
   fileRoutesById: FileRoutesById
 }
@@ -606,6 +618,7 @@ export interface RootRouteChildren {
   GuideAircraftManagementRoute: typeof GuideAircraftManagementRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicPushDispatchRoute: typeof ApiPublicPushDispatchRoute
   ApiPublicV1OpenapiJsonRoute: typeof ApiPublicV1OpenapiJsonRoute
 }
 
@@ -898,6 +911,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/push-dispatch': {
+      id: '/api/public/push-dispatch'
+      path: '/api/public/push-dispatch'
+      fullPath: '/api/public/push-dispatch'
+      preLoaderRoute: typeof ApiPublicPushDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/flights/$id': {
       id: '/_authenticated/flights/$id'
       path: '/$id'
@@ -1061,6 +1081,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuideAircraftManagementRoute: GuideAircraftManagementRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicPushDispatchRoute: ApiPublicPushDispatchRoute,
   ApiPublicV1OpenapiJsonRoute: ApiPublicV1OpenapiJsonRoute,
 }
 export const routeTree = rootRouteImport
