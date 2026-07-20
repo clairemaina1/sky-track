@@ -37,12 +37,32 @@ function MarketplacePage() {
   const [showForm, setShowForm] = useState(false);
 
   const { data: listings = [] } = useQuery({
-    queryKey: ["marketplace"],
+    queryKey: ["marketplace", org?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("marketplace_listings").select("*").eq("status", "open").order("created_at", { ascending: false });
-      return (data ?? []) as Listing[];
+      // Cross-org discovery via a security-definer RPC that omits contact_email + rate.
+      const { data: pub } = await supabase.rpc("marketplace_public_listings");
+      const rows = ((pub ?? []) as Listing[]).map((r) => ({ ...r, hourly_rate_usd: null, contact_email: null }));
+      // Merge in own-org rows (full detail including rate + email).
+      if (org?.id) {
+        const { data: own } = await supabase.from("marketplace_listings").select("*").eq("status", "open").eq("org_id", org.id);
+        const ownIds = new Set((own ?? []).map((r) => r.id));
+        return [
+          ...((own ?? []) as Listing[]),
+          ...rows.filter((r) => !ownIds.has(r.id)),
+        ].sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+      }
+      return rows;
     },
   });
+
+  async function revealContact(listingId: string) {
+    const { data, error } = await supabase.rpc("marketplace_reveal_contact", { _listing_id: listingId });
+    if (error) { toast.error(error.message); return; }
+    const row = (data ?? [])[0] as { contact_email: string | null; hourly_rate_usd: number | null } | undefined;
+    if (!row?.contact_email) { toast.info("No contact on file for this listing"); return; }
+    window.location.href = `mailto:${row.contact_email}?subject=SkyTrack marketplace enquiry`;
+  }
+
 
   const filtered = filter === "all" ? listings : listings.filter((l) => l.kind === filter);
 
@@ -163,11 +183,16 @@ function MarketplacePage() {
                     <span className="font-mono text-[10px] text-secondary-fg ml-1">/hr</span>
                   </div>
                 )}
-                {l.contact_email && (
+                {l.contact_email ? (
                   <a href={`mailto:${l.contact_email}`} className="text-xs text-accent-fg underline mt-1 block">
                     Contact
                   </a>
+                ) : (
+                  <button onClick={() => revealContact(l.id)} className="text-xs text-accent-fg underline mt-1 block">
+                    Reveal contact
+                  </button>
                 )}
+
               </div>
             </div>
           );
