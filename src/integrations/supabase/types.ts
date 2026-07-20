@@ -1116,6 +1116,27 @@ export type Database = {
           },
         ]
       }
+      push_dispatch_config: {
+        Row: {
+          endpoint_url: string
+          id: boolean
+          shared_secret: string
+          updated_at: string
+        }
+        Insert: {
+          endpoint_url: string
+          id?: boolean
+          shared_secret: string
+          updated_at?: string
+        }
+        Update: {
+          endpoint_url?: string
+          id?: boolean
+          shared_secret?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -1247,6 +1268,28 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _uid: string }; Returns: boolean }
+      marketplace_public_listings: {
+        Args: never
+        Returns: {
+          aircraft_type: string
+          base_iata: string
+          created_at: string
+          id: string
+          kind: string
+          notes: string
+          org_id: string
+          status: string
+          tail: string
+          title: string
+        }[]
+      }
+      marketplace_reveal_contact: {
+        Args: { _listing_id: string }
+        Returns: {
+          contact_email: string
+          hourly_rate_usd: number
+        }[]
+      }
       org_admin_count: { Args: { _org_id: string }; Returns: number }
       realtime_topic_org_id: { Args: { _topic: string }; Returns: string }
       user_has_category: {

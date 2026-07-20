@@ -61,15 +61,6 @@ export function AIRecoveryAssistant() {
           <Sparkles className="w-4 h-4 text-violet-400" />
           AI Recovery Assistant
         </div>
-        <span
-          className="font-mono text-[9px] uppercase tracking-[0.14em] px-2 py-0.5 border"
-          style={{
-            borderColor: "rgba(167,139,250,0.4)",
-            color: "#a78bfa",
-          }}
-        >
-          Lovable AI · Gemini
-        </span>
       </div>
 
       <div className="grid md:grid-cols-4 gap-3">

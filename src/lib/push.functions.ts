@@ -17,8 +17,25 @@ export const savePushSubscription = createServerFn({ method: "POST" })
       { onConflict: "endpoint" },
     );
     if (error) throw new Error(error.message);
+
+    // Best-effort: keep the pg_net push dispatch config in sync so the
+    // notifications trigger can fan out to /api/public/push-dispatch.
+    try {
+      const secret = process.env.PUSH_DISPATCH_SECRET;
+      const origin =
+        process.env.PUBLIC_APP_ORIGIN ??
+        "https://skytrackk.lovable.app";
+      if (secret) {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("push_dispatch_config").upsert(
+          { id: true, endpoint_url: `${origin}/api/public/push-dispatch`, shared_secret: secret, updated_at: new Date().toISOString() },
+          { onConflict: "id" },
+        );
+      }
+    } catch { /* non-fatal */ }
     return { ok: true };
   });
+
 
 /** Fire a test push to the calling user's own subscriptions. */
 export const sendTestPush = createServerFn({ method: "POST" })
