@@ -4,6 +4,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { HealthGauge } from "@/components/fleet/HealthGauge";
 import { declareAOG } from "@/lib/eventEngine";
 import type { PlatformTier } from "@/lib/tierGuard";
+import planeNarrowbody from "@/assets/plane-narrowbody.jpg";
+import planeWidebody from "@/assets/plane-widebody.jpg";
+import planeTrainer from "@/assets/plane-trainer.jpg";
+import planeRegional from "@/assets/plane-regional.jpg";
+import planeCargo from "@/assets/plane-cargo.jpg";
+
+function pickPlanePhoto(model: string, tier: PlatformTier): string {
+  const m = model.toLowerCase();
+  if (tier === "flight_school") return planeTrainer;
+  if (m.includes("cessna") || m.includes("172") || m.includes("152") || m.includes("pa-28") || m.includes("piper")) return planeTrainer;
+  if (m.includes("787") || m.includes("dreamliner") || m.includes("a350") || m.includes("777") || m.includes("a380") || m.includes("a340")) return planeWidebody;
+  if (m.includes("freight") || m.includes("cargo") || m.includes("-f") || m.includes("747")) return planeCargo;
+  if (m.includes("crj") || m.includes("erj") || m.includes("e170") || m.includes("e175") || m.includes("e190") || m.includes("e195") || m.includes("dash")) return planeRegional;
+  return planeNarrowbody;
+}
 
 export type AircraftStatus = "In-Flight" | "AOG" | "Maintenance" | "Standby";
 
