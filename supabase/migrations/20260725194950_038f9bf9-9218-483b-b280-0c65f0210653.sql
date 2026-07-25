@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.enqueue_push_for_notification() FROM PUBLIC, anon, authenticated;
