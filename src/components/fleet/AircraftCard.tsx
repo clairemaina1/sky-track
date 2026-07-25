@@ -249,7 +249,54 @@ export function AircraftCard({ aircraft, index = 0 }: AircraftCardProps) {
           )}
 
           <div className={isAOG ? "pt-8" : ""}>
+            {/* Hero photo of the aircraft with health % overlay */}
+            <div
+              className="relative h-32 w-full overflow-hidden"
+              style={{
+                backgroundImage: `url(${pickPlanePhoto(aircraft.model, aircraft.org_tier)})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(5,12,26,0.15) 0%, rgba(5,12,26,0.55) 65%, rgba(5,12,26,0.95) 100%)",
+                }}
+              />
+              <div className="absolute bottom-2 right-3 flex items-baseline gap-1 rounded-md px-2 py-1"
+                style={{
+                  background: "rgba(0,0,0,0.55)",
+                  border: `1px solid ${
+                    aircraft.health_score >= 90 ? "rgba(16,185,129,0.6)"
+                      : aircraft.health_score >= 70 ? "rgba(245,158,11,0.6)"
+                      : "rgba(239,68,68,0.7)"
+                  }`,
+                  backdropFilter: "blur(6px)",
+                }}
+              >
+                <span
+                  className={`text-[20px] font-bold leading-none ${
+                    aircraft.health_score >= 90 ? "text-emerald-300"
+                      : aircraft.health_score >= 70 ? "text-amber-300"
+                      : "text-red-300"
+                  }`}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {Math.round(aircraft.health_score)}
+                </span>
+                <span
+                  className="text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-300"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  % Health
+                </span>
+              </div>
+            </div>
+
             <div className="flex items-start justify-between px-5 pt-5">
+
               <div className="min-w-0 flex-1 pr-3">
                 <div className="flex items-center gap-2">
                   <span
