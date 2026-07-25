@@ -100,11 +100,13 @@ export default function WorldMap({
   const mapRef = useRef<L.Map | null>(null);
   const [showWeather, setShowWeather] = useState(false);
   const [showAdsb, setShowAdsb] = useState(true);
-  const [showFir, setShowFir] = useState(true);
+  const [showFir, setShowFir] = useState(false);
   const [showNotams, setShowNotams] = useState(true);
+  const [basemap, setBasemap] = useState<"map" | "satellite">("map");
 
   const fetchAdsb = useServerFn(fetchLiveAircraft);
   const fetchWx = useServerFn(getWeatherTileUrl);
+
 
   const { data: adsb = [] } = useQuery({
     queryKey: ["live-adsb"],
