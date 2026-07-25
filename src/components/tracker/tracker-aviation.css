@@ -1,22 +1,57 @@
-/* Sectional-chart inspired dark aviation theme for the Leaflet tracker.
-   Applied via .tracker--aviation wrapper on the map container. */
+/* Flightradar24-inspired terrain map theme.
+   Applied via .tracker--aviation wrapper. */
 
 .tracker--aviation .leaflet-container {
-  background: #05070d;
-}
-
-.tracker--aviation .leaflet-tile-pane {
-  filter: hue-rotate(200deg) saturate(0.55) brightness(0.55) contrast(1.15);
+  background: #a8c8e8;
 }
 
 .tracker--aviation .leaflet-control-attribution {
-  background: rgba(5, 7, 13, 0.7) !important;
-  color: #64748b !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #475569 !important;
   font-size: 9px !important;
 }
 
 .tracker--aviation .leaflet-control-attribution a {
-  color: #94a3b8 !important;
+  color: #1e40af !important;
+}
+
+/* Plane marker (rotates by heading via inline transform) */
+.plane-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s linear;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+}
+
+.plane-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.plane-icon.selected svg {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+}
+
+/* FR24-style permanent callsign label */
+.plane-label {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 3px !important;
+  padding: 1px 5px !important;
+  font-family: "SFMono-Regular", ui-monospace, monospace !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  white-space: nowrap !important;
+}
+
+.plane-label::before {
+  display: none !important;
 }
 
 /* Magenta compass rose for hub VORs */
@@ -26,28 +61,28 @@
 
 .vor-rose .rose-ring {
   fill: none;
-  stroke: #d946ef;
+  stroke: #7c2d12;
+  stroke-width: 1;
+  opacity: 0.4;
+}
+
+.vor-rose .rose-tick {
+  stroke: #7c2d12;
   stroke-width: 1;
   opacity: 0.55;
 }
 
-.vor-rose .rose-tick {
-  stroke: #d946ef;
-  stroke-width: 1;
-  opacity: 0.75;
-}
-
 .vor-rose .rose-label {
-  fill: #f0abfc;
+  fill: #7c2d12;
   font-family: "SFMono-Regular", ui-monospace, monospace;
   font-size: 8px;
   letter-spacing: 0.1em;
 }
 
 .weather-toggle-chip {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  color: #1e293b;
   padding: 4px 10px;
   border-radius: 9999px;
   font-size: 10px;
@@ -56,14 +91,15 @@
   letter-spacing: 0.14em;
   cursor: pointer;
   transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .weather-toggle-chip:hover {
-  border-color: rgba(217, 70, 239, 0.4);
+  border-color: rgba(37, 99, 235, 0.5);
 }
 
 .weather-toggle-chip[data-active="true"] {
-  background: rgba(217, 70, 239, 0.15);
-  border-color: rgba(217, 70, 239, 0.6);
-  color: #f0abfc;
+  background: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
 }
