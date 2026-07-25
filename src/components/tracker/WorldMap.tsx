@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Polyline, LayerGroup, SVGOverlay } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Marker, Tooltip, Polyline, LayerGroup, SVGOverlay } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./tracker-aviation.css";
@@ -9,6 +9,24 @@ import { fetchLiveAircraft, type LiveAircraft } from "@/lib/opensky.functions";
 import { getWeatherTileUrl } from "@/lib/weather.functions";
 import { FIR_LINES, VOR_HUBS } from "./aviation-fir";
 import { NOTAMS, NOTAM_COLOR } from "./notams";
+
+// FR24-style plane silhouette (nose-up); rotated by heading via CSS transform.
+function planeSvg(color: string, stroke = "#000"): string {
+  return `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2 L14 10 L22 12 L22 14 L14 13 L13 20 L15 21 L15 22 L12 21 L9 22 L9 21 L11 20 L10 13 L2 14 L2 12 L10 10 Z"
+      fill="${color}" stroke="${stroke}" stroke-width="0.6" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function planeDivIcon(color: string, heading: number, selected: boolean): L.DivIcon {
+  return L.divIcon({
+    className: `plane-icon${selected ? " selected" : ""}`,
+    html: `<div style="transform: rotate(${heading}deg);">${planeSvg(color)}</div>`,
+    iconSize: selected ? [30, 30] : [22, 22],
+    iconAnchor: selected ? [15, 15] : [11, 11],
+  });
+}
+
 
 const AIRPORT_COORDS: Record<string, [number, number]> = {
   HKJK: [-1.319, 36.927], HKWL: [-1.323, 36.806], HKNW: [-1.322, 36.815],
