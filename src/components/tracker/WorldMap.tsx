@@ -182,7 +182,7 @@ export default function WorldMap({
   return (
     <div
       className="tracker--aviation relative w-full overflow-hidden rounded-2xl"
-      style={{ height: 560, border: "1px solid rgba(217, 70, 239, 0.2)" }}
+      style={{ height: 560, border: "1px solid rgba(37,99,235,0.25)" }}
     >
       <MapContainer
         ref={mapRef as never}
@@ -193,11 +193,27 @@ export default function WorldMap({
         style={{ height: "100%", width: "100%" }}
         attributionControl
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          subdomains={["a", "b", "c", "d"]}
-          attribution='&copy; OpenStreetMap &copy; CARTO &middot; ADS-B: OpenSky Network &middot; Radar: RainViewer'
-        />
+        {basemap === "map" ? (
+          <TileLayer
+            key="osm"
+            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; OpenStreetMap contributors &middot; ADS-B: OpenSky &middot; Radar: RainViewer'
+          />
+        ) : (
+          <>
+            <TileLayer
+              key="sat"
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              attribution='Tiles &copy; Esri &middot; ADS-B: OpenSky'
+            />
+            <TileLayer
+              key="sat-labels"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+              subdomains={["a", "b", "c", "d"]}
+              attribution=""
+            />
+          </>
+        )}
 
         {showWeather && weather?.precip && (
           <TileLayer
@@ -207,6 +223,7 @@ export default function WorldMap({
             attribution=""
           />
         )}
+
 
         {showFir && (
           <LayerGroup>
