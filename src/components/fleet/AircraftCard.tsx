@@ -4,6 +4,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { HealthGauge } from "@/components/fleet/HealthGauge";
 import { declareAOG } from "@/lib/eventEngine";
 import type { PlatformTier } from "@/lib/tierGuard";
+import planeNarrowbody from "@/assets/plane-narrowbody.jpg";
+import planeWidebody from "@/assets/plane-widebody.jpg";
+import planeTrainer from "@/assets/plane-trainer.jpg";
+import planeRegional from "@/assets/plane-regional.jpg";
+import planeCargo from "@/assets/plane-cargo.jpg";
+
+function pickPlanePhoto(model: string, tier: PlatformTier): string {
+  const m = model.toLowerCase();
+  if (tier === "flight_school") return planeTrainer;
+  if (m.includes("cessna") || m.includes("172") || m.includes("152") || m.includes("pa-28") || m.includes("piper")) return planeTrainer;
+  if (m.includes("787") || m.includes("dreamliner") || m.includes("a350") || m.includes("777") || m.includes("a380") || m.includes("a340")) return planeWidebody;
+  if (m.includes("freight") || m.includes("cargo") || m.includes("-f") || m.includes("747")) return planeCargo;
+  if (m.includes("crj") || m.includes("erj") || m.includes("e170") || m.includes("e175") || m.includes("e190") || m.includes("e195") || m.includes("dash")) return planeRegional;
+  return planeNarrowbody;
+}
 
 export type AircraftStatus = "In-Flight" | "AOG" | "Maintenance" | "Standby";
 
@@ -234,7 +249,54 @@ export function AircraftCard({ aircraft, index = 0 }: AircraftCardProps) {
           )}
 
           <div className={isAOG ? "pt-8" : ""}>
+            {/* Hero photo of the aircraft with health % overlay */}
+            <div
+              className="relative h-32 w-full overflow-hidden"
+              style={{
+                backgroundImage: `url(${pickPlanePhoto(aircraft.model, aircraft.org_tier)})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(5,12,26,0.15) 0%, rgba(5,12,26,0.55) 65%, rgba(5,12,26,0.95) 100%)",
+                }}
+              />
+              <div className="absolute bottom-2 right-3 flex items-baseline gap-1 rounded-md px-2 py-1"
+                style={{
+                  background: "rgba(0,0,0,0.55)",
+                  border: `1px solid ${
+                    aircraft.health_score >= 90 ? "rgba(16,185,129,0.6)"
+                      : aircraft.health_score >= 70 ? "rgba(245,158,11,0.6)"
+                      : "rgba(239,68,68,0.7)"
+                  }`,
+                  backdropFilter: "blur(6px)",
+                }}
+              >
+                <span
+                  className={`text-[20px] font-bold leading-none ${
+                    aircraft.health_score >= 90 ? "text-emerald-300"
+                      : aircraft.health_score >= 70 ? "text-amber-300"
+                      : "text-red-300"
+                  }`}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {Math.round(aircraft.health_score)}
+                </span>
+                <span
+                  className="text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-300"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  % Health
+                </span>
+              </div>
+            </div>
+
             <div className="flex items-start justify-between px-5 pt-5">
+
               <div className="min-w-0 flex-1 pr-3">
                 <div className="flex items-center gap-2">
                   <span

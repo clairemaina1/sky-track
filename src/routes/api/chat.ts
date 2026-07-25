@@ -186,11 +186,14 @@ The user is signed in as role: "${role}". ${isLeader ? "They are a leader — yo
 Use the provided tools to fetch live data before answering. Be concise, use bullet points and markdown, and surface numbers clearly. All times are UTC. If a question is outside SkyTrack operations, politely redirect.`;
 
         const result = streamText({
-          model: gateway("google/gemini-3-flash-preview"),
+          model: gateway("google/gemini-2.5-flash"),
           system,
           messages: convertToModelMessages(messages),
           tools,
           stopWhen: stepCountIs(8),
+          onError: (err) => {
+            console.error("[SkyChat] stream error", err);
+          },
         });
 
         return result.toUIMessageStreamResponse({ originalMessages: messages });

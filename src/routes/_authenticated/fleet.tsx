@@ -316,7 +316,69 @@ function FleetPage() {
           </div>
         )}
 
+        {/* CEO Brief — one-glance summary of what needs attention right now */}
+        {fleet.length > 0 && (
+          <section
+            className="banner-in mb-6 rounded-2xl p-5"
+            style={{
+              background:
+                summary.aog > 0
+                  ? "linear-gradient(135deg, rgba(239,68,68,0.09) 0%, rgba(10,20,42,0.9) 60%)"
+                  : summary.criticalCount > 0
+                    ? "linear-gradient(135deg, rgba(245,158,11,0.09) 0%, rgba(10,20,42,0.9) 60%)"
+                    : "linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(10,20,42,0.9) 60%)",
+              border: "1px solid rgba(255,255,255,0.06)",
+            }}
+            aria-label="CEO brief"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div
+                  className="mb-1 text-[9.5px] font-semibold uppercase tracking-[0.18em] text-slate-500"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  CEO Brief · {new Date().toUTCString().slice(0, 16)}Z
+                </div>
+                <p className="text-[14px] leading-snug text-slate-100" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  {summary.aog > 0 ? (
+                    <>
+                      <span className="text-red-400 font-semibold">{summary.aog} aircraft AOG</span> · {summary.airborne} airborne · fleet health {summary.avgHealth}%. Immediate action on grounded tails.
+                    </>
+                  ) : summary.criticalCount > 0 ? (
+                    <>
+                      <span className="text-amber-300 font-semibold">{summary.criticalCount} tail{summary.criticalCount === 1 ? "" : "s"} below 70% health</span> · {summary.airborne} airborne · avg {summary.avgHealth}%. Schedule maintenance this week.
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-emerald-300 font-semibold">All systems nominal.</span> {summary.airborne} of {summary.total} airborne · fleet health {summary.avgHealth}%.
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 shrink-0">
+                <span className="rounded-md border border-emerald-500/25 bg-emerald-500/5 px-2.5 py-1 text-[10px] text-emerald-300 font-mono uppercase tracking-wider">
+                  {summary.airborne} Airborne
+                </span>
+                <span className="rounded-md border border-slate-700 bg-slate-800/50 px-2.5 py-1 text-[10px] text-slate-300 font-mono uppercase tracking-wider">
+                  {summary.total - summary.airborne - summary.aog - summary.maintenance} Standby
+                </span>
+                {summary.maintenance > 0 && (
+                  <span className="rounded-md border border-amber-500/30 bg-amber-500/5 px-2.5 py-1 text-[10px] text-amber-300 font-mono uppercase tracking-wider">
+                    {summary.maintenance} MRO
+                  </span>
+                )}
+                {summary.aog > 0 && (
+                  <span className="rounded-md border border-red-500/40 bg-red-500/10 px-2.5 py-1 text-[10px] text-red-300 font-mono uppercase tracking-wider">
+                    {summary.aog} AOG
+                  </span>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section
+
           className="banner-in mb-8 rounded-2xl p-6"
           style={{
             background: "linear-gradient(145deg, rgba(10,20,42,0.9) 0%, rgba(5,12,26,0.9) 100%)",
