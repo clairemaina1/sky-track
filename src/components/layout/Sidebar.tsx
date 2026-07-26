@@ -32,8 +32,10 @@ import {
   CloudRain,
   FileText,
   Presentation,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
+import { getProfileMeta } from "@/lib/product-profile";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
@@ -90,6 +92,8 @@ export function Sidebar({
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
+  const profile = getProfileMeta(currentOrg?.product_profile);
+  const isHidden = (to: string) => profile.hides.some((h) => to.toLowerCase().startsWith(h.toLowerCase()));
   const [category] = useCurrentCategory();
   const { data: isSuper = false } = useSuperAdmin();
   const [collapsedState, setCollapsed] = useState(false);
@@ -255,34 +259,45 @@ export function Sidebar({
             {!collapsed && <span className="flex-1 truncate">{tr("admin","Admin")}</span>}
           </Link>
         )}
-        <ExtraLink to="/tracker" icon={Radar} label={tr("tracker","Live Tracker")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/fuel-burn" icon={Flame} label={tr("fuel_burn","Fuel Burn")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/simulator" icon={FlaskConical} label={tr("simulator","What-If Sim")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/marketplace" icon={Handshake} label={tr("marketplace","Marketplace")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/regulator" icon={FileCheck2} label={tr("regulator","Regulator Export")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/predictive" icon={Activity} label={tr("predictive","Predictive")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        {(role === "admin" || role === "dispatcher") && (
+        {!isHidden("/tracker") && <ExtraLink to="/tracker" icon={Radar} label={tr("tracker","Live Tracker")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/fuel-burn") && <ExtraLink to="/fuel-burn" icon={Flame} label={tr("fuel_burn","Fuel Burn")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/simulator") && <ExtraLink to="/simulator" icon={FlaskConical} label={tr("simulator","What-If Sim")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/marketplace") && <ExtraLink to="/marketplace" icon={Handshake} label={tr("marketplace","Marketplace")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/regulator") && <ExtraLink to="/regulator" icon={FileCheck2} label={tr("regulator","Regulator Export")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/predictive") && <ExtraLink to="/predictive" icon={Activity} label={tr("predictive","Predictive")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {(role === "admin" || role === "dispatcher") && !isHidden("/allocation") && (
           <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
-        {category === "flight_school" && (
+        {(category === "flight_school" || currentOrg?.product_profile === "flight_school") && !isHidden("/logbook") && (
           <ExtraLink to="/logbook" icon={BookOpen} label={tr("logbook","Logbook")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         )}
-        <ExtraLink to="/adsb-status" icon={Radar} label={tr("adsb","ADS-B Status")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        <ExtraLink to="/weather-risk" icon={CloudRain} label={tr("wx_risk","Weather Risk")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+        {!isHidden("/adsb-status") && <ExtraLink to="/adsb-status" icon={Radar} label={tr("adsb","ADS-B Status")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        {!isHidden("/weather-risk") && <ExtraLink to="/weather-risk" icon={CloudRain} label={tr("wx_risk","Weather Risk")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+        <ExtraLink to="/support" icon={LifeBuoy} label={tr("support","Support")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
         {(currentOrg?.role === "admin" || isSuper) && (
           <>
-            <ExtraLink to="/import" icon={Upload} label={tr("import","CSV Import")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/branding" icon={Palette} label={tr("branding","Branding")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/audit" icon={FileText} label={tr("audit","Audit & DPA")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/pitch" icon={Presentation} label={tr("pitch","Sales One-Pager")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-            <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
+            {!isHidden("/import") && <ExtraLink to="/import" icon={Upload} label={tr("import","CSV Import")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+            {!isHidden("/branding") && <ExtraLink to="/branding" icon={Palette} label={tr("branding","Branding")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+            {!isHidden("/audit") && <ExtraLink to="/audit" icon={FileText} label={tr("audit","Audit & DPA")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+            {!isHidden("/pitch") && <ExtraLink to="/pitch" icon={Presentation} label={tr("pitch","Sales One-Pager")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+            {!isHidden("/approvals") && <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
+            {!isHidden("/integrations") && <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
           </>
         )}
         {isSuper && (
           <ExtraLink to="/superadmin" icon={ShieldAlert} label={tr("superadmin","Super Admin")} path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
         )}
       </nav>
+
+      {/* Product profile chip */}
+      {!collapsed && (
+        <div className="mx-2 mb-2 px-2.5 py-2 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
+          <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: profile.accent }}>
+            SkyTrack · {profile.brand}
+          </div>
+          <div className="font-mono text-[9px] text-secondary-fg mt-1 truncate">{profile.headline}</div>
+        </div>
+      )}
 
       {/* Active category brand badge */}
       {category && !collapsed && (

@@ -21,6 +21,7 @@ import { Route as DocsApiRouteImport } from './routes/docs.api'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedWeatherRiskRouteImport } from './routes/_authenticated/weather-risk'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
+import { Route as AuthenticatedSupportRouteImport } from './routes/_authenticated/support'
 import { Route as AuthenticatedSuperadminRouteImport } from './routes/_authenticated/superadmin'
 import { Route as AuthenticatedSimulatorRouteImport } from './routes/_authenticated/simulator'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -116,6 +117,11 @@ const AuthenticatedWeatherRiskRoute =
 const AuthenticatedTrackerRoute = AuthenticatedTrackerRouteImport.update({
   id: '/tracker',
   path: '/tracker',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSupportRoute = AuthenticatedSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSuperadminRoute = AuthenticatedSuperadminRouteImport.update({
@@ -340,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
@@ -388,6 +395,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/simulator': typeof AuthenticatedSimulatorRoute
   '/superadmin': typeof AuthenticatedSuperadminRoute
+  '/support': typeof AuthenticatedSupportRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
@@ -439,6 +447,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/simulator': typeof AuthenticatedSimulatorRoute
   '/_authenticated/superadmin': typeof AuthenticatedSuperadminRoute
+  '/_authenticated/support': typeof AuthenticatedSupportRoute
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/_authenticated/weather-risk': typeof AuthenticatedWeatherRiskRoute
   '/api/chat': typeof ApiChatRoute
@@ -491,6 +500,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/simulator'
     | '/superadmin'
+    | '/support'
     | '/tracker'
     | '/weather-risk'
     | '/api/chat'
@@ -539,6 +549,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/simulator'
     | '/superadmin'
+    | '/support'
     | '/tracker'
     | '/weather-risk'
     | '/api/chat'
@@ -589,6 +600,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/simulator'
     | '/_authenticated/superadmin'
+    | '/_authenticated/support'
     | '/_authenticated/tracker'
     | '/_authenticated/weather-risk'
     | '/api/chat'
@@ -706,6 +718,13 @@ declare module '@tanstack/react-router' {
       path: '/tracker'
       fullPath: '/tracker'
       preLoaderRoute: typeof AuthenticatedTrackerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/support': {
+      id: '/_authenticated/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof AuthenticatedSupportRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/superadmin': {
@@ -1024,6 +1043,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedSimulatorRoute: typeof AuthenticatedSimulatorRoute
   AuthenticatedSuperadminRoute: typeof AuthenticatedSuperadminRoute
+  AuthenticatedSupportRoute: typeof AuthenticatedSupportRoute
   AuthenticatedTrackerRoute: typeof AuthenticatedTrackerRoute
   AuthenticatedWeatherRiskRoute: typeof AuthenticatedWeatherRiskRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -1057,6 +1077,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedSimulatorRoute: AuthenticatedSimulatorRoute,
   AuthenticatedSuperadminRoute: AuthenticatedSuperadminRoute,
+  AuthenticatedSupportRoute: AuthenticatedSupportRoute,
   AuthenticatedTrackerRoute: AuthenticatedTrackerRoute,
   AuthenticatedWeatherRiskRoute: AuthenticatedWeatherRiskRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

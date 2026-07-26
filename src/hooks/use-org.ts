@@ -9,6 +9,7 @@ export interface OrgMembership {
   role: string;
   name: string;
   tier: "commercial" | "flight_school";
+  product_profile: string;
 }
 
 export function useMyOrgs() {
@@ -17,7 +18,7 @@ export function useMyOrgs() {
     queryFn: async (): Promise<OrgMembership[]> => {
       const { data, error } = await supabase
         .from("organization_members")
-        .select("role, org_id, organizations!inner(id, name, tier)");
+        .select("role, org_id, organizations!inner(id, name, tier, product_profile)");
       if (error) throw error;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (data ?? []).map((row: any) => ({
@@ -25,6 +26,7 @@ export function useMyOrgs() {
         role: row.role,
         name: row.organizations.name,
         tier: row.organizations.tier,
+        product_profile: row.organizations.product_profile ?? "generic",
       }));
     },
     staleTime: 60_000,
