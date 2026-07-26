@@ -822,6 +822,45 @@ export type Database = {
           },
         ]
       }
+      marketplace_reveal_log: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          requested_by: string
+          requester_org_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          requested_by: string
+          requester_org_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          requested_by?: string
+          requester_org_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_reveal_log_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_reveal_log_requester_org_id_fkey"
+            columns: ["requester_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           action_url: string | null
