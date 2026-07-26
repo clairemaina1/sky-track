@@ -32,8 +32,10 @@ import {
   CloudRain,
   FileText,
   Presentation,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
+import { getProfileMeta } from "@/lib/product-profile";
 import { useCurrentOrg, useResolvedTier } from "@/hooks/use-org";
 import { supabase } from "@/integrations/supabase/client";
 import { SkytrackLogo } from "@/components/brand/SkytrackLogo";
