@@ -947,6 +947,7 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          product_profile: Database["public"]["Enums"]["product_profile"]
           subdomain: string | null
           tier: Database["public"]["Enums"]["org_tier"]
           updated_at: string
@@ -958,6 +959,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name: string
+          product_profile?: Database["public"]["Enums"]["product_profile"]
           subdomain?: string | null
           tier?: Database["public"]["Enums"]["org_tier"]
           updated_at?: string
@@ -969,6 +971,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name?: string
+          product_profile?: Database["public"]["Enums"]["product_profile"]
           subdomain?: string | null
           tier?: Database["public"]["Enums"]["org_tier"]
           updated_at?: string
@@ -1167,6 +1170,59 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          body: string
+          category: string
+          created_at: string
+          id: string
+          org_id: string | null
+          priority: string
+          resolved_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          body: string
+          category?: string
+          created_at?: string
+          id?: string
+          org_id?: string | null
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          org_id?: string | null
+          priority?: string
+          resolved_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_category_access: {
         Row: {
           category: Database["public"]["Enums"]["skytrack_category"]
@@ -1346,6 +1402,13 @@ export type Database = {
         | "In-Flight"
       notification_priority: "critical" | "high" | "normal" | "low"
       org_tier: "commercial" | "flight_school"
+      product_profile:
+        | "airline_ops"
+        | "widebody_intl"
+        | "regulator"
+        | "flight_school"
+        | "cargo_ops"
+        | "generic"
       skytrack_category: "flight_school" | "icao" | "airline" | "cargo"
       work_order_status:
         | "Open"
@@ -1515,6 +1578,14 @@ export const Constants = {
       ],
       notification_priority: ["critical", "high", "normal", "low"],
       org_tier: ["commercial", "flight_school"],
+      product_profile: [
+        "airline_ops",
+        "widebody_intl",
+        "regulator",
+        "flight_school",
+        "cargo_ops",
+        "generic",
+      ],
       skytrack_category: ["flight_school", "icao", "airline", "cargo"],
       work_order_status: [
         "Open",
