@@ -92,6 +92,8 @@ export function Sidebar({
 
   const currentOrg = useCurrentOrg();
   const tier: PlatformTier = useResolvedTier();
+  const profile = getProfileMeta(currentOrg?.product_profile);
+  const isHidden = (to: string) => profile.hides.some((h) => to.toLowerCase().startsWith(h.toLowerCase()));
   const [category] = useCurrentCategory();
   const { data: isSuper = false } = useSuperAdmin();
   const [collapsedState, setCollapsed] = useState(false);
