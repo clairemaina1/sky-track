@@ -14,9 +14,9 @@ export function Shell() {
   const setMobileNav = useUiStore((s) => s.setMobileNav);
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <div className="min-h-screen flex flex-col bg-void">
+    <div className="h-screen overflow-hidden flex flex-col bg-void">
       <OnboardingGate />
-      <div className="flex-1 flex relative">
+      <div className="flex-1 min-h-0 flex relative">
         {/* Desktop sidebar */}
         <div className="hidden md:flex">
           <Sidebar />
