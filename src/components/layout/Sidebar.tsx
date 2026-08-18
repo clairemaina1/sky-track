@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   LayoutDashboard,
   Plane,
@@ -72,6 +72,18 @@ const BADGE_STYLES: Record<NonNullable<NavItem["badge"]>, string> = {
 
 // Tier is server-of-record from the org row; never trusted from the browser.
 
+type Entry = {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  title?: string;
+  badge?: NavItem["badge"];
+  exact?: boolean;
+  accent?: string;
+};
+
+type Section = { id: string; label: string; entries: Entry[] };
+
 function initials(name: string) {
   const p = name.trim().split(/\s+/);
   if (p.length === 1) return p[0].slice(0, 2).toUpperCase();
@@ -143,9 +155,119 @@ export function Sidebar({
 
   const items = getPermittedNavItems(tier, role);
   const tierMeta = getTierMeta(tier);
+  const isOrgAdmin = currentOrg?.role === "admin" || isSuper;
+
+  const sections: Section[] = useMemo(() => {
+    const byId = new Map(items.map((i) => [i.id, i] as const));
+    const manifest = (id: string): Entry | null => {
+      const it = byId.get(id as never);
+      if (!it || isHidden(it.to)) return null;
+      return {
+        to: it.to,
+        icon: ICONS[it.icon] ?? LayoutDashboard,
+        label: tr(it.id, it.label),
+        title: it.description,
+        badge: it.badge,
+        exact: it.exact,
+      };
+    };
+    const extra = (to: string, icon: LucideIcon, label: string, opts: Partial<Entry> = {}): Entry | null =>
+      isHidden(to) ? null : { to, icon, label, ...opts };
+
+    const isSchool = category === "flight_school" || currentOrg?.product_profile === "flight_school";
+
+    const raw: Section[] = [
+      {
+        id: "overview",
+        label: tr("group_overview", "Overview"),
+        entries: [manifest("command")],
+      },
+      {
+        id: "fleet",
+        label: tr("group_fleet", "Fleet & Maintenance"),
+        entries: [
+          manifest("fleet"),
+          manifest("mro"),
+          extra("/predictive", Activity, tr("predictive", "Predictive")),
+          extra("/adsb-status", Radar, tr("adsb", "ADS-B Status")),
+        ],
+      },
+      {
+        id: "ops",
+        label: tr("group_ops", "Flight Operations"),
+        entries: [
+          extra("/tracker", Radar, tr("tracker", "Live Tracker")),
+          manifest("routing"),
+          manifest("scheduling"),
+          manifest("disruption"),
+          extra("/weather-risk", CloudRain, tr("wx_risk", "Weather Risk")),
+          extra("/simulator", FlaskConical, tr("simulator", "What-If Sim")),
+        ],
+      },
+      {
+        id: "people",
+        label: tr("group_people", "Crew & Training"),
+        entries: [
+          manifest("crew"),
+          role === "admin" || role === "dispatcher"
+            ? extra("/allocation", UserCheck, tr("allocation", "Allocation"))
+            : null,
+          manifest("training"),
+          isSchool ? extra("/logbook", BookOpen, tr("logbook", "Logbook")) : null,
+        ],
+      },
+      {
+        id: "commercial",
+        label: tr("group_commercial", "Cargo & Commercial"),
+        entries: [
+          manifest("cargo"),
+          extra("/marketplace", Handshake, tr("marketplace", "Marketplace")),
+          extra("/fuel-burn", Flame, tr("fuel_burn", "Fuel Burn")),
+        ],
+      },
+      {
+        id: "compliance",
+        label: tr("group_compliance", "Compliance & Sustainability"),
+        entries: [
+          manifest("carbon"),
+          extra("/regulator", FileCheck2, tr("regulator", "Regulator Export")),
+          isOrgAdmin ? extra("/audit", FileText, tr("audit", "Audit & DPA")) : null,
+          isOrgAdmin ? extra("/approvals", Inbox, tr("approvals", "Approvals")) : null,
+        ],
+      },
+      {
+        id: "admin",
+        label: tr("group_admin", "Administration"),
+        entries: [
+          currentOrg?.role === "admin"
+            ? { to: "/admin", icon: Shield, label: tr("admin", "Admin"), title: "Manage team & data" }
+            : null,
+          isOrgAdmin ? extra("/import", Upload, tr("import", "CSV Import")) : null,
+          isOrgAdmin ? extra("/branding", Palette, tr("branding", "Branding")) : null,
+          isOrgAdmin ? extra("/integrations", Plug, tr("integrations", "Integrations")) : null,
+          isOrgAdmin ? extra("/pitch", Presentation, tr("pitch", "Sales One-Pager")) : null,
+          manifest("settings"),
+          { to: "/support", icon: LifeBuoy, label: tr("support", "Support") },
+          isSuper
+            ? {
+                to: "/superadmin",
+                icon: ShieldAlert,
+                label: tr("superadmin", "Super Admin"),
+                accent: "var(--accent-primary)",
+              }
+            : null,
+        ],
+      },
+    ];
+
+    return raw
+      .map((s) => ({ ...s, entries: s.entries.filter(Boolean) as Entry[] }))
+      .filter((s) => s.entries.length > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, category, currentOrg?.role, currentOrg?.product_profile, isSuper, role, profile, t]);
 
   const isActive = useCallback(
-    (item: NavItem) => (item.exact ? path === item.to : path.startsWith(item.to)),
+    (e: Entry) => (e.exact ? path === e.to : path === e.to || path.startsWith(e.to + "/")),
     [path],
   );
 
@@ -158,12 +280,12 @@ export function Sidebar({
 
   return (
     <aside
-      className="shrink-0 border-r flex flex-col bg-panel transition-[width] duration-200"
+      className="shrink-0 h-full border-r flex flex-col bg-panel transition-[width] duration-200"
       style={{ width, borderColor: "var(--border-subtle)" }}
     >
       {/* Header */}
       <div
-        className="px-3 py-4 border-b flex items-center gap-2 min-h-[60px]"
+        className="px-3 py-4 border-b flex items-center gap-2 min-h-[60px] shrink-0"
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <SkytrackLogo size={collapsed ? 24 : 28} showWordmark={false} />
@@ -195,103 +317,63 @@ export function Sidebar({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-2 overflow-y-auto">
-        {items.map((item, i) => {
-          const Icon = ICONS[item.icon] ?? LayoutDashboard;
-          const active = isActive(item);
-          const showDivider = item.groupStart && i !== 0;
-
-          return (
-            <div key={item.id}>
-              {showDivider && (
-                <div
-                  className="mx-3 my-2 border-t"
-                  style={{ borderColor: "var(--border-subtle)" }}
-                />
-              )}
-              <Link
-                to={item.to}
-                onClick={onNavigate}
-                title={collapsed ? `${item.label} — ${item.description}` : item.description}
-                className="relative flex items-center gap-3 mx-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all group"
-                style={{
-                  background: active ? "var(--bg-elevated)" : "transparent",
-                  color: active ? "var(--text-primary)" : "var(--text-secondary)",
-                  borderRadius: 2,
-                }}
-              >
-                {active && (
-                  <span
-                    className="absolute left-0 top-1.5 bottom-1.5 w-[2px]"
-                    style={{ background: "var(--accent-primary)", boxShadow: "0 0 8px var(--accent-glow)" }}
-                  />
-                )}
-                <Icon className="w-4 h-4 shrink-0" />
-                {!collapsed && (
-                  <>
-                    <span className="flex-1 truncate">{tr(item.id, item.label)}</span>
-                    {item.badge && (
-                      <span
-                        className={`font-mono text-[8px] tracking-[0.1em] px-1.5 py-[1px] border rounded-sm ${BADGE_STYLES[item.badge]}`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                  </>
-                )}
-              </Link>
-            </div>
-          );
-        })}
-        {currentOrg?.role === "admin" && (
-          <Link
-            to={"/admin" as string}
-            onClick={onNavigate}
-            title={collapsed ? "Admin — manage team & data" : "Manage team & data"}
-            className="relative flex items-center gap-3 mx-2 mt-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
-            style={{
-              background: path === "/admin" ? "var(--bg-elevated)" : "transparent",
-              color: path === "/admin" ? "var(--text-primary)" : "var(--text-secondary)",
-              borderRadius: 2,
-            }}
-          >
-            <Shield className="w-4 h-4 shrink-0" />
-            {!collapsed && <span className="flex-1 truncate">{tr("admin","Admin")}</span>}
-          </Link>
-        )}
-        {!isHidden("/tracker") && <ExtraLink to="/tracker" icon={Radar} label={tr("tracker","Live Tracker")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/fuel-burn") && <ExtraLink to="/fuel-burn" icon={Flame} label={tr("fuel_burn","Fuel Burn")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/simulator") && <ExtraLink to="/simulator" icon={FlaskConical} label={tr("simulator","What-If Sim")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/marketplace") && <ExtraLink to="/marketplace" icon={Handshake} label={tr("marketplace","Marketplace")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/regulator") && <ExtraLink to="/regulator" icon={FileCheck2} label={tr("regulator","Regulator Export")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/predictive") && <ExtraLink to="/predictive" icon={Activity} label={tr("predictive","Predictive")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {(role === "admin" || role === "dispatcher") && !isHidden("/allocation") && (
-          <ExtraLink to="/allocation" icon={UserCheck} label={tr("allocation","Allocation")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        )}
-        {(category === "flight_school" || currentOrg?.product_profile === "flight_school") && !isHidden("/logbook") && (
-          <ExtraLink to="/logbook" icon={BookOpen} label={tr("logbook","Logbook")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        )}
-        {!isHidden("/adsb-status") && <ExtraLink to="/adsb-status" icon={Radar} label={tr("adsb","ADS-B Status")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        {!isHidden("/weather-risk") && <ExtraLink to="/weather-risk" icon={CloudRain} label={tr("wx_risk","Weather Risk")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-        <ExtraLink to="/support" icon={LifeBuoy} label={tr("support","Support")} path={path} collapsed={collapsed} onNavigate={onNavigate} />
-        {(currentOrg?.role === "admin" || isSuper) && (
-          <>
-            {!isHidden("/import") && <ExtraLink to="/import" icon={Upload} label={tr("import","CSV Import")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-            {!isHidden("/branding") && <ExtraLink to="/branding" icon={Palette} label={tr("branding","Branding")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-            {!isHidden("/audit") && <ExtraLink to="/audit" icon={FileText} label={tr("audit","Audit & DPA")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-            {!isHidden("/pitch") && <ExtraLink to="/pitch" icon={Presentation} label={tr("pitch","Sales One-Pager")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-            {!isHidden("/approvals") && <ExtraLink to="/approvals" icon={Inbox} label={tr("approvals","Approvals")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-            {!isHidden("/integrations") && <ExtraLink to="/integrations" icon={Plug} label={tr("integrations","Integrations")} path={path} collapsed={collapsed} onNavigate={onNavigate} />}
-          </>
-        )}
-        {isSuper && (
-          <ExtraLink to="/superadmin" icon={ShieldAlert} label={tr("superadmin","Super Admin")} path={path} collapsed={collapsed} onNavigate={onNavigate} accent="var(--accent-primary)" />
-        )}
+      <nav className="flex-1 min-h-0 py-2 overflow-y-auto">
+        {sections.map((section, si) => (
+          <div key={section.id} className={si === 0 ? "" : "mt-3"}>
+            {collapsed ? (
+              si === 0 ? null : (
+                <div className="mx-3 mb-2 border-t" style={{ borderColor: "var(--border-subtle)" }} />
+              )
+            ) : (
+              <div className="px-4 mb-1.5 font-mono text-[8.5px] uppercase tracking-[0.22em] text-secondary-fg/70">
+                {section.label}
+              </div>
+            )}
+            {section.entries.map((e) => {
+              const Icon = e.icon;
+              const active = isActive(e);
+              return (
+                <Link
+                  key={e.to}
+                  to={e.to}
+                  onClick={onNavigate}
+                  title={collapsed ? `${e.label}${e.title ? ` — ${e.title}` : ""}` : e.title ?? e.label}
+                  className="relative flex items-center gap-3 mx-2 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
+                  style={{
+                    background: active ? "var(--bg-elevated)" : "transparent",
+                    color: e.accent ?? (active ? "var(--text-primary)" : "var(--text-secondary)"),
+                    borderRadius: 2,
+                  }}
+                >
+                  {active && (
+                    <span
+                      className="absolute left-0 top-1.5 bottom-1.5 w-[2px]"
+                      style={{ background: "var(--accent-primary)", boxShadow: "0 0 8px var(--accent-glow)" }}
+                    />
+                  )}
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {!collapsed && (
+                    <>
+                      <span className="flex-1 truncate">{e.label}</span>
+                      {e.badge && (
+                        <span
+                          className={`font-mono text-[8px] tracking-[0.1em] px-1.5 py-[1px] border rounded-sm ${BADGE_STYLES[e.badge]}`}
+                        >
+                          {e.badge}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* Product profile chip */}
       {!collapsed && (
-        <div className="mx-2 mb-2 px-2.5 py-2 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
+        <div className="mx-2 mb-2 px-2.5 py-2 border shrink-0" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
           <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: profile.accent }}>
             SkyTrack · {profile.brand}
           </div>
@@ -301,17 +383,16 @@ export function Sidebar({
 
       {/* Active category brand badge */}
       {category && !collapsed && (
-        <div className="mx-2 mb-2 px-2.5 py-2 border" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
+        <div className="mx-2 mb-2 px-2.5 py-2 border shrink-0" style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}>
           <div className="font-display text-[10px] uppercase tracking-[0.14em]" style={{ color: CATEGORY_ACCENT[category] }}>
             {CATEGORY_LABEL[category]}
           </div>
         </div>
       )}
 
-
       {/* Tier badge */}
       <div
-        className="mx-2 mb-2 px-2.5 py-2 flex items-center gap-2 border"
+        className="mx-2 mb-2 px-2.5 py-2 flex items-center gap-2 border shrink-0"
         style={{ borderColor: "var(--border-subtle)", borderRadius: 2 }}
       >
         <span
@@ -335,7 +416,7 @@ export function Sidebar({
 
       {/* User row */}
       <div
-        className="border-t px-2 py-2 flex items-center gap-2"
+        className="border-t px-2 py-2 flex items-center gap-2 shrink-0"
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <div
@@ -369,29 +450,3 @@ export function Sidebar({
     </aside>
   );
 }
-
-function ExtraLink({
-  to, icon: Icon, label, path, collapsed, onNavigate, accent,
-}: {
-  to: string; icon: LucideIcon; label: string; path: string; collapsed: boolean;
-  onNavigate?: () => void; accent?: string;
-}) {
-  const active = path === to || path.startsWith(to + "/");
-  return (
-    <Link
-      to={to}
-      onClick={onNavigate}
-      title={collapsed ? label : label}
-      className="relative flex items-center gap-3 mx-2 mt-1 px-2.5 py-2 font-display uppercase text-[11px] tracking-[0.1em] transition-all"
-      style={{
-        background: active ? "var(--bg-elevated)" : "transparent",
-        color: accent ?? (active ? "var(--text-primary)" : "var(--text-secondary)"),
-        borderRadius: 2,
-      }}
-    >
-      <Icon className="w-4 h-4 shrink-0" />
-      {!collapsed && <span className="flex-1 truncate">{label}</span>}
-    </Link>
-  );
-}
-
