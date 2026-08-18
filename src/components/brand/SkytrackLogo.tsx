@@ -1,14 +1,33 @@
-import logoUrl from "@/assets/skytrack-logo.png";
+import markUrl from "@/assets/brand/mark-primary.png";
+import lockupUrl from "@/assets/brand/lockup-horizontal.png";
+import appIconUrl from "@/assets/brand/app-icon.png";
+
+export type LogoVariant = "mark" | "lockup" | "lockup-light" | "icon";
 
 export function SkytrackLogo({
   size = 28,
   showWordmark = true,
   className,
+  variant = "mark",
 }: {
   size?: number;
   showWordmark?: boolean;
   className?: string;
+  variant?: LogoVariant;
 }) {
+  const logoUrl = variant === "icon" ? appIconUrl : markUrl;
+  if (variant === "lockup-light") {
+    return (
+      <img
+        src={lockupUrl}
+        alt="SKYTRACK"
+        height={size}
+        style={{ height: size, width: "auto" }}
+        className={`block ${className ?? ""}`}
+      />
+    );
+  }
+  if (variant === "lockup") showWordmark = true;
   return (
     <div className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
       <div
