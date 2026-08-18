@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Role = "admin" | "dispatcher" | "maintenance" | "pilot";
+type Role = "admin" | "dispatcher" | "maintenance" | "crew";
 
 function AdminPage() {
   const org = useCurrentOrg();
@@ -151,7 +151,7 @@ function AdminPage() {
                   <option className="bg-slate-900" value="admin">admin</option>
                   <option className="bg-slate-900" value="dispatcher">dispatcher</option>
                   <option className="bg-slate-900" value="maintenance">maintenance</option>
-                  <option className="bg-slate-900" value="pilot">pilot</option>
+                  <option className="bg-slate-900" value="crew">crew (pilot / cabin)</option>
                 </select>
                 <button
                   onClick={() => {
@@ -191,7 +191,7 @@ function AdminPage() {
             <option className="bg-slate-900" value="admin">admin</option>
             <option className="bg-slate-900" value="dispatcher">dispatcher</option>
             <option className="bg-slate-900" value="maintenance">maintenance</option>
-            <option className="bg-slate-900" value="pilot">pilot</option>
+            <option className="bg-slate-900" value="crew">crew (pilot / cabin)</option>
           </select>
           <button
             disabled={!email.includes("@") || invite.isPending}
