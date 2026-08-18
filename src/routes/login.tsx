@@ -96,8 +96,7 @@ function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="flex flex-col items-center mb-8">
-          <SkytrackLogo size={56} showWordmark={false} className="mb-4" />
-          <h1 className="text-2xl font-semibold text-primary-fg tracking-tight">SkyTrack</h1>
+          <SkytrackLogo variant="lockup" size={44} className="mb-1" />
         </div>
 
 
