@@ -1,6 +1,4 @@
-import markUrl from "@/assets/brand/mark-primary.png";
-import lockupUrl from "@/assets/brand/lockup-horizontal.png";
-import appIconUrl from "@/assets/brand/app-icon.png";
+import logoUrl from "@/assets/skytrack-logo.png";
 
 export type LogoVariant = "mark" | "lockup" | "lockup-light" | "icon";
 
@@ -15,25 +13,10 @@ export function SkytrackLogo({
   className?: string;
   variant?: LogoVariant;
 }) {
-  const logoUrl = variant === "icon" ? appIconUrl : markUrl;
-  if (variant === "lockup-light") {
-    return (
-      <img
-        src={lockupUrl}
-        alt="SKYTRACK"
-        height={size}
-        style={{ height: size, width: "auto" }}
-        className={`block ${className ?? ""}`}
-      />
-    );
-  }
-  if (variant === "lockup") showWordmark = true;
+  if (variant === "lockup" || variant === "lockup-light") showWordmark = true;
   return (
     <div className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
-      <div
-        className="relative shrink-0"
-        style={{ width: size, height: size }}
-      >
+      <div className="relative shrink-0" style={{ width: size, height: size }}>
         <div
           className="absolute inset-0 rounded-full opacity-40 blur-md"
           style={{
@@ -47,9 +30,7 @@ export function SkytrackLogo({
           width={size}
           height={size}
           className="relative block"
-          style={{
-            filter: "drop-shadow(0 0 6px rgba(61,217,255,0.4))",
-          }}
+          style={{ filter: "drop-shadow(0 0 6px rgba(61,217,255,0.4))" }}
         />
       </div>
       {showWordmark && (
@@ -58,8 +39,7 @@ export function SkytrackLogo({
             className="font-display font-bold tracking-[0.18em]"
             style={{
               fontSize: size > 32 ? 18 : 14,
-              background:
-                "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
+              background: "linear-gradient(135deg, #3DD9FF 0%, #00C2A8 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
