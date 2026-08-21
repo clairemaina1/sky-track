@@ -105,6 +105,15 @@
     repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.03) 0 1px, transparent 1px 40px);
 }
 
+/* Native dropdown menus render on an OS-white surface in most browsers,
+   so option text must stay dark regardless of the app theme. */
+select option,
+select optgroup,
+datalist option {
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
 @layer base {
   * {
     border-color: var(--border-subtle);
