@@ -194,11 +194,30 @@ export default function WorldMap({
         attributionControl
       >
         {basemap === "map" ? (
-          <TileLayer
-            key="osm"
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; OpenStreetMap contributors &middot; ADS-B: OpenSky &middot; Radar: RainViewer'
-          />
+          /* Flightradar24-style terrain composite:
+             Esri World Hillshade (relief) + Carto Voyager land/water without labels
+             + Carto label-only layer on top so callsigns stay readable. */
+          <>
+            <TileLayer
+              key="hillshade"
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}"
+              attribution='Relief &copy; Esri &middot; &copy; OpenStreetMap contributors &middot; ADS-B: OpenSky &middot; Radar: RainViewer'
+            />
+            <TileLayer
+              key="voyager-nolabels"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
+              subdomains={["a", "b", "c", "d"]}
+              opacity={0.62}
+              attribution=""
+            />
+            <TileLayer
+              key="voyager-labels"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
+              subdomains={["a", "b", "c", "d"]}
+              zIndex={400}
+              attribution=""
+            />
+          </>
         ) : (
           <>
             <TileLayer
@@ -210,10 +229,12 @@ export default function WorldMap({
               key="sat-labels"
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png"
               subdomains={["a", "b", "c", "d"]}
+              zIndex={400}
               attribution=""
             />
           </>
         )}
+
 
         {showWeather && weather?.precip && (
           <TileLayer
